@@ -2,11 +2,16 @@ package com.andreykaraman.multinote;
 
 import java.util.Locale;
 
+
+
 import android.app.Activity;
 import android.app.ActionBar;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -15,8 +20,12 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
 
@@ -34,10 +43,12 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
      */
     ViewPager mViewPager;
 
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.activity_main);
+
 
 	// Set up the action bar.
 	final ActionBar actionBar = getActionBar();
@@ -72,6 +83,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 		    .setText(mSectionsPagerAdapter.getPageTitle(i))
 		    .setTabListener(this));
 	}
+	
+	
     }
 
     @Override
@@ -127,7 +140,15 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	    // getItem is called to instantiate the fragment for the given page.
 	    // Return a PlaceholderFragment (defined as a static inner class
 	    // below).
-	    return PlaceholderFragment.newInstance(position + 1);
+	    // return PlaceholderFragment.newInstance(position);
+
+	    switch (position) {
+	    case 0:
+		return LoginFragment.newInstance();
+	    case 1:
+		return RegisterFragment.newInstance();
+	    }
+	    return null;
 	}
 
 	@Override
@@ -152,25 +173,42 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
-	/**
-	 * The fragment argument representing the section number for this
-	 * fragment.
-	 */
-	private static final String ARG_SECTION_NUMBER = "section_number";
+    // public static class PlaceholderFragment extends Fragment {
+    /**
+     * The fragment argument representing the section number for this fragment.
+     */
+    // private static final String ARG_SECTION_NUMBER = "section_number";
 
-	/**
-	 * Returns a new instance of this fragment for the given section number.
-	 */
-	public static PlaceholderFragment newInstance(int sectionNumber) {
-	    PlaceholderFragment fragment = new PlaceholderFragment();
-	    Bundle args = new Bundle();
-	    args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-	    fragment.setArguments(args);
+    /**
+     * Returns a new instance of this fragment for the given section number.
+     */
+    /*
+     * public static PlaceholderFragment newInstance(int sectionNumber) {
+     * PlaceholderFragment fragment = new PlaceholderFragment(); Bundle args =
+     * new Bundle(); args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+     * fragment.setArguments(args); return fragment; }
+     * 
+     * public PlaceholderFragment() { }
+     * 
+     * @Override public View onCreateView(LayoutInflater inflater, ViewGroup
+     * container, Bundle savedInstanceState) { View rootView =
+     * inflater.inflate(R.layout.login_frame, container, false); /* TextView
+     * textView = (TextView) rootView .findViewById(R.id.section_label);
+     * textView.setText(Integer.toString(getArguments().getInt(
+     * ARG_SECTION_NUMBER)));
+     */
+    /*
+     * return rootView; } }
+     */
+
+    public static class LoginFragment extends Fragment {
+
+	public static LoginFragment newInstance() {
+	    LoginFragment fragment = new LoginFragment();
 	    return fragment;
 	}
 
-	public PlaceholderFragment() {
+	public LoginFragment() {
 	}
 
 	@Override
@@ -178,12 +216,71 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 		Bundle savedInstanceState) {
 	    View rootView = inflater.inflate(R.layout.login_frame, container,
 		    false);
-	  /*  TextView textView = (TextView) rootView
-		    .findViewById(R.id.section_label);
-	    textView.setText(Integer.toString(getArguments().getInt(
-		    ARG_SECTION_NUMBER)));*/
+	    final EditText loginText = (EditText) rootView
+		    .findViewById(R.id.editTextLogin);
+	    final EditText passwordText = (EditText) rootView
+		    .findViewById(R.id.editTextPassword);
+
+	    Button button = (Button) rootView.findViewById(R.id.buttonLogin);
+
+	    button.setOnClickListener(new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+		    // TODO Auto-generated method stub
+		    Toast.makeText(v.getContext(),
+			    loginText.getText() + "/" + passwordText.getText(),
+			    Toast.LENGTH_SHORT).show();
+		    Intent intent = new Intent(v.getContext(), NoteList.class);
+		    startActivity(intent);
+
+		}
+	    });
+
 	    return rootView;
 	}
     }
+
+    public static class RegisterFragment extends Fragment {
+
+	public static RegisterFragment newInstance() {
+	    RegisterFragment fragment = new RegisterFragment();
+	    return fragment;
+	}
+
+	public RegisterFragment() {
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+		Bundle savedInstanceState) {
+	    View rootView = inflater.inflate(R.layout.register_frame,
+		    container, false);
+
+	    final EditText loginText = (EditText) rootView
+		    .findViewById(R.id.editTextRegisterLogin);
+	    final EditText passwordText = (EditText) rootView
+		    .findViewById(R.id.editTextRegisterPass);
+	    final EditText newPasswordText = (EditText) rootView
+		    .findViewById(R.id.editTextRegisterRepPassword);
+	    
+	    Button button = (Button) rootView.findViewById(R.id.buttonRegister);
+
+	    button.setOnClickListener(new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+		    // TODO Auto-generated method stub
+		    Toast.makeText(v.getContext(),
+			    loginText.getText() + "/" + passwordText.getText() + "/"+ newPasswordText.getText(),
+			    Toast.LENGTH_SHORT).show();
+		    Intent intent = new Intent(v.getContext(), NoteList.class);
+		    startActivity(intent);
+		}
+	    });
+	    
+	    return rootView;
+	}
+    }
+    
+    
 
 }
