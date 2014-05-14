@@ -29,5 +29,6 @@
     <string name="cancel">Отмена</string>
     <string name="wrong_login_pass">Неправильный логин/пароль</string>
     <string name="select_all">Выделить всё</string>
+    <string name="add_note">Добавить заметку</string>
 
 </resources>

@@ -29,5 +29,9 @@
     <string name="cancel">Cancel</string>
     <string name="wrong_login_pass">Wrong login/password</string>
     <string name="select_all">Select all</string>
+    <string name="add_note">Add new note</string>
+    <string name="title_activity_edit_pass">EditPassActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_edit_note">EditNoteActivity</string>
 
 </resources>

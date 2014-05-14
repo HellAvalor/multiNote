@@ -230,7 +230,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 		    Toast.makeText(v.getContext(),
 			    loginText.getText() + "/" + passwordText.getText(),
 			    Toast.LENGTH_SHORT).show();
-		    Intent intent = new Intent(v.getContext(), NoteList.class);
+		    Intent intent = new Intent(v.getContext(), NoteListActivity.class);
 		    startActivity(intent);
 
 		}
@@ -272,7 +272,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 		    Toast.makeText(v.getContext(),
 			    loginText.getText() + "/" + passwordText.getText() + "/"+ newPasswordText.getText(),
 			    Toast.LENGTH_SHORT).show();
-		    Intent intent = new Intent(v.getContext(), NoteList.class);
+		    Intent intent = new Intent(v.getContext(), NoteListActivity.class);
 		    startActivity(intent);
 		}
 	    });

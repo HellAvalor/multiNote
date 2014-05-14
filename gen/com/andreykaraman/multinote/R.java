@@ -26,11 +26,13 @@ public final class R {
     }
     public static final class id {
         public static final int ScrollView01=0x7f080012;
+        public static final int actionAddNote=0x7f08001a;
         public static final int action_settings=0x7f080017;
         public static final int buttonChangePassword=0x7f080005;
         public static final int buttonLogin=0x7f08000b;
         public static final int buttonRegister=0x7f080016;
-        public static final int container=0x7f080001;
+        public static final int change_pass=0x7f080018;
+        public static final int container=0x7f080000;
         public static final int editTextEditNote=0x7f080006;
         public static final int editTextLogin=0x7f080009;
         public static final int editTextNewNote=0x7f08000d;
@@ -44,31 +46,38 @@ public final class R {
         public static final int editTextRegisterRepPassword=0x7f080015;
         public static final int imageButtonDelete=0x7f080010;
         public static final int listView1=0x7f080011;
-        public static final int pager=0x7f080000;
+        public static final int logout=0x7f080019;
+        public static final int pager=0x7f080001;
         public static final int section_label=0x7f080007;
         public static final int textNoteContent=0x7f08000f;
         public static final int textNoteTilte=0x7f080008;
         public static final int textNoteTitle=0x7f08000e;
     }
     public static final class layout {
-        public static final int activity_main=0x7f030000;
-        public static final int activity_note_list=0x7f030001;
-        public static final int alt_note_list=0x7f030002;
-        public static final int change_pass=0x7f030003;
-        public static final int edit_note=0x7f030004;
-        public static final int fragment_main=0x7f030005;
-        public static final int login_frame=0x7f030006;
-        public static final int new_note=0x7f030007;
-        public static final int note_item=0x7f030008;
-        public static final int notes_list=0x7f030009;
-        public static final int register_frame=0x7f03000a;
+        public static final int activity_edit_note=0x7f030000;
+        public static final int activity_edit_pass=0x7f030001;
+        public static final int activity_main=0x7f030002;
+        public static final int activity_note_list=0x7f030003;
+        public static final int alt_note_list=0x7f030004;
+        public static final int change_pass=0x7f030005;
+        public static final int edit_note=0x7f030006;
+        public static final int fragment_edit_note=0x7f030007;
+        public static final int fragment_main=0x7f030008;
+        public static final int login_frame=0x7f030009;
+        public static final int new_note=0x7f03000a;
+        public static final int note_item=0x7f03000b;
+        public static final int notes_list=0x7f03000c;
+        public static final int register_frame=0x7f03000d;
     }
     public static final class menu {
-        public static final int main=0x7f070000;
-        public static final int note_list=0x7f070001;
+        public static final int edit_note=0x7f070000;
+        public static final int edit_pass=0x7f070001;
+        public static final int main=0x7f070002;
+        public static final int note_list=0x7f070003;
     }
     public static final class string {
         public static final int action_settings=0x7f050004;
+        public static final int add_note=0x7f05001c;
         public static final int app_name=0x7f050000;
         public static final int cancel=0x7f050019;
         public static final int change_pass=0x7f05000f;
@@ -77,6 +86,7 @@ public final class R {
         public static final int enter_button=0x7f050008;
         public static final int enter_name_text=0x7f050005;
         public static final int exit=0x7f050011;
+        public static final int hello_world=0x7f05001e;
         public static final int login=0x7f050007;
         public static final int new_note=0x7f050014;
         public static final int new_pass=0x7f05000d;
@@ -92,6 +102,8 @@ public final class R {
         public static final int rep_pass=0x7f05000e;
         public static final int save=0x7f050015;
         public static final int select_all=0x7f05001b;
+        public static final int title_activity_edit_note=0x7f05001f;
+        public static final int title_activity_edit_pass=0x7f05001d;
         public static final int title_section1=0x7f050001;
         public static final int title_section2=0x7f050002;
         public static final int title_section3=0x7f050003;
