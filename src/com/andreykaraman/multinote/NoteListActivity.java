@@ -12,6 +12,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -73,7 +75,7 @@ public class NoteListActivity extends Activity {
 	    Toast.makeText(this, "Adding new note", Toast.LENGTH_SHORT).show();
 
 	    Intent intent = new Intent(this, EditNoteActivity.class);
-	//    intent.putExtra("id", "-1");
+	    // intent.putExtra("id", "-1");
 	    startActivity(intent);
 
 	    return true;
@@ -84,7 +86,7 @@ public class NoteListActivity extends Activity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class PlaceholderFragment extends Fragment  implements OnItemClickListener {
 
 	public PlaceholderFragment() {
 	}
@@ -115,10 +117,22 @@ public class NoteListActivity extends Activity {
 	    // LinearLayout linAddEstate = (LinearLayout) EstateView
 	    // .findViewById(R.id.estate_footer_add);
 	    // linAddEstate.setOnClickListener(this);
+	    noteView.setOnItemClickListener(this);
 	    noteView.setAdapter(noteAdapter);
-	    // registerForContextMenu(EstateView);
+	    
 
+	    // registerForContextMenu(EstateView);
+	    
 	    return rootView;
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+		long id) {
+	
+	    // TODO Auto-generated method stub
+	    Toast.makeText(view.getContext(), "2 tap on " + position+"/"+ notes.get(position) + " id "+ notes.get(position).getNoteId(), Toast.LENGTH_SHORT).show();
+	 
 	}
     }
 

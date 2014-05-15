@@ -13,7 +13,6 @@ public class Note {
     final static String LOG_TAG = "myLogs";
     final static int ADD = 1;
     final static int EDIT = 2;
-    final static int DELETE = 3;
 
     private long noteId;
     private String noteTitle;
@@ -54,9 +53,9 @@ public class Note {
 	return noteId;
     }
 
-    public static void addNewNote(Context context, Note note, int addEditFlag) {
+    public static void addEditNote(Context context, Note note, int addEditFlag) {
 
-	Log.d(LOG_TAG, "add new est");
+	Log.d(LOG_TAG, "add new note");
 
 	int maxID = 0;
 
@@ -92,6 +91,12 @@ public class Note {
 		    null);
 	}
 
+	Log.d(LOG_TAG, "--------- Table after add/edit --------------");
+
+	Cursor cursor = DbHelper.getCursor(db, DbHelper.NOTE_TABLE_NAME, null,
+		    null);
+	DbHelper.printTableLog(cursor);
+	
 	db.close();
 
     }
@@ -103,8 +108,17 @@ public class Note {
 
 	db.delete(DbHelper.NOTE_TABLE_NAME,
 		DbHelper.NOTE_ID + " = " + note.getNoteId(), null);
+	
+	
+	Log.d(LOG_TAG, "--------- Table after delete --------------");
 
+	Cursor cursor = DbHelper.getCursor(db, DbHelper.NOTE_TABLE_NAME, null,
+		    null);
+	DbHelper.printTableLog(cursor);
+	
 	db.close();
+	
+	
     }
 
     public static Note getNote(Context context, long noteId) {

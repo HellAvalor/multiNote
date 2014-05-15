@@ -25,33 +25,33 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int ScrollView01=0x7f080012;
+        public static final int ScrollView01=0x7f080011;
         public static final int actionAddNote=0x7f08001a;
+        public static final int action_save_note=0x7f080016;
         public static final int action_settings=0x7f080017;
         public static final int buttonChangePassword=0x7f080005;
-        public static final int buttonLogin=0x7f08000b;
-        public static final int buttonRegister=0x7f080016;
+        public static final int buttonLogin=0x7f08000a;
+        public static final int buttonRegister=0x7f080015;
         public static final int change_pass=0x7f080018;
         public static final int container=0x7f080000;
-        public static final int editTextEditNote=0x7f080006;
-        public static final int editTextLogin=0x7f080009;
-        public static final int editTextNewNote=0x7f08000d;
+        public static final int editTextLogin=0x7f080008;
+        public static final int editTextNewNote=0x7f08000c;
         public static final int editTextNewPassword=0x7f080003;
         public static final int editTextNewRepPassword=0x7f080004;
-        public static final int editTextNewTitle=0x7f08000c;
+        public static final int editTextNewTitle=0x7f08000b;
         public static final int editTextOldPassword=0x7f080002;
-        public static final int editTextPassword=0x7f08000a;
-        public static final int editTextRegisterLogin=0x7f080013;
-        public static final int editTextRegisterPass=0x7f080014;
-        public static final int editTextRegisterRepPassword=0x7f080015;
-        public static final int imageButtonDelete=0x7f080010;
-        public static final int listView1=0x7f080011;
+        public static final int editTextPassword=0x7f080009;
+        public static final int editTextRegisterLogin=0x7f080012;
+        public static final int editTextRegisterPass=0x7f080013;
+        public static final int editTextRegisterRepPassword=0x7f080014;
+        public static final int imageButtonDelete=0x7f08000f;
+        public static final int listView1=0x7f080010;
         public static final int logout=0x7f080019;
         public static final int pager=0x7f080001;
-        public static final int section_label=0x7f080007;
-        public static final int textNoteContent=0x7f08000f;
-        public static final int textNoteTilte=0x7f080008;
-        public static final int textNoteTitle=0x7f08000e;
+        public static final int section_label=0x7f080006;
+        public static final int textNoteContent=0x7f08000e;
+        public static final int textNoteTilte=0x7f080007;
+        public static final int textNoteTitle=0x7f08000d;
     }
     public static final class layout {
         public static final int activity_edit_note=0x7f030000;
@@ -60,14 +60,13 @@ public final class R {
         public static final int activity_note_list=0x7f030003;
         public static final int alt_note_list=0x7f030004;
         public static final int change_pass=0x7f030005;
-        public static final int edit_note=0x7f030006;
-        public static final int fragment_edit_note=0x7f030007;
-        public static final int fragment_main=0x7f030008;
-        public static final int login_frame=0x7f030009;
-        public static final int new_note=0x7f03000a;
-        public static final int note_item=0x7f03000b;
-        public static final int notes_list=0x7f03000c;
-        public static final int register_frame=0x7f03000d;
+        public static final int fragment_edit_note=0x7f030006;
+        public static final int fragment_main=0x7f030007;
+        public static final int login_frame=0x7f030008;
+        public static final int new_note=0x7f030009;
+        public static final int note_item=0x7f03000a;
+        public static final int notes_list=0x7f03000b;
+        public static final int register_frame=0x7f03000c;
     }
     public static final class menu {
         public static final int edit_note=0x7f070000;
