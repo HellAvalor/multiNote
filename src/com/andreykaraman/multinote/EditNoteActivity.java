@@ -2,7 +2,10 @@ package com.andreykaraman.multinote;
 
 import android.app.Activity;
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -33,8 +36,8 @@ public class EditNoteActivity extends Activity {
 	Intent intent = getIntent();
 	noteId = intent.getLongExtra("id", -1); // if it's a string you stored.
 
-	//Toast.makeText(this, "create for id " + noteId, Toast.LENGTH_SHORT)
-	//	.show();
+	// Toast.makeText(this, "create for id " + noteId, Toast.LENGTH_SHORT)
+	// .show();
 
 	if (noteId != -1) {
 	    this.setTitle(Note.getNote(this, noteId).getNoteTitle());
@@ -64,29 +67,21 @@ public class EditNoteActivity extends Activity {
 		// return false;
 		Toast.makeText(this, "back Changed true", Toast.LENGTH_SHORT)
 			.show();
-		 getActionBar().setDisplayHomeAsUpEnabled(false);
+		getActionBar().setDisplayHomeAsUpEnabled(false);
+		showCancelChangesDialog(this);
 	    } else {
 		Toast.makeText(this, "back Changed false", Toast.LENGTH_SHORT)
 			.show();
-		 getActionBar().setDisplayHomeAsUpEnabled(true);
-		 finish();
-		 return true;
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		finish();
+		return true;
 	    }
-	   
+
 	    Toast.makeText(this, "back Changed out", Toast.LENGTH_SHORT).show();
 	    break;
-	    
+
 	case R.id.action_save_note:
-	    if (noteId != -1) {
-		Note.addEditNote(this, new Note(noteId, titleText.getText()
-			.toString(), contentText.getText().toString()),
-			Note.EDIT);
-	    } else {
-		Note.addEditNote(this, new Note(0, titleText.getText()
-			.toString(), contentText.getText().toString()),
-			Note.ADD);
-	    }
-	    finish();
+	    saveNote();
 	}
 
 	return super.onOptionsItemSelected(item);
@@ -116,8 +111,8 @@ public class EditNoteActivity extends Activity {
 		contentText.setText(note.getNoteContent());
 	    }
 
-	//    Toast.makeText(container.getContext(),
-	//	    "edit/add note id " + noteId, Toast.LENGTH_LONG).show();
+	    // Toast.makeText(container.getContext(),
+	    // "edit/add note id " + noteId, Toast.LENGTH_LONG).show();
 
 	    return rootView;
 	}
@@ -142,14 +137,45 @@ public class EditNoteActivity extends Activity {
 	if (!contentText.getText().toString()
 		.equals(Note.getNote(this, noteId).getNoteContent())) {
 	    Toast.makeText(this, "Changed", Toast.LENGTH_SHORT).show();
+	    showCancelChangesDialog(this);
 	    return true;
 	}
 	Toast.makeText(this, "Not Changed", Toast.LENGTH_SHORT).show();
 	return false;
     }
 
-    private void showCancelChangesDialog () {
-	
+    private void showCancelChangesDialog(Context context) {
 
+	AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(context);
+	// myAlertDialog.setTitle("--- Title ---");
+	myAlertDialog.setMessage(getText(R.string.save_note));
+	myAlertDialog.setPositiveButton(getText(R.string.ok),
+		new DialogInterface.OnClickListener() {
+
+		    public void onClick(DialogInterface arg0, int arg1) {
+			saveNote();
+		    }
+		});
+	myAlertDialog.setNegativeButton(getText(R.string.cancel),
+		new DialogInterface.OnClickListener() {
+
+		    public void onClick(DialogInterface arg0, int arg1) {
+			finish();
+		    }
+		});
+	myAlertDialog.show();
+
+    }
+
+    private void saveNote() {
+
+	if (noteId != -1) {
+	    Note.addEditNote(this, new Note(noteId, titleText.getText()
+		    .toString(), contentText.getText().toString()), Note.EDIT);
+	} else {
+	    Note.addEditNote(this, new Note(0, titleText.getText().toString(),
+		    contentText.getText().toString()), Note.ADD);
+	}
+	finish();
     }
 }

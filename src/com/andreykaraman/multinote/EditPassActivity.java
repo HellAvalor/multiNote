@@ -21,7 +21,7 @@ public class EditPassActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
-	setContentView(R.layout.activity_note_list);
+	setContentView(R.layout.activity_edit_pass);
 
 	if (savedInstanceState == null) {
 	    getFragmentManager().beginTransaction()
@@ -29,14 +29,13 @@ public class EditPassActivity extends Activity {
 	}
     }
 
-    
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    // @Override
+    // public boolean onCreateOptionsMenu(Menu menu) {
 
-	// Inflate the menu; this adds items to the action bar if it is present.
-	getMenuInflater().inflate(R.menu.note_list, menu);
-	return true;
-    }
+    // Inflate the menu; this adds items to the action bar if it is present.
+    // getMenuInflater().inflate(R.menu.edit_pass, menu);
+    // return true;
+    // }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -53,8 +52,6 @@ public class EditPassActivity extends Activity {
 	return super.onOptionsItemSelected(item);
     }
 
- 
-
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -66,31 +63,36 @@ public class EditPassActivity extends Activity {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState) {
-	    View rootView = inflater.inflate(R.layout.change_pass,
-		    container, false);
-	    
+	    View rootView = inflater.inflate(R.layout.change_pass, container,
+		    false);
+
 	    final EditText oldPasswordText = (EditText) rootView
 		    .findViewById(R.id.editTextOldPassword);
 	    final EditText newPasswordText = (EditText) rootView
 		    .findViewById(R.id.editTextNewPassword);
 	    final EditText repPasswordText = (EditText) rootView
 		    .findViewById(R.id.editTextNewRepPassword);
-	    
-	    Button button = (Button) rootView.findViewById(R.id.buttonChangePassword);
+
+	    Button button = (Button) rootView
+		    .findViewById(R.id.buttonChangePassword);
 
 	    button.setOnClickListener(new OnClickListener() {
 		@Override
 		public void onClick(View v) {
-		   
-		    Toast.makeText(v.getContext(),
-			    oldPasswordText.getText() + "/" + newPasswordText.getText()+ "/" + repPasswordText.getText(),
+
+		    Toast.makeText(
+			    v.getContext(),
+			    oldPasswordText.getText() + "/"
+				    + newPasswordText.getText() + "/"
+				    + repPasswordText.getText(),
 			    Toast.LENGTH_SHORT).show();
-		    
-		 // TODO Auto-generated method stub
-		 // check passChange   
-		    
-		  //  Intent intent = new Intent(v.getContext(), NoteListActivity.class);
-		  //  startActivity(intent);
+
+		    // TODO Auto-generated method stub
+		    // check passChange
+
+		    // Intent intent = new Intent(v.getContext(),
+		    // NoteListActivity.class);
+		    // startActivity(intent);
 
 		}
 	    });

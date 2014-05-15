@@ -17,13 +17,13 @@ public class NoteAdapter extends BaseAdapter {
     final static String LOG_TAG = "myLogs";
 
     ArrayList<Note> notes = new ArrayList<Note>();
-    Context context;
+
 
     public NoteAdapter(Context context, ArrayList<Note> notes) {
 	if (notes != null) {
 	    this.notes = notes;
 	}
-	this.context = context;
+
     }
 
     public void setNotesList(ArrayList<Note> notes) {
@@ -47,7 +47,7 @@ public class NoteAdapter extends BaseAdapter {
     
     public View getView(int position, View view, ViewGroup arg2) {
 
-	LayoutInflater inflater = LayoutInflater.from(context);
+	LayoutInflater inflater = LayoutInflater.from(arg2.getContext());
 
 	if (view == null) {
 	    view = inflater.inflate(R.layout.note_item, arg2, false);
