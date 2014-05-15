@@ -43,6 +43,8 @@ public class NoteAdapter extends BaseAdapter {
 	return notes.get(itemID).getNoteId();
     }
 
+    
+    
     public View getView(int position, View view, ViewGroup arg2) {
 
 	LayoutInflater inflater = LayoutInflater.from(context);
@@ -57,6 +59,8 @@ public class NoteAdapter extends BaseAdapter {
 
 	noteTitle.setText(notes.get(position).getNoteTitle());
 
+	// view.setTag(tag) holder
+	
 	noteContent.setText(notes.get(position).getNoteContent());
 	ImageButton deleteButton = (ImageButton) view
 		.findViewById(R.id.imageButtonDelete);

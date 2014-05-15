@@ -20,7 +20,7 @@ import android.widget.Toast;
 public class NoteListActivity extends Activity {
 
     static ArrayList<Note> notes = new ArrayList<Note>();
-
+    static Intent intent; 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
@@ -70,12 +70,10 @@ public class NoteListActivity extends Activity {
 	}
 
 	if (id == R.id.actionAddNote) {
-	    // TODO Auto-generated method stub
 
-	    Toast.makeText(this, "Adding new note", Toast.LENGTH_SHORT).show();
+	   // Toast.makeText(this, "Adding new note", Toast.LENGTH_SHORT).show();
 
-	    Intent intent = new Intent(this, EditNoteActivity.class);
-	    // intent.putExtra("id", "-1");
+	    intent = new Intent(this, EditNoteActivity.class);
 	    startActivity(intent);
 
 	    return true;
@@ -101,27 +99,10 @@ public class NoteListActivity extends Activity {
 		    .findViewById(R.id.listView1);
 	    NoteAdapter noteAdapter = new NoteAdapter(rootView.getContext(),
 		    notes);
-	    // footerLayout = getLayoutInflater()
-	    // .inflate(R.layout.estate_footer, null);
 
-	    // ImageView imageView2 = (ImageView) footerLayout
-	    // .findViewById(R.id.imageViewFooter);
-
-	    // SVG svg2 = SVGParser.getSVGFromResource(getResources(),
-	    // / R.raw.noun_project_1439);
-
-	    // imageView2.setImageDrawable(svg2.createPictureDrawable());
-
-	    // EstateView.addFooterView(footerLayout, null, false);
-
-	    // LinearLayout linAddEstate = (LinearLayout) EstateView
-	    // .findViewById(R.id.estate_footer_add);
-	    // linAddEstate.setOnClickListener(this);
-	    noteView.setOnItemClickListener(this);
 	    noteView.setAdapter(noteAdapter);
-	    
+	    noteView.setOnItemClickListener(this);
 
-	    // registerForContextMenu(EstateView);
 	    
 	    return rootView;
 	}
@@ -131,8 +112,12 @@ public class NoteListActivity extends Activity {
 		long id) {
 	
 	    // TODO Auto-generated method stub
-	    Toast.makeText(view.getContext(), "2 tap on " + position+"/"+ notes.get(position) + " id "+ notes.get(position).getNoteId(), Toast.LENGTH_SHORT).show();
+	  //  Toast.makeText(view.getContext(), "2 tap on " + position + " id "+ notes.get(position).getNoteId(), Toast.LENGTH_SHORT).show();
 	 
+	    intent = new Intent(view.getContext(), EditNoteActivity.class);
+	    intent.putExtra("id", notes.get(position).getNoteId());
+	    startActivity(intent);
+	    
 	}
     }
 

@@ -5,6 +5,7 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,7 +16,7 @@ import android.widget.Toast;
 import android.os.Build;
 
 public class EditNoteActivity extends Activity {
-    static String noteId;
+    static long noteId;
     static EditText titleText;
     static EditText contentText;
 
@@ -30,13 +31,13 @@ public class EditNoteActivity extends Activity {
 	}
 
 	Intent intent = getIntent();
-	noteId = intent.getStringExtra("id"); // if it's a string you stored.
+	noteId = intent.getLongExtra("id", -1); // if it's a string you stored.
 
-	Toast.makeText(this, "" + noteId, Toast.LENGTH_SHORT).show();
+	//Toast.makeText(this, "create for id " + noteId, Toast.LENGTH_SHORT)
+	//	.show();
 
-	if (noteId != null) {
-	    this.setTitle(Note.getNote(this, Integer.getInteger(noteId))
-		    .getNoteTitle());
+	if (noteId != -1) {
+	    this.setTitle(Note.getNote(this, noteId).getNoteTitle());
 	} else {
 	    this.setTitle(getString(R.string.new_note));
 	}
@@ -55,22 +56,39 @@ public class EditNoteActivity extends Activity {
 	// Handle action bar item clicks here. The action bar will
 	// automatically handle clicks on the Home/Up button, so long
 	// as you specify a parent activity in AndroidManifest.xml.
-	int id = item.getItemId();
-	if (id == R.id.action_save_note) {
 
-	    if (noteId != null) {
-		Note.addEditNote(this, new Note(Integer.getInteger(noteId), titleText.getText().toString(),
-			contentText.getText().toString()), Note.EDIT);
+	switch (item.getItemId()) {
+	case android.R.id.home:
+
+	    if (isContentChanged()) {
+		// return false;
+		Toast.makeText(this, "back Changed true", Toast.LENGTH_SHORT)
+			.show();
+		 getActionBar().setDisplayHomeAsUpEnabled(false);
 	    } else {
-		Note.addEditNote(this, new Note(0, titleText.getText().toString(),
-			contentText.getText().toString()), Note.ADD);
+		Toast.makeText(this, "back Changed false", Toast.LENGTH_SHORT)
+			.show();
+		 getActionBar().setDisplayHomeAsUpEnabled(true);
+		 finish();
+		 return true;
 	    }
-
-	    Toast.makeText(this, "adding/saving note", Toast.LENGTH_LONG)
-		    .show();
-
-	    return true;
+	   
+	    Toast.makeText(this, "back Changed out", Toast.LENGTH_SHORT).show();
+	    break;
+	    
+	case R.id.action_save_note:
+	    if (noteId != -1) {
+		Note.addEditNote(this, new Note(noteId, titleText.getText()
+			.toString(), contentText.getText().toString()),
+			Note.EDIT);
+	    } else {
+		Note.addEditNote(this, new Note(0, titleText.getText()
+			.toString(), contentText.getText().toString()),
+			Note.ADD);
+	    }
+	    finish();
 	}
+
 	return super.onOptionsItemSelected(item);
     }
 
@@ -91,18 +109,47 @@ public class EditNoteActivity extends Activity {
 	    titleText = (EditText) rootView.findViewById(R.id.editTextNewTitle);
 	    contentText = (EditText) rootView
 		    .findViewById(R.id.editTextNewNote);
-	    if (noteId != null) {
+	    if (noteId != -1) {
 		titleText.setVisibility(View.GONE);
-		int id = Integer.getInteger(noteId);
-		Note note = Note.getNote(rootView.getContext(), id);
+		Note note = Note.getNote(rootView.getContext(), noteId);
 		titleText.setText(note.getNoteTitle());
 		contentText.setText(note.getNoteContent());
-	    } else {
-
 	    }
+
+	//    Toast.makeText(container.getContext(),
+	//	    "edit/add note id " + noteId, Toast.LENGTH_LONG).show();
 
 	    return rootView;
 	}
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+	if (keyCode == KeyEvent.KEYCODE_BACK) {
+	    if (isContentChanged()) {
+
+		return false;
+	    }
+
+	    finish();
+	    return true;
+	}
+
+	return super.onKeyDown(keyCode, event);
+    }
+
+    private boolean isContentChanged() {
+	if (!contentText.getText().toString()
+		.equals(Note.getNote(this, noteId).getNoteContent())) {
+	    Toast.makeText(this, "Changed", Toast.LENGTH_SHORT).show();
+	    return true;
+	}
+	Toast.makeText(this, "Not Changed", Toast.LENGTH_SHORT).show();
+	return false;
+    }
+
+    private void showCancelChangesDialog () {
+	
+
+    }
 }
