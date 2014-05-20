@@ -15,6 +15,7 @@ public class Note {
     final static int EDIT = 2;
 
     private long noteId;
+
     private String noteTitle;
     private String noteContent;
 
@@ -31,6 +32,9 @@ public class Note {
 	this.noteTitle = "";
 	this.noteContent = "";
 
+    }
+    public void setNoteId(long noteId) {
+        this.noteId = noteId;
     }
 
     public String getNoteTitle() {
@@ -52,7 +56,7 @@ public class Note {
     public long getNoteId() {
 	return noteId;
     }
-
+/*
     public static void addEditNote(Context context, Note note, int addEditFlag) {
 
 	Log.d(LOG_TAG, "add new note");
@@ -100,7 +104,7 @@ public class Note {
 	db.close();
 
     }
-
+/*
     public static void dellNote(Context context, Note note) {
 
 	DbHelper mDbHelper = new DbHelper(context);
@@ -120,7 +124,7 @@ public class Note {
 	
 	
     }
-
+/*
     public static Note getNote(Context context, long noteId) {
 
 	DbHelper mDbHelper = new DbHelper(context);
@@ -202,7 +206,7 @@ public class Note {
 	return estateArray;
     }
 */
-
+/*
     public static ArrayList<Note> getNotes(Context context  ) {
 
 	ArrayList<Note> notes = new ArrayList<Note>();
@@ -238,5 +242,6 @@ public class Note {
 
 	return notes;
     }
-
+    
+*/
 }

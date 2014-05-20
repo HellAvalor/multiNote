@@ -28,5 +28,5 @@
     <string name="select_all">Выделить всё</string>
     <string name="add_note">Добавить заметку</string>
     <string name="save_note">Сохранит заметку?</string>
-
+    <string name="note_added">Новая заметка добавлена</string>
 </resources>

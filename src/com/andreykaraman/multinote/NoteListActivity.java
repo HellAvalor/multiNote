@@ -1,10 +1,16 @@
 package com.andreykaraman.multinote;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,12 +21,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 public class NoteListActivity extends Activity {
 
-    static ArrayList<Note> notes = new ArrayList<Note>();
-    static Intent intent; 
+    static Intent intent;
+    static DbHelperNew db;
+    static NoteAdapter scAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
@@ -31,10 +40,6 @@ public class NoteListActivity extends Activity {
 		    .add(R.id.container, new PlaceholderFragment()).commit();
 	}
 
-	DbHelper mDbHelper = new DbHelper(this);
-	SQLiteDatabase db = mDbHelper.getWritableDatabase();
-	mDbHelper.deleteDB(db, 1);
-	mDbHelper.onCreate(db);
     }
 
     @Override
@@ -52,7 +57,6 @@ public class NoteListActivity extends Activity {
 	// as you specify a parent activity in AndroidManifest.xml.
 	int id = item.getItemId();
 	if (id == R.id.change_pass) {
-	    // TODO Auto-generated method stub
 	    Toast.makeText(this, "going to change pass", Toast.LENGTH_SHORT)
 		    .show();
 	    Intent intent = new Intent(this, EditPassActivity.class);
@@ -71,7 +75,8 @@ public class NoteListActivity extends Activity {
 
 	if (id == R.id.actionAddNote) {
 
-	   // Toast.makeText(this, "Adding new note", Toast.LENGTH_SHORT).show();
+	    // Toast.makeText(this, "Adding new note",
+	    // Toast.LENGTH_SHORT).show();
 
 	    intent = new Intent(this, EditNoteActivity.class);
 	    startActivity(intent);
@@ -84,7 +89,8 @@ public class NoteListActivity extends Activity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment  implements OnItemClickListener {
+    public static class PlaceholderFragment extends Fragment implements
+	    OnItemClickListener, LoaderCallbacks<Cursor> {
 
 	public PlaceholderFragment() {
 	}
@@ -92,33 +98,95 @@ public class NoteListActivity extends Activity {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState) {
+
+	    db = new DbHelperNew(container.getContext());
+	    db.open();
+
+	    scAdapter = new NoteAdapter(container.getContext(), null);
 	    View rootView = inflater.inflate(R.layout.notes_list, container,
 		    false);
-	    notes = Note.getNotes(rootView.getContext());
+
 	    ListView noteView = (ListView) rootView
 		    .findViewById(R.id.listView1);
-	    NoteAdapter noteAdapter = new NoteAdapter(rootView.getContext(),
-		    notes);
 
-	    noteView.setAdapter(noteAdapter);
+	    noteView.setAdapter(scAdapter);
 	    noteView.setOnItemClickListener(this);
+	    // создаем лоадер для чтения данных
+	    getLoaderManager().initLoader(0, null, this);
 
-	    
 	    return rootView;
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 		long id) {
-	
+
 	    // TODO Auto-generated method stub
-	  //  Toast.makeText(view.getContext(), "2 tap on " + position + " id "+ notes.get(position).getNoteId(), Toast.LENGTH_SHORT).show();
-	 
+	    Toast.makeText(view.getContext(),
+		    "tap on " + position + " id " + id, Toast.LENGTH_SHORT)
+		    .show();
+
 	    intent = new Intent(view.getContext(), EditNoteActivity.class);
-	    intent.putExtra("id", notes.get(position).getNoteId());
+	    intent.putExtra("id", id);
 	    startActivity(intent);
-	    
+	    // scAdapter.notifyDataSetChanged();
 	}
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle bndl) {
+	    return new MyCursorLoader(getActivity(), db);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+	    scAdapter.swapCursor(cursor);
+	    // scAdapter.notifyDataSetChanged();
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader) {
+	    // scAdapter.notifyDataSetChanged();
+	}
+	
+	public void onResume() {
+		super.onResume();
+		getLoaderManager().initLoader(0, null, this);
+	    }
+
+
     }
 
+    protected void onDestroy() {
+	super.onDestroy();
+	// закрываем подключение при выходе
+	db.close();
+    }
+
+  // protected void onResume() {
+//	super.onResume();
+//	getLoaderManager().initLoader(0, null, this);
+ //   }
+
+    static class MyCursorLoader extends CursorLoader {
+
+	DbHelperNew db;
+
+	public MyCursorLoader(Context context, DbHelperNew db) {
+	    super(context);
+	    this.db = db;
+	}
+
+	@Override
+	public Cursor loadInBackground() {
+	    Cursor cursor = db.getAllData();
+	    try {
+		TimeUnit.SECONDS.sleep(3);
+	    } catch (InterruptedException e) {
+		e.printStackTrace();
+	    }
+
+	    return cursor;
+	}
+
+    }
 }

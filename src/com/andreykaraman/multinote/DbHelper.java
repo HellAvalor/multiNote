@@ -43,7 +43,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	    + NOTE_TABLE_NAME
 	    + " ("
 	    + NOTE_ID
-	    + " INTEGER PRIMARY KEY, "
+	    + " INTEGER PRIMARY KEY AUTOINCREMENT, "
 	    + NOTE_TITLE
 	    + " TEXT NOT NULL, "
 	    + NOTE_CONTENT
@@ -119,6 +119,24 @@ public class DbHelper extends SQLiteOpenHelper {
 
 	db.execSQL("DROP TABLE IF EXISTS " + NOTE_TABLE_NAME + ";");
 
+    }
+    
+    // получить все данные из таблицы DB_TABLE
+    public Cursor getAllData(SQLiteDatabase db) {
+      return db.query(NOTE_TABLE_NAME, null, null, null, null, null, null);
+    }
+    
+    // добавить запись в DB_TABLE
+    public void addRec(SQLiteDatabase db, String title, String content) {
+      ContentValues cv = new ContentValues();
+      cv.put(NOTE_TITLE, title);
+      cv.put(NOTE_CONTENT, content);
+      db.insert(NOTE_TABLE_NAME, null, cv);
+    }
+    
+    // удалить запись из DB_TABLE
+    public void delRec(SQLiteDatabase db, long id) {
+	db.delete(NOTE_TABLE_NAME, NOTE_ID + " = " + id, null);
     }
 
 }

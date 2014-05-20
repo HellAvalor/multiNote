@@ -19,6 +19,8 @@ import android.widget.Toast;
 import android.os.Build;
 
 public class EditNoteActivity extends Activity {
+    static Note note;
+
     static long noteId;
     static EditText titleText;
     static EditText contentText;
@@ -40,7 +42,8 @@ public class EditNoteActivity extends Activity {
 	// .show();
 
 	if (noteId != -1) {
-	    this.setTitle(Note.getNote(this, noteId).getNoteTitle());
+	    note = DbHelperNew.getNote(this, noteId);
+	    this.setTitle(note.getNoteTitle());
 	} else {
 	    this.setTitle(getString(R.string.new_note));
 	}
@@ -106,7 +109,7 @@ public class EditNoteActivity extends Activity {
 		    .findViewById(R.id.editTextNewNote);
 	    if (noteId != -1) {
 		titleText.setVisibility(View.GONE);
-		Note note = Note.getNote(rootView.getContext(), noteId);
+
 		titleText.setText(note.getNoteTitle());
 		contentText.setText(note.getNoteContent());
 	    }
@@ -135,7 +138,7 @@ public class EditNoteActivity extends Activity {
 
     private boolean isContentChanged() {
 	if (!contentText.getText().toString()
-		.equals(Note.getNote(this, noteId).getNoteContent())) {
+		.equals(note.getNoteContent())) {
 	    Toast.makeText(this, "Changed", Toast.LENGTH_SHORT).show();
 	    showCancelChangesDialog(this);
 	    return true;
@@ -147,8 +150,7 @@ public class EditNoteActivity extends Activity {
     private void showCancelChangesDialog(Context context) {
 
 	AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(context);
-	// myAlertDialog.setTitle("--- Title ---");
-	myAlertDialog.setMessage(getText(R.string.save_note));
+		myAlertDialog.setMessage(getText(R.string.save_note));
 	myAlertDialog.setPositiveButton(getText(R.string.ok),
 		new DialogInterface.OnClickListener() {
 
@@ -170,11 +172,17 @@ public class EditNoteActivity extends Activity {
     private void saveNote() {
 
 	if (noteId != -1) {
-	    Note.addEditNote(this, new Note(noteId, titleText.getText()
-		    .toString(), contentText.getText().toString()), Note.EDIT);
+	    DbHelperNew.saveRec(new Note(noteId, titleText.getText().toString(), contentText
+		    .getText().toString()));
+	    Toast.makeText(getBaseContext(), R.string.note_added, Toast.LENGTH_SHORT).show();
+	    
 	} else {
-	    Note.addEditNote(this, new Note(0, titleText.getText().toString(),
-		    contentText.getText().toString()), Note.ADD);
+	    DbHelperNew.addRec(titleText.getText().toString(), contentText
+		    .getText().toString());
+
+	    // Note.addEditNote(this, new Note(0,
+	    // titleText.getText().toString(),
+	    // contentText.getText().toString()), Note.ADD);
 	}
 	finish();
     }

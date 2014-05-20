@@ -28,5 +28,6 @@
     <string name="select_all">Select all</string>
     <string name="add_note">Add new note</string>
     <string name="save_note">Save note?</string>
+    <string name="note_added">New note added</string>
 
 </resources>
