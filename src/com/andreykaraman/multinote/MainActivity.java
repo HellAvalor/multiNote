@@ -2,7 +2,8 @@ package com.andreykaraman.multinote;
 
 import java.util.Locale;
 
-
+import com.andreykaraman.multinote.data.LoginLoader;
+import com.andreykaraman.multinote.data.ResponseLogin;
 
 import android.app.Activity;
 import android.app.ActionBar;
@@ -10,7 +11,9 @@ import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.LoaderManager;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
@@ -42,13 +45,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
+    static EditText loginText;
+    static EditText passwordText;
+    static Loader loader;
 
-    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.activity_main);
-
 
 	// Set up the action bar.
 	final ActionBar actionBar = getActionBar();
@@ -83,8 +87,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 		    .setText(mSectionsPagerAdapter.getPageTitle(i))
 		    .setTabListener(this));
 	}
-	
-	
+
     }
 
     @Override
@@ -102,9 +105,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	// as you specify a parent activity in AndroidManifest.xml.
 	int id = item.getItemId();
 	if (id == R.id.action_settings) {
-	    Toast.makeText(this,
-		    "go to settings",
-		    Toast.LENGTH_SHORT).show();
+	    Toast.makeText(this, "go to settings", Toast.LENGTH_SHORT).show();
 	    Intent intent = new Intent(this, SettingsActivity.class);
 	    startActivity(intent);
 	    return true;
@@ -208,6 +209,39 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     public static class LoginFragment extends Fragment {
 
+	final LoaderManager.LoaderCallbacks<ResponseLogin> mLoaderCallback = new LoaderManager.LoaderCallbacks<ResponseLogin>() {
+
+	    @Override
+	    public Loader<ResponseLogin> onCreateLoader(int id, Bundle args) {
+		LoginLoader loader = new LoginLoader(getActivity());
+		if (args != null) {
+		    String login = args.getString("LOGIN");
+		    String pass = args.getString("PASSWORD");
+		    loader.setLoginAndPasswrod(login, pass);
+		}
+		return loader;
+	    }
+
+	    @Override
+	    public void onLoadFinished(Loader<ResponseLogin> loader,
+		    ResponseLogin data) {
+		if (data.isSuccess()) {
+		    Toast.makeText(getActivity(),
+			    ((LoginLoader) loader).getmLogin(),
+			    Toast.LENGTH_SHORT).show();
+		    // startActivity(new Intent(getActivity(),
+		    // ActivityRoom.class));
+		} else {
+		    Toast.makeText(getActivity(), data.getError().toString(),
+			    Toast.LENGTH_SHORT).show();
+		}
+	    }
+
+	    @Override
+	    public void onLoaderReset(Loader<ResponseLogin> loader) {
+	    }
+	};
+
 	public static LoginFragment newInstance() {
 	    LoginFragment fragment = new LoginFragment();
 	    return fragment;
@@ -217,13 +251,25 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	}
 
 	@Override
+	public void onSaveInstanceState(Bundle outState) {
+	    super.onSaveInstanceState(outState);
+
+	}
+
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState) {
+
 	    View rootView = inflater.inflate(R.layout.login_frame, container,
 		    false);
-	    final EditText loginText = (EditText) rootView
-		    .findViewById(R.id.editTextLogin);
-	    final EditText passwordText = (EditText) rootView
+
+	    loader = getLoaderManager().getLoader(R.id.loader_login);
+	    if (loader == null || (loader != null && loader.isStarted())) {
+		getLoaderManager().initLoader(R.id.loader_login, null,
+			mLoaderCallback);
+	    }
+	    loginText = (EditText) rootView.findViewById(R.id.editTextLogin);
+	    passwordText = (EditText) rootView
 		    .findViewById(R.id.editTextPassword);
 
 	    Button button = (Button) rootView.findViewById(R.id.buttonLogin);
@@ -232,12 +278,21 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 		@Override
 		public void onClick(View v) {
 		    // TODO Auto-generated method stub
-		    Toast.makeText(v.getContext(),
-			    loginText.getText() + "/" + passwordText.getText(),
+		    // Toast.makeText(v.getContext(),
+		    // loginText.getText() + "/" + passwordText.getText(),
+		    // Toast.LENGTH_SHORT).show();
+		    
+		    // Intent intent = new Intent(v.getContext(),
+		    // NoteListActivity.class);
+		    // startActivity(intent);
+		    Bundle params = new Bundle();
+		    params.putString("LOGIN", loginText.getText().toString());
+		    params.putString("PASSWORD", passwordText.getText()
+			    .toString());
+		    Toast.makeText(getActivity(), "restart loader",
 			    Toast.LENGTH_SHORT).show();
-		    Intent intent = new Intent(v.getContext(), NoteListActivity.class);
-		    startActivity(intent);
-
+		    getLoaderManager().restartLoader(R.id.loader_login, params,
+			    mLoaderCallback);
 		}
 	    });
 
@@ -267,25 +322,26 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 		    .findViewById(R.id.editTextRegisterPass);
 	    final EditText newPasswordText = (EditText) rootView
 		    .findViewById(R.id.editTextRegisterRepPassword);
-	    
+
 	    Button button = (Button) rootView.findViewById(R.id.buttonRegister);
 
 	    button.setOnClickListener(new OnClickListener() {
 		@Override
 		public void onClick(View v) {
 		    // TODO Auto-generated method stub
-		    Toast.makeText(v.getContext(),
-			    loginText.getText() + "/" + passwordText.getText() + "/"+ newPasswordText.getText(),
+		    Toast.makeText(
+			    v.getContext(),
+			    loginText.getText() + "/" + passwordText.getText()
+				    + "/" + newPasswordText.getText(),
 			    Toast.LENGTH_SHORT).show();
-		    Intent intent = new Intent(v.getContext(), NoteListActivity.class);
+		    Intent intent = new Intent(v.getContext(),
+			    NoteListActivity.class);
 		    startActivity(intent);
 		}
 	    });
-	    
+
 	    return rootView;
 	}
     }
-    
-    
 
 }

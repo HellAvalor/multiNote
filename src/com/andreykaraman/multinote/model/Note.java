@@ -1,4 +1,4 @@
-package com.andreykaraman.multinote;
+package com.andreykaraman.multinote.model;
 
 import java.util.ArrayList;
 

@@ -1,7 +1,8 @@
 package com.andreykaraman.multinote;
 
+import com.andreykaraman.multinote.model.Note;
+
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
@@ -16,11 +17,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
-import android.os.Build;
 
 public class EditNoteActivity extends Activity {
+   
     static Note note;
-
     static long noteId;
     static EditText titleText;
     static EditText contentText;
@@ -179,11 +179,23 @@ public class EditNoteActivity extends Activity {
 	} else {
 	    DbHelperNew.addRec(titleText.getText().toString(), contentText
 		    .getText().toString());
-
+	    Toast.makeText(getBaseContext(), R.string.note_added, Toast.LENGTH_SHORT).show();
 	    // Note.addEditNote(this, new Note(0,
 	    // titleText.getText().toString(),
 	    // contentText.getText().toString()), Note.ADD);
 	}
+	
+	  //  Intent intentMessage=new Intent();
+	    
+	        // put the message in Intent
+	    //    intentMessage.putExtra("MESSAGE",message);
+	        // Set The Result in Intent
+	    //    setResult(2,intentMessage);
+	        // finish The activity 
+	    //    finish();
+	
+//	setResult(RESULT_OK, this.getIntent());
 	finish();
+	
     }
 }

@@ -1,5 +1,7 @@
 package com.andreykaraman.multinote;
 
+import com.andreykaraman.multinote.model.Note;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;

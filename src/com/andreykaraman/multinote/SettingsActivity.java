@@ -44,20 +44,20 @@ public class SettingsActivity extends PreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
-	//setupActionBar();
+	setupActionBar();
     }
 
     /**
      * Set up the {@link android.app.ActionBar}, if the API is available.
      */
- /*   @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void setupActionBar() {
 	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 	    // Show the Up button in the action bar.
 	    getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
     }
-*/
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 	int id = item.getItemId();
@@ -149,14 +149,14 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     /** {@inheritDoc} */
-  /*  @Override
+    @Override
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void onBuildHeaders(List<Header> target) {
 	if (!isSimplePreferences(this)) {
 	    loadHeadersFromResource(R.xml.pref_headers, target);
 	}
     }
-*/
+
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -236,7 +236,7 @@ public class SettingsActivity extends PreferenceActivity {
      * This fragment shows general preferences only. It is used when the
      * activity is showing a two-pane settings UI.
      */
-   /* @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -251,12 +251,12 @@ public class SettingsActivity extends PreferenceActivity {
 	    bindPreferenceSummaryToValue(findPreference("example_list"));
 	}
     }
-*/
+
     /**
      * This fragment shows notification preferences only. It is used when the
      * activity is showing a two-pane settings UI.
      */
-  /*  @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class NotificationPreferenceFragment extends
 	    PreferenceFragment {
 	@Override
@@ -271,12 +271,12 @@ public class SettingsActivity extends PreferenceActivity {
 	    bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
 	}
     }
-*/
+
     /**
      * This fragment shows data and sync preferences only. It is used when the
      * activity is showing a two-pane settings UI.
      */
-  /*  @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class DataSyncPreferenceFragment extends PreferenceFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -289,5 +289,5 @@ public class SettingsActivity extends PreferenceActivity {
 	    // guidelines.
 	    bindPreferenceSummaryToValue(findPreference("sync_frequency"));
 	}
-    }*/
+    }
 }

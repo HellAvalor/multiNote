@@ -2,6 +2,8 @@ package com.andreykaraman.multinote;
 
 import java.util.ArrayList;
 
+import com.andreykaraman.multinote.model.Note;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.view.LayoutInflater;
