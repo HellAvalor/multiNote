@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
+    
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -107,6 +108,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	if (id == R.id.action_settings) {
 	    Toast.makeText(this, "go to settings", Toast.LENGTH_SHORT).show();
 	    Intent intent = new Intent(this, SettingsActivity.class);
+	    
 	    startActivity(intent);
 	    return true;
 	}

@@ -102,6 +102,7 @@ public final class R {
         public static final int old_pass=0x7f070009;
         public static final int password=0x7f070008;
         public static final int pref_default_display_name=0x7f070021;
+        public static final int pref_default_server_path=0x7f07002d;
         public static final int pref_description_social_recommendations=0x7f07001f;
         /**  Example settings for Data & Sync 
          */
@@ -114,6 +115,10 @@ public final class R {
          */
         public static final int pref_header_notifications=0x7f070026;
         public static final int pref_ringtone_silent=0x7f070029;
+        public static final int pref_server_path=0x7f07002c;
+        /**  Custom setting strings 
+         */
+        public static final int pref_stay_login=0x7f07002b;
         public static final int pref_title_add_friends_to_messages=0x7f070022;
         public static final int pref_title_display_name=0x7f070020;
         public static final int pref_title_new_message_notifications=0x7f070027;
@@ -162,8 +167,6 @@ public final class R {
     }
     public static final class xml {
         public static final int pref_data_sync=0x7f040000;
-        public static final int pref_general=0x7f040001;
-        public static final int pref_headers=0x7f040002;
-        public static final int pref_notification=0x7f040003;
+        public static final int pref_headers=0x7f040001;
     }
 }
