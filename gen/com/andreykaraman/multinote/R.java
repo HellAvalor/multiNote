@@ -9,10 +9,8 @@ package com.andreykaraman.multinote;
 
 public final class R {
     public static final class array {
-        public static final int pref_example_list_titles=0x7f080000;
-        public static final int pref_example_list_values=0x7f080001;
-        public static final int pref_sync_frequency_titles=0x7f080002;
-        public static final int pref_sync_frequency_values=0x7f080003;
+        public static final int pref_sync_frequency_titles=0x7f080000;
+        public static final int pref_sync_frequency_values=0x7f080001;
     }
     public static final class attr {
     }
@@ -102,32 +100,20 @@ public final class R {
         public static final int ok=0x7f070015;
         public static final int old_pass=0x7f070009;
         public static final int password=0x7f070008;
-        public static final int pref_default_display_name=0x7f070021;
-        public static final int pref_default_server_path=0x7f07002d;
-        public static final int pref_description_social_recommendations=0x7f07001f;
-        /**  Example settings for Data & Sync 
-         */
-        public static final int pref_header_data_sync=0x7f070023;
+        public static final int pref_default_server_path=0x7f070022;
         /**  Strings related to Settings 
- Example General settings 
+ Example settings for Data & Sync 
+ Strings related to Settings 
+ Example settings for Data & Sync 
          */
-        public static final int pref_header_general=0x7f07001d;
-        /**  Example settings for Notifications 
-         */
-        public static final int pref_header_notifications=0x7f070026;
-        public static final int pref_ringtone_silent=0x7f070029;
+        public static final int pref_header_data_sync=0x7f07001d;
         /**  Custom setting strings 
+ Custom setting strings 
          */
-        public static final int pref_save_login=0x7f07002b;
-        public static final int pref_server_path=0x7f07002c;
-        public static final int pref_title_add_friends_to_messages=0x7f070022;
-        public static final int pref_title_display_name=0x7f070020;
-        public static final int pref_title_new_message_notifications=0x7f070027;
-        public static final int pref_title_ringtone=0x7f070028;
-        public static final int pref_title_social_recommendations=0x7f07001e;
-        public static final int pref_title_sync_frequency=0x7f070024;
-        public static final int pref_title_system_sync_settings=0x7f070025;
-        public static final int pref_title_vibrate=0x7f07002a;
+        public static final int pref_save_login=0x7f070020;
+        public static final int pref_server_path=0x7f070021;
+        public static final int pref_title_sync_frequency=0x7f07001e;
+        public static final int pref_title_system_sync_settings=0x7f07001f;
         public static final int register_button=0x7f070007;
         public static final int register_user_text=0x7f070003;
         public static final int registration_tab=0x7f070006;
