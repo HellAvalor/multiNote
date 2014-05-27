@@ -7,18 +7,19 @@ import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.util.Log;
 
-public class LoginLoader extends AsyncTaskLoader<LoginResponse> {
+public class AddUserLoader extends AsyncTaskLoader<LoginResponse> {
 
     public LoginResponse mResponse;
 
     private String mLogin;
     private String mPassword;
+    private String mRepeatPassword;
 
-
-    public LoginLoader(Context context, String login, String pass) {
+    public AddUserLoader(Context context, String login, String pass, String repeatPass) {
 	super(context);
 	mLogin = login;
 	mPassword = pass;
+	mRepeatPassword = repeatPass;
     }
 
     @Override
@@ -28,7 +29,7 @@ public class LoginLoader extends AsyncTaskLoader<LoginResponse> {
 	mResponse = new LoginResponse();
 
 	try {
-	    ss.checkLogin(mLogin, mPassword);
+	    ss.registrationNewUser(mLogin, mPassword, mRepeatPassword);
 
 	} catch (UserExceptions e) {
 	    // TODO Auto-generated catch block

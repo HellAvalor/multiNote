@@ -2,15 +2,15 @@ package com.andreykaraman.multinote.data;
 
 import android.app.Application;
 
-import com.andreykaraman.multinote.data.Singleton;
+import com.andreykaraman.multinote.data.ServerSimulation;
 
 public class StartInit extends Application {
 
     public void onCreate() {
 	// TODO Auto-generated method stub
 	super.onCreate();
-	Singleton.getInstance().Init();
-	Singleton.getInstance().InitUser();
+	ServerSimulation.getInstance().Init();
+	ServerSimulation.getInstance().InitUser();
     }
 
 }

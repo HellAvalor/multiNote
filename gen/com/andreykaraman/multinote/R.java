@@ -31,34 +31,35 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int ScrollView01=0x7f060012;
-        public static final int actionAddNote=0x7f06001b;
-        public static final int action_save_note=0x7f060017;
-        public static final int action_settings=0x7f060018;
-        public static final int buttonChangePassword=0x7f060006;
-        public static final int buttonLogin=0x7f06000b;
-        public static final int buttonRegister=0x7f060016;
-        public static final int change_pass=0x7f060019;
-        public static final int container=0x7f060001;
-        public static final int editTextLogin=0x7f060009;
-        public static final int editTextNewNote=0x7f06000d;
-        public static final int editTextNewPassword=0x7f060004;
-        public static final int editTextNewRepPassword=0x7f060005;
-        public static final int editTextNewTitle=0x7f06000c;
-        public static final int editTextOldPassword=0x7f060003;
-        public static final int editTextPassword=0x7f06000a;
-        public static final int editTextRegisterLogin=0x7f060013;
-        public static final int editTextRegisterPass=0x7f060014;
-        public static final int editTextRegisterRepPassword=0x7f060015;
-        public static final int imageButtonDelete=0x7f060010;
-        public static final int listView1=0x7f060011;
+        public static final int ScrollView01=0x7f060013;
+        public static final int actionAddNote=0x7f06001c;
+        public static final int action_save_note=0x7f060018;
+        public static final int action_settings=0x7f060019;
+        public static final int buttonChangePassword=0x7f060007;
+        public static final int buttonLogin=0x7f06000c;
+        public static final int buttonRegister=0x7f060017;
+        public static final int change_pass=0x7f06001a;
+        public static final int container=0x7f060002;
+        public static final int editTextLogin=0x7f06000a;
+        public static final int editTextNewNote=0x7f06000e;
+        public static final int editTextNewPassword=0x7f060005;
+        public static final int editTextNewRepPassword=0x7f060006;
+        public static final int editTextNewTitle=0x7f06000d;
+        public static final int editTextOldPassword=0x7f060004;
+        public static final int editTextPassword=0x7f06000b;
+        public static final int editTextRegisterLogin=0x7f060014;
+        public static final int editTextRegisterPass=0x7f060015;
+        public static final int editTextRegisterRepPassword=0x7f060016;
+        public static final int imageButtonDelete=0x7f060011;
+        public static final int listView1=0x7f060012;
         public static final int loader_login=0x7f060000;
-        public static final int logout=0x7f06001a;
-        public static final int pager=0x7f060002;
-        public static final int section_label=0x7f060007;
-        public static final int textNoteContent=0x7f06000f;
-        public static final int textNoteTilte=0x7f060008;
-        public static final int textNoteTitle=0x7f06000e;
+        public static final int loader_new_user=0x7f060001;
+        public static final int logout=0x7f06001b;
+        public static final int pager=0x7f060003;
+        public static final int section_label=0x7f060008;
+        public static final int textNoteContent=0x7f060010;
+        public static final int textNoteTilte=0x7f060009;
+        public static final int textNoteTitle=0x7f06000f;
     }
     public static final class layout {
         public static final int activity_edit_note=0x7f030000;
@@ -115,10 +116,10 @@ public final class R {
          */
         public static final int pref_header_notifications=0x7f070026;
         public static final int pref_ringtone_silent=0x7f070029;
-        public static final int pref_server_path=0x7f07002c;
         /**  Custom setting strings 
          */
-        public static final int pref_stay_login=0x7f07002b;
+        public static final int pref_save_login=0x7f07002b;
+        public static final int pref_server_path=0x7f07002c;
         public static final int pref_title_add_friends_to_messages=0x7f070022;
         public static final int pref_title_display_name=0x7f070020;
         public static final int pref_title_new_message_notifications=0x7f070027;

@@ -77,12 +77,12 @@ public class SettingsActivity extends PreferenceActivity {
 	return super.onOptionsItemSelected(item);
     }
 
-    // @Override
-    // protected void onPostCreate(Bundle savedInstanceState) {
-    // super.onPostCreate(savedInstanceState);
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+	super.onPostCreate(savedInstanceState);
 
-    // setupSimplePreferencesScreen();
-    // }
+	setupSimplePreferencesScreen();
+    }
 
     /**
      * Shows the simplified settings UI if the device configuration if the
@@ -99,6 +99,7 @@ public class SettingsActivity extends PreferenceActivity {
 
 	// Add 'general' preferences.
 	// addPreferencesFromResource(R.xml.pref_general);
+
 	addPreferencesFromResource(R.xml.pref_data_sync);
 	// Add 'notifications' preferences, and a corresponding header.
 	// PreferenceCategory fakeHeader = new PreferenceCategory(this);
@@ -120,18 +121,18 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     /** {@inheritDoc} */
-  //  @Override
- //   public boolean onIsMultiPane() {
-//	return false;//isXLargeTablet(this);
- //   }
+    @Override
+    public boolean onIsMultiPane() {
+	return isXLargeTablet(this);
+    }
 
     /**
      * Helper method to determine if the device has an extra-large screen. For
      * example, 10" tablets are extra-large.
      */
-  //  private static boolean isXLargeTablet(Context context) {
-//	return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
-  //  }
+    private static boolean isXLargeTablet(Context context) {
+	return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
+    }
 
     /**
      * Determines whether the simplified settings UI should be shown. This is
@@ -140,20 +141,21 @@ public class SettingsActivity extends PreferenceActivity {
      * doesn't have an extra-large screen. In these cases, a single-pane
      * "simplified" settings UI should be shown.
      */
-    // private static boolean isSimplePreferences(Context context) {
-    // return ALWAYS_SIMPLE_PREFS
-    // || Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB
-    // || !isXLargeTablet(context);
-    // }
+    private static boolean isSimplePreferences(Context context) {
+	return ALWAYS_SIMPLE_PREFS
+		|| Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB
+		|| !isXLargeTablet(context);
+    }
 
     /** {@inheritDoc} */
     @Override
-  //  @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void onBuildHeaders(List<Header> target) {
-	// if (!isSimplePreferences(this)) {
+	if (!isSimplePreferences(this)) {
+	    loadHeadersFromResource(R.xml.pref_headers, target);
+	}
+
 	// loadHeadersFromResource(R.xml.pref_headers, target);
-	// }
-	loadHeadersFromResource(R.xml.pref_headers, target);
     }
 
     /**

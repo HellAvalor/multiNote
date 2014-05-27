@@ -55,7 +55,7 @@
     <string name="pref_title_vibrate">Vibrate</string>
 
     <!-- Custom setting strings -->
-    <string name="pref_stay_login">Stay login</string>
+    <string name="pref_save_login">Save login</string>
  	<string name="pref_server_path">Server path</string>
     <string name="pref_default_server_path">http://&#8230;</string>
     

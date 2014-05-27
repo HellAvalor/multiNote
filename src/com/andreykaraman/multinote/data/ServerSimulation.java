@@ -8,22 +8,22 @@ import com.andreykaraman.multinote.model.User;
 import com.andreykaraman.multinote.data.UserExceptions.Error;
 
 
-public class Singleton {
+public class ServerSimulation {
 
-    private static Singleton sInstance;
+    private static ServerSimulation sInstance;
     private HashSet<User> Users;
     private User UserInSystem;
 
     private ArrayList<Note> Notes;// add
 
-    public static Singleton getInstance() {
+    public static ServerSimulation getInstance() {
 	if (sInstance == null) {
-	    sInstance = new Singleton();
+	    sInstance = new ServerSimulation();
 	}
 	return sInstance;
     }
 
-    private Singleton() {
+    private ServerSimulation() {
 	Users = new HashSet<User>();
 	Notes = new ArrayList<Note>();// add
 
@@ -49,6 +49,11 @@ public class Singleton {
     }
 
     public boolean setPassword(User LogInUser, String Old, String NewPass) {
+	try {
+	    Thread.sleep(5000);
+	} catch (InterruptedException e) {
+	    e.printStackTrace();
+	}
 	for (User user : Users) {
 	    if (user.getLogin().equals(LogInUser.getLogin()) == true) {
 		if (LogInUser.getPass().equals(Old)) {
@@ -60,7 +65,7 @@ public class Singleton {
 	return false;
     }
 
-    public void login(String Name, String Pass) throws UserExceptions {
+    public void checkLogin(String Name, String Pass) throws UserExceptions {
 	try {
 	    Thread.sleep(5000);
 	} catch (InterruptedException e) {
@@ -107,15 +112,22 @@ public class Singleton {
 
     public void registrationNewUser(String Login, String Pass, String repeatPass)
 	    throws UserExceptions {
+	
+	try {
+	    Thread.sleep(5000);
+	} catch (InterruptedException e) {
+	    e.printStackTrace();
+	}
+	
 	boolean nameFree = true;
 	for (User user : Users) {
-	    if (user.getLogin() == Login) {
+	    if (user.getLogin().equals(Login)) {
 		nameFree = false;
 	    }
 	}
 	if (nameFree) {
 	    if (Pass.equals(repeatPass)) {
-		Singleton.getInstance().addUser(Login, repeatPass);
+		ServerSimulation.getInstance().addUser(Login, repeatPass);
 	    } else {
 		throw new UserExceptions(Error.PASSWORD_MISSMATCH);
 	    }

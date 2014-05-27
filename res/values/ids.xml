@@ -1,5 +1,6 @@
 <resources>
 
-    <item type="id" name="loader_login" />
+    <item name="loader_login" type="id"/>
+    <item name="loader_new_user" type="id"/>
 
 </resources>
