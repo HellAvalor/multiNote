@@ -3,9 +3,9 @@ package com.andreykaraman.multinote.model;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-public class DBnote extends AbsDBObject {
+public class DBNote extends AbsDBObject {
 
-    public static final String TABLE_NAME = "DBnote";
+    public static final String TABLE_NAME = "DBNote";
 
     public static final String NOTE_ID = "_id";
     public static final String NOTE_TITLE = "title";
@@ -28,15 +28,10 @@ public class DBnote extends AbsDBObject {
 	return title;
     }
 
-    public DBnote(final Cursor cursor) {
+    public DBNote(final Cursor cursor) {
 	fillFromCursor(cursor);
     }
 
-    // public DBService(final GQ_Service service) {
-    // id = service.id;
-    // name = service.name;
-    // documentType = service.documentType;
-    // }
 
     @Override
     public void fillFromCursor(Cursor cursor) {

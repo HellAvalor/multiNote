@@ -2,8 +2,11 @@
 
     <string name="title_activity_settings">Settings</string>
 
-    <!-- Strings related to Settings -->
-
+    
+    <string name="pref_header_general">General</string>
+    
+      <string name="pref_alt_notes_screen">Alternative view</string>
+    
     <!-- Example settings for Data & Sync -->
     <string name="pref_header_data_sync">Data &amp; sync</string>
     <string name="pref_title_sync_frequency">Sync frequency</string>

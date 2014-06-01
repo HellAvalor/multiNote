@@ -1,10 +1,7 @@
 package com.andreykaraman.multinote.utils;
 
-import java.util.ArrayList;
-
 import com.andreykaraman.multinote.R;
-import com.andreykaraman.multinote.R.id;
-import com.andreykaraman.multinote.R.layout;
+import com.andreykaraman.multinote.model.DBNote;
 import com.andreykaraman.multinote.model.Note;
 
 import android.content.Context;
@@ -14,8 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -27,6 +22,12 @@ public class NoteAdapter extends CursorAdapter {
     Note note;
     Context context;
 
+    protected static class RowViewHolder {
+	public TextView noteTitle;
+	public TextView noteContent;
+	public ImageButton deleteButton;
+    }
+
     @SuppressWarnings("deprecation")
     public NoteAdapter(Context context, Cursor c) {
 	super(context, c);
@@ -34,13 +35,12 @@ public class NoteAdapter extends CursorAdapter {
 	// TODO Auto-generated constructor stub
     }
 
-
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
 	// when the view will be created for first time,
 	// we need to tell the adapters, how each item will look
 	LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-	View retView = inflater.inflate(R.layout.note_item, parent, false);
+	View retView = inflater.inflate(R.layout.list_item_note, parent, false);
 
 	return retView;
     }
@@ -50,70 +50,29 @@ public class NoteAdapter extends CursorAdapter {
 	// here we are setting our data
 	// that means, take the data from the cursor and put it in views
 	// note = new Note();
+	RowViewHolder holder = new RowViewHolder();
 
-	TextView noteTitle = (TextView) view.findViewById(R.id.textNoteTitle);
-	TextView noteContent = (TextView) view
-		.findViewById(R.id.textNoteContent);
+	holder.noteTitle = (TextView) view.findViewById(R.id.textNoteTitle);
+	holder.noteContent = (TextView) view.findViewById(R.id.textNoteContent);
 
 	// view.setTag(tag) holder
 
-	noteTitle.setText(cursor.getString(cursor.getColumnIndex(cursor
+	holder.noteTitle.setText(cursor.getString(cursor.getColumnIndex(cursor
 		.getColumnName(1))));
 
-	noteContent.setText(cursor.getString(cursor.getColumnIndex(cursor
-		.getColumnName(2))));
-	ImageButton deleteButton = (ImageButton) view
+	holder.noteContent.setText(cursor.getString(cursor
+		.getColumnIndex(cursor.getColumnName(2))));
+	holder.deleteButton = (ImageButton) view
 		.findViewById(R.id.imageButtonDelete);
-	deleteButton.setOnClickListener(new NoteOnClickListener(cursor
-		.getInt(cursor.getColumnIndex(DbHelperNew.NOTE_ID))));
+	holder.deleteButton.setOnClickListener(new NoteOnClickListener(cursor
+		.getInt(cursor.getColumnIndex(DBNote.NOTE_ID))));
+	view.setTag(holder);
 
     }
-
-    /*
-     * public View getView(int position, View view, ViewGroup arg2) {
-     * 
-     * LayoutInflater inflater = LayoutInflater.from(arg2.getContext());
-     * 
-     * if (view == null) { view = inflater.inflate(R.layout.note_item, arg2,
-     * false);
-     * 
-     * } TextView noteTitle = (TextView) view.findViewById(R.id.textNoteTitle);
-     * TextView noteContent = (TextView) view
-     * .findViewById(R.id.textNoteContent);
-     * 
-     * noteTitle.setText(notes.get(position).getNoteTitle());
-     * 
-     * // view.setTag(tag) holder
-     * 
-     * noteContent.setText(notes.get(position).getNoteContent()); ImageButton
-     * deleteButton = (ImageButton) view .findViewById(R.id.imageButtonDelete);
-     * deleteButton.setOnClickListener(new NoteOnClickListener(notes
-     * .get(position)));
-     * 
-     * return view; }
-     */
-    /*
-     * public class NoteOnClickListener implements OnClickListener {
-     * 
-     * Note note;
-     * 
-     * public NoteOnClickListener(Note note) { this.note = note; }
-     * 
-     * public void onClick(View v) {
-     * 
-     * Toast.makeText(v.getContext(), note.getNoteTitle(),
-     * Toast.LENGTH_LONG).show(); Note.dellNote(v.getContext(), note);
-     * 
-     * }
-     * 
-     * }
-     */
 
     public class NoteOnClickListener implements OnClickListener {
 
 	int id;
-
-	// Cursor cur;
 
 	public NoteOnClickListener(int id) {
 	    this.id = id;
@@ -121,22 +80,18 @@ public class NoteAdapter extends CursorAdapter {
 	}
 
 	public void onClick(View v) {
+	    v.getRootView().getRootView().setEnabled(false);
 
 	    Toast.makeText(v.getContext(), "id " + id, Toast.LENGTH_SHORT)
 		    .show();
 
-	    Intent intent= new Intent(v.getContext(),
-		    ServerDBSimulation.class).putExtra("update_notes_on_remote", R.id.delete_note).putExtra("delId", id);
+	    Intent intent = new Intent(v.getContext(), ServerDBSimulation.class)
+		    .putExtra("update_notes_on_remote", R.id.delete_note)
+		    .putExtra("delId", id);
 
 	    v.getContext().startService(intent);
-	    
-	   // DbHelperNew.delRec(id);
-	    // context.getContentResolver().notifyChange(ActivityContentProvider.CONTENT_URI,
-	    // null);
-	    //notifyDataSetChanged();
-	   
-	    // Note.dellNote(v.getContext(), note);
 
 	}
     }
+
 }

@@ -32,5 +32,6 @@
     <string name="save_note">Save note?</string>
     <string name="note_added">New note added</string>
     <string name="note_updated">Note updated</string>
+    <string name="loading">Loading&#8230;</string>
 
 </resources>

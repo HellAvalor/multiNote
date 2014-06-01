@@ -2,7 +2,6 @@
 
     <PreferenceCategory android:title="@string/pref_header_data_sync" >
 
-     
         <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
         <ListPreference
             android:defaultValue="180"
@@ -15,7 +14,7 @@
 
         <!--
          This preference simply launches an intent when selected. Use this UI sparingly, per
-         design guidelines.
+         design guidelines.
         -->
 
         <CheckBoxPreference
@@ -32,7 +31,6 @@
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="@string/pref_server_path" />
-        
     </PreferenceCategory>
 
 </PreferenceScreen>

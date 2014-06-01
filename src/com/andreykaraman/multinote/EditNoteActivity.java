@@ -1,12 +1,12 @@
 package com.andreykaraman.multinote;
 
 import com.andreykaraman.multinote.model.Note;
-import com.andreykaraman.multinote.utils.DbHelperNew;
 import com.andreykaraman.multinote.utils.ServerDBSimulation;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -61,10 +61,14 @@ public class EditNoteActivity extends Activity {
 
 	if (noteId != -1) {
 	    // создаем фильтр для BroadcastReceiver
-
+	    final ProgressDialog ringProgressDialog = ProgressDialog.show(this, "", getResources().getString(R.string.loading), true);
+	    ringProgressDialog.setCancelable(true);
 	    br = new BroadcastReceiver() {
+		
 		// действия при получении сообщений
 		public void onReceive(Context context, Intent intent) {
+
+
 		    // int task = intent.getIntExtra(PARAM_TASK, 0);
 		    int status = intent.getIntExtra(PARAM_STATUS, 0);
 		    Log.d(TAG, "onReceive: task = " + ", status = " + status);
@@ -72,8 +76,7 @@ public class EditNoteActivity extends Activity {
 		    // Ловим сообщения о старте задач
 		    if (status == STATUS_START) {
 			// TODO add here loader screen
-
-		    }
+					    }
 
 		    // Ловим сообщения об окончании задач
 		    if (status == STATUS_FINISH) {
@@ -92,6 +95,7 @@ public class EditNoteActivity extends Activity {
 			titleText.setText(note.getNoteTitle());
 			contentText.setText(note.getNoteContent());
 			setTitle(note.getNoteTitle());
+			ringProgressDialog.dismiss();
 		    }
 		}
 	    };
@@ -105,7 +109,7 @@ public class EditNoteActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
 
 	// Inflate the menu; this adds items to the action bar if it is present.
-	getMenuInflater().inflate(R.menu.edit_note, menu);
+	getMenuInflater().inflate(R.menu.menu_edit_note, menu);
 	return true;
     }
 
@@ -176,7 +180,7 @@ public class EditNoteActivity extends Activity {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState) {
-	    View rootView = inflater.inflate(R.layout.new_note, container,
+	    View rootView = inflater.inflate(R.layout.fragment_new_note, container,
 		    false);
 
 	    titleText = (EditText) rootView.findViewById(R.id.editTextNewTitle);

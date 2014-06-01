@@ -2,7 +2,7 @@ package com.andreykaraman.multinote.utils;
 
 import java.util.ArrayList;
 
-import com.andreykaraman.multinote.model.DBnote;
+import com.andreykaraman.multinote.model.DBNote;
 import com.andreykaraman.multinote.utils.MyDatabaseHelper.Tables;
 
 import android.content.ContentProvider;
@@ -104,7 +104,7 @@ public class MyContentProvider extends ContentProvider {
 		
 		switch (matchQuery(uri)) {
 		case DB_NOTE:
-			id = db.insertOrThrow(DBnote.TABLE_NAME, null, values);
+			id = db.insertOrThrow(DBNote.TABLE_NAME, null, values);
 			result = Uri.parse(URI_NOTE_TABLE + "/" + id);
 			break;
 

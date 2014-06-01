@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Заметки</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Настройки</string>
     <string name="enter_name_text">Введите логин и пароль</string>
     <string name="register_user_text">Регистрация пользователя</string>
     <string name="login">Логин</string>
@@ -32,5 +32,6 @@
     <string name="save_note">Сохранит заметку?</string>
     <string name="note_added">Новая заметка добавлена</string>
     <string name="note_updated">Заметка обновлена</string>
+    <string name="loading">Загрузка&#8230;</string>
 
 </resources>

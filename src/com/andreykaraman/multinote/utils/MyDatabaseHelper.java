@@ -1,11 +1,10 @@
 package com.andreykaraman.multinote.utils;
 
-import com.andreykaraman.multinote.model.DBnote;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.andreykaraman.multinote.model.DBNote;
 
 public final class MyDatabaseHelper extends SQLiteOpenHelper {
 
@@ -25,7 +24,7 @@ public final class MyDatabaseHelper extends SQLiteOpenHelper {
 	 * with model class identifiers
 	 */
 	interface Tables {
-		String _DBNote = DBnote.TABLE_NAME;
+		String _DBNote = DBNote.TABLE_NAME;
 	//	String _DBServiceGroup = DBServiceGroup.TABLE_NAME;
 	}
 
@@ -47,12 +46,12 @@ public final class MyDatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	private void createDatabase(SQLiteDatabase db) {
-		db.execSQL(DBnote.CREATE_TABLE);
+		db.execSQL(DBNote.CREATE_TABLE);
 	//	db.execSQL(DBServiceGroup.CREATE_TABLE);
 	}
 
 	public void dropAndRecreateDatabase(SQLiteDatabase db) {
-		db.execSQL("DROP TABLE IF EXISTS " + DBnote.TABLE_NAME);
+		db.execSQL("DROP TABLE IF EXISTS " + DBNote.TABLE_NAME);
 	//	db.execSQL("DROP TABLE IF EXISTS " + DBServiceGroup.TABLE_NAME);
 		onCreate(db);
 		notifyEveryone();

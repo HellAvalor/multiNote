@@ -1,7 +1,6 @@
 package com.andreykaraman.multinote.utils;
 
 import com.andreykaraman.multinote.data.UserExceptions;
-import com.andreykaraman.multinote.data.UserExceptions.Error;
 import com.andreykaraman.multinote.model.ServerResponse;
 
 import android.content.AsyncTaskLoader;

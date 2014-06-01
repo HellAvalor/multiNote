@@ -3,19 +3,18 @@ package com.andreykaraman.multinote.utils;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-import com.andreykaraman.multinote.EditNoteActivity;
-import com.andreykaraman.multinote.MainActivity;
-import com.andreykaraman.multinote.R;
-import com.andreykaraman.multinote.model.DBItem;
-import com.andreykaraman.multinote.model.DBnote;
-import com.andreykaraman.multinote.model.Note;
-
 import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
+
+import com.andreykaraman.multinote.EditNoteActivity;
+import com.andreykaraman.multinote.MainActivity;
+import com.andreykaraman.multinote.R;
+import com.andreykaraman.multinote.model.DBNote;
+import com.andreykaraman.multinote.model.Note;
 
 public class ServerDBSimulation extends IntentService {
 
@@ -89,6 +88,12 @@ public class ServerDBSimulation extends IntentService {
 
 	    break;
 
+	case R.id.delete_notes:
+	    Log.d(LOG_SECTION, "Delete elements");
+	    delNotes(intent.getStringArrayExtra("delId"));
+
+	    break;
+	    
 	default:
 	    Log.d(LOG_SECTION, "Wrong id");
 	    break;
@@ -118,8 +123,8 @@ public class ServerDBSimulation extends IntentService {
 		for (Note note : notes) {
 		    ContentValues cv = new ContentValues();
 
-		    cv.put(DBnote.NOTE_TITLE, note.getNoteTitle());
-		    cv.put(DBnote.NOTE_CONTENT, note.getNoteContent());
+		    cv.put(DBNote.NOTE_TITLE, note.getNoteTitle());
+		    cv.put(DBNote.NOTE_CONTENT, note.getNoteContent());
 
 		    Uri result = getContentResolver().insert(
 			    MyContentProvider.URI_NOTE_TABLE, cv);
@@ -140,8 +145,8 @@ public class ServerDBSimulation extends IntentService {
 	    TimeUnit.SECONDS.sleep(3);
 	    ContentValues cv = new ContentValues();
 	    // cv.put(DBnote.NOTE_ID, note.getNoteTitle());
-	    cv.put(DBnote.NOTE_TITLE, title);
-	    cv.put(DBnote.NOTE_CONTENT, content);
+	    cv.put(DBNote.NOTE_TITLE, title);
+	    cv.put(DBNote.NOTE_CONTENT, content);
 
 	    Uri result = getContentResolver().insert(
 		    MyContentProvider.URI_NOTE_TABLE, cv);
@@ -158,7 +163,30 @@ public class ServerDBSimulation extends IntentService {
 	    TimeUnit.SECONDS.sleep(3);
 	    int result = getContentResolver().delete(
 		    MyContentProvider.URI_NOTE_TABLE,
-		    DBnote.NOTE_ID + "=" + id, null);
+		    DBNote.NOTE_ID + "=" + id, null);
+	    Log.d(LOG_SECTION, "" + result);
+
+	} catch (InterruptedException e) {
+	    e.printStackTrace();
+	}
+    }
+    
+    private void delNotes(String[] ids) {
+	Log.d(LOG_SECTION, "ThreadInit");
+	
+	
+	String selectionArgs[] = ids;
+	String selection = DBNote.NOTE_ID + " in (";
+	for(int i = 0; i < selectionArgs.length; i++)
+	    selection += "?, ";
+	selection = selection.substring(0, selection.length() - 2) + ")";
+	// selection is 'DBColumns.History._ID + " in (?, ?, ?)"'
+	
+	try {
+	    TimeUnit.SECONDS.sleep(3);
+	    int result = getContentResolver().delete(
+		    MyContentProvider.URI_NOTE_TABLE,
+		    selection , selectionArgs);
 	    Log.d(LOG_SECTION, "" + result);
 
 	} catch (InterruptedException e) {
@@ -178,16 +206,16 @@ public class ServerDBSimulation extends IntentService {
 
 	    result = getContentResolver().query(
 		    MyContentProvider.URI_NOTE_TABLE, null,
-		    DBnote.NOTE_ID + "=" + id, null, null);
+		    DBNote.NOTE_ID + "=" + id, null, null);
 	    Log.d(LOG_SECTION, "id = " + id + " result " + result.toString());
 
 	    if (result.moveToFirst()) {
 		note.setNoteId(result.getInt(result
-			.getColumnIndex(DBnote.NOTE_ID)));
+			.getColumnIndex(DBNote.NOTE_ID)));
 		note.setNoteTitle(result.getString(result
-			.getColumnIndex(DBnote.NOTE_TITLE)));
+			.getColumnIndex(DBNote.NOTE_TITLE)));
 		note.setNoteContent(result.getString(result
-			.getColumnIndex(DBnote.NOTE_CONTENT)));
+			.getColumnIndex(DBNote.NOTE_CONTENT)));
 		Log.d(LOG_SECTION,
 			note.getNoteId() + " / " + note.getNoteTitle() + " / "
 				+ note.getNoteContent());
@@ -207,17 +235,17 @@ public class ServerDBSimulation extends IntentService {
 	    ContentValues cv = new ContentValues();
 
 	    // Defines a variable to contain the number of updated rows
-	    int rowsUpdated;
+	  
 
-	    cv.put(DBnote.NOTE_ID, id);
-	    cv.put(DBnote.NOTE_TITLE, title);
-	    cv.put(DBnote.NOTE_CONTENT, content);
+	    cv.put(DBNote.NOTE_ID, id);
+	    cv.put(DBNote.NOTE_TITLE, title);
+	    cv.put(DBNote.NOTE_CONTENT, content);
 
-	    rowsUpdated = getContentResolver().update(
+	    getContentResolver().update(
 		    MyContentProvider.URI_NOTE_TABLE, // the user dictionary
 						      // content URI
 		    cv, // the columns to update
-		    DBnote.NOTE_ID + "=" + id, // the column to select on
+		    DBNote.NOTE_ID + "=" + id, // the column to select on
 		    null // the value to compare to
 		    );
 

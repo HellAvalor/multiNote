@@ -4,19 +4,15 @@ import com.andreykaraman.multinote.MainActivity.LoadingHandler;
 import com.andreykaraman.multinote.data.UserExceptions.Error;
 import com.andreykaraman.multinote.model.ServerResponse;
 import com.andreykaraman.multinote.utils.ChangePassLoader;
-import com.andreykaraman.multinote.utils.LoginLoader;
 import com.andreykaraman.multinote.utils.ServerSimulation;
 
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.LoaderManager;
-import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +20,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import android.os.Build;
 
 public class EditPassActivity extends Activity {
 
@@ -106,7 +101,7 @@ public class EditPassActivity extends Activity {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState) {
 
-	    View rootView = inflater.inflate(R.layout.change_pass, container,
+	    View rootView = inflater.inflate(R.layout.fragment_change_pass, container,
 		    false);
 
 	    oldPasswordText = (EditText) rootView

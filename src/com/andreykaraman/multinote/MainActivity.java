@@ -9,23 +9,18 @@ import com.andreykaraman.multinote.utils.LoginLoader;
 
 import android.app.Activity;
 import android.app.ActionBar;
-import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager;
-import android.content.AsyncTaskLoader;
-import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,7 +29,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
@@ -57,7 +51,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     ViewPager mViewPager;
     static EditText loginText;
     static EditText passwordText;
-    static Loader loader;
     static Button button;
     static String login;
     static Button registerButton;
@@ -174,7 +167,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public boolean onCreateOptionsMenu(Menu menu) {
 
 	// Inflate the menu; this adds items to the action bar if it is present.
-	getMenuInflater().inflate(R.menu.main, menu);
+	getMenuInflater().inflate(R.menu.menu_main, menu);
 	return true;
     }
 
@@ -271,7 +264,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState) {
 
-	    View rootView = inflater.inflate(R.layout.login_frame, container,
+	    View rootView = inflater.inflate(R.layout.fragment_login, container,
 		    false);
 
 	    loginText = (EditText) rootView.findViewById(R.id.editTextLogin);
@@ -345,6 +338,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 			Toast.LENGTH_SHORT).show();
 
 		if (result.getStatus() == Error.OK) {
+		    passwordText.setText("");
+		    
 		    if (sharedPrefs.getBoolean("stay_login", false)) {
 			savedData.edit().putString(ARG_LOGIN, login).commit();
 		    }
@@ -352,8 +347,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 			    savedData.getString(ARG_LOGIN, ""),
 			    Toast.LENGTH_SHORT).show();
 
-		    startActivity(new Intent(getActivity(),
-			    NoteListActivity.class));
+		    if (sharedPrefs.getBoolean("alt_UI", false)) { 
+			startActivity(new Intent(getActivity(),
+				    AltNoteListActivity.class));
+		    } else {
+			startActivity(new Intent(getActivity(),
+				    NoteListActivity.class));
+		    }
 		}
 	    }
 	};
@@ -447,7 +447,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState) {
-	    View rootView = inflater.inflate(R.layout.register_frame,
+	    View rootView = inflater.inflate(R.layout.fragment_register,
 		    container, false);
 
 	    final EditText loginText = (EditText) rootView
