@@ -1,14 +1,19 @@
 package com.andreykaraman.multinote;
 
 import com.andreykaraman.multinote.model.Note;
+import com.andreykaraman.multinote.utils.DbHelperNew;
+import com.andreykaraman.multinote.utils.ServerDBSimulation;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,11 +24,27 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class EditNoteActivity extends Activity {
-   
-    static Note note;
+
+    protected final String TAG = this.getClass().getSimpleName();
+
+    final static int TASK1_CODE = 1;
+    final static int TASK2_CODE = 2;
+    final static int TASK3_CODE = 3;
+
+    public final static int STATUS_START = 100;
+    public final static int STATUS_FINISH = 200;
+
+    public final static String PARAM_TIME = "time";
+    public final static String PARAM_TASK = "task";
+    public final static String PARAM_RESULT = "result";
+    public final static String PARAM_STATUS = "status";
+
+    Note note = new Note();
     static long noteId;
     static EditText titleText;
     static EditText contentText;
+    public final static String BROADCAST_ACTION = "com.andreykaraman.multinote.getnotebroadcast";
+    BroadcastReceiver br;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,14 +57,45 @@ public class EditNoteActivity extends Activity {
 	}
 
 	Intent intent = getIntent();
-	noteId = intent.getLongExtra("id", -1); // if it's a string you stored.
-
-	// Toast.makeText(this, "create for id " + noteId, Toast.LENGTH_SHORT)
-	// .show();
+	noteId = intent.getLongExtra("id", -1);
 
 	if (noteId != -1) {
-	    note = DbHelperNew.getNote(this, noteId);
-	    this.setTitle(note.getNoteTitle());
+	    // создаем фильтр для BroadcastReceiver
+
+	    br = new BroadcastReceiver() {
+		// действия при получении сообщений
+		public void onReceive(Context context, Intent intent) {
+		    // int task = intent.getIntExtra(PARAM_TASK, 0);
+		    int status = intent.getIntExtra(PARAM_STATUS, 0);
+		    Log.d(TAG, "onReceive: task = " + ", status = " + status);
+
+		    // Ловим сообщения о старте задач
+		    if (status == STATUS_START) {
+			// TODO add here loader screen
+
+		    }
+
+		    // Ловим сообщения об окончании задач
+		    if (status == STATUS_FINISH) {
+
+			Log.d(TAG, "onReceive id= " + noteId + " title="
+				+ intent.getStringExtra("title") + " content="
+				+ intent.getStringExtra("content"));
+			// int result = intent.getIntExtra(PARAM_RESULT, 0);
+			note.setNoteId(noteId);
+			note.setNoteTitle(intent.getStringExtra("title"));
+			note.setNoteContent(intent.getStringExtra("content"));
+
+			Log.d(TAG, "onReceive: task = " + ", status = "
+				+ status);
+
+			titleText.setText(note.getNoteTitle());
+			contentText.setText(note.getNoteContent());
+			setTitle(note.getNoteTitle());
+		    }
+		}
+	    };
+
 	} else {
 	    this.setTitle(getString(R.string.new_note));
 	}
@@ -90,6 +142,29 @@ public class EditNoteActivity extends Activity {
 	return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onDestroy() {
+	// дерегистрируем (выключаем) BroadcastReceiver
+	super.onDestroy();
+
+    }
+
+    protected void onPause() {
+	super.onPause();
+	if (br != null) {
+	    unregisterReceiver(br);
+	}
+
+    }
+
+    protected void onResume() {
+	super.onResume();
+	IntentFilter intFilt = new IntentFilter(BROADCAST_ACTION);
+	intFilt.addCategory(Intent.CATEGORY_DEFAULT);
+	// регистрируем (включаем) BroadcastReceiver
+	registerReceiver(br, intFilt);
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -107,15 +182,20 @@ public class EditNoteActivity extends Activity {
 	    titleText = (EditText) rootView.findViewById(R.id.editTextNewTitle);
 	    contentText = (EditText) rootView
 		    .findViewById(R.id.editTextNewNote);
+
 	    if (noteId != -1) {
+
 		titleText.setVisibility(View.GONE);
 
-		titleText.setText(note.getNoteTitle());
-		contentText.setText(note.getNoteContent());
-	    }
+		Intent intent = new Intent(container.getContext(),
+			ServerDBSimulation.class)
+			.putExtra("update_notes_on_remote", R.id.load_note)
+			.putExtra("getNote", noteId).putExtra(PARAM_TIME, 7)
+			.putExtra(PARAM_TASK, TASK1_CODE);
 
-	    // Toast.makeText(container.getContext(),
-	    // "edit/add note id " + noteId, Toast.LENGTH_LONG).show();
+		container.getContext().startService(intent);
+
+	    }
 
 	    return rootView;
 	}
@@ -125,10 +205,8 @@ public class EditNoteActivity extends Activity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 	if (keyCode == KeyEvent.KEYCODE_BACK) {
 	    if (isContentChanged()) {
-
 		return false;
 	    }
-
 	    finish();
 	    return true;
 	}
@@ -137,8 +215,7 @@ public class EditNoteActivity extends Activity {
     }
 
     private boolean isContentChanged() {
-	if (!contentText.getText().toString()
-		.equals(note.getNoteContent())) {
+	if (!contentText.getText().toString().equals(note.getNoteContent())) {
 	    Toast.makeText(this, "Changed", Toast.LENGTH_SHORT).show();
 	    showCancelChangesDialog(this);
 	    return true;
@@ -150,7 +227,7 @@ public class EditNoteActivity extends Activity {
     private void showCancelChangesDialog(Context context) {
 
 	AlertDialog.Builder myAlertDialog = new AlertDialog.Builder(context);
-		myAlertDialog.setMessage(getText(R.string.save_note));
+	myAlertDialog.setMessage(getText(R.string.save_note));
 	myAlertDialog.setPositiveButton(getText(R.string.ok),
 		new DialogInterface.OnClickListener() {
 
@@ -172,30 +249,32 @@ public class EditNoteActivity extends Activity {
     private void saveNote() {
 
 	if (noteId != -1) {
-	    DbHelperNew.saveRec(new Note(noteId, titleText.getText().toString(), contentText
-		    .getText().toString()));
-	    Toast.makeText(getBaseContext(), R.string.note_added, Toast.LENGTH_SHORT).show();
-	    
+
+	    Intent intent = new Intent(this, ServerDBSimulation.class)
+		    .putExtra("update_notes_on_remote", R.id.edit_note)
+		    .putExtra("id", noteId)
+		    .putExtra("title", titleText.getText().toString())
+		    .putExtra("content", contentText.getText().toString());
+
+	    this.startService(intent);
+
+	    Toast.makeText(getBaseContext(), R.string.note_updated,
+		    Toast.LENGTH_SHORT).show();
+
 	} else {
-	    DbHelperNew.addRec(titleText.getText().toString(), contentText
-		    .getText().toString());
-	    Toast.makeText(getBaseContext(), R.string.note_added, Toast.LENGTH_SHORT).show();
-	    // Note.addEditNote(this, new Note(0,
-	    // titleText.getText().toString(),
-	    // contentText.getText().toString()), Note.ADD);
+
+	    Intent intent = new Intent(this, ServerDBSimulation.class)
+		    .putExtra("update_notes_on_remote", R.id.add_note)
+		    .putExtra("title", titleText.getText().toString())
+		    .putExtra("content", contentText.getText().toString());
+
+	    this.startService(intent);
+
+	    Toast.makeText(getBaseContext(), R.string.note_added,
+		    Toast.LENGTH_SHORT).show();
 	}
-	
-	  //  Intent intentMessage=new Intent();
-	    
-	        // put the message in Intent
-	    //    intentMessage.putExtra("MESSAGE",message);
-	        // Set The Result in Intent
-	    //    setResult(2,intentMessage);
-	        // finish The activity 
-	    //    finish();
-	
-//	setResult(RESULT_OK, this.getIntent());
+
 	finish();
-	
+
     }
 }

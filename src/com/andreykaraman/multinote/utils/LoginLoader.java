@@ -1,15 +1,17 @@
-package com.andreykaraman.multinote.data;
+package com.andreykaraman.multinote.utils;
 
-import com.andreykaraman.multinote.MainActivity.LoginResponse;
-import com.andreykaraman.multinote.data.ServerSimulation;
+
+import com.andreykaraman.multinote.data.UserExceptions;
+import com.andreykaraman.multinote.data.UserExceptions.Error;
+import com.andreykaraman.multinote.model.ServerResponse;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.util.Log;
 
-public class LoginLoader extends AsyncTaskLoader<LoginResponse> {
+public class LoginLoader extends AsyncTaskLoader<ServerResponse> {
 
-    public LoginResponse mResponse;
+    public ServerResponse mResponse;
 
     private String mLogin;
     private String mPassword;
@@ -22,10 +24,10 @@ public class LoginLoader extends AsyncTaskLoader<LoginResponse> {
     }
 
     @Override
-    public LoginResponse loadInBackground() {
+    public ServerResponse loadInBackground() {
 	Log.d("LoginLoader", String.format("LoginLoader.loadInBackground"));
 	ServerSimulation ss = ServerSimulation.getInstance();
-	mResponse = new LoginResponse();
+	mResponse = new ServerResponse();
 
 	try {
 	    ss.checkLogin(mLogin, mPassword);

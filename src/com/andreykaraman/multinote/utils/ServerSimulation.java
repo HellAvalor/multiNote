@@ -1,15 +1,18 @@
-package com.andreykaraman.multinote.data;
+package com.andreykaraman.multinote.utils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import android.util.Log;
+
+import com.andreykaraman.multinote.MainActivity;
 import com.andreykaraman.multinote.model.Note;
 import com.andreykaraman.multinote.model.User;
+import com.andreykaraman.multinote.data.UserExceptions;
 import com.andreykaraman.multinote.data.UserExceptions.Error;
 
-
 public class ServerSimulation {
-
+    static final String LOG_SECTION = MainActivity.class.getName();
     private static ServerSimulation sInstance;
     private HashSet<User> Users;
     private User UserInSystem;
@@ -30,8 +33,9 @@ public class ServerSimulation {
     }
 
     public void Init() {
-	//Notes.add(new Note("Firsttt", "ttttt"));
-	//Notes.add(new Note("Seconddd", "dddd"));
+	Log.d(LOG_SECTION, "initNotes");
+	Notes.add(new Note("Firsttt", "ttttt"));
+	Notes.add(new Note("Seconddd", "dddd"));
     }
 
     public void InitUser() {
@@ -40,15 +44,17 @@ public class ServerSimulation {
     }
 
     public ArrayList<Note> getNotes() {
+	Log.d(LOG_SECTION, "getNotes");
 	return Notes;
     }
 
     public void addNote(String noteName, String noteText) {
-	//Notes.add(new Note(noteName, noteText));
+	Notes.add(new Note(noteName, noteText));
 
     }
 
-    public boolean setPassword(User LogInUser, String Old, String NewPass) {
+    public boolean setPassword(User LogInUser, String Old, String NewPass)
+	    throws UserExceptions {
 	try {
 	    Thread.sleep(5000);
 	} catch (InterruptedException e) {
@@ -57,12 +63,19 @@ public class ServerSimulation {
 	for (User user : Users) {
 	    if (user.getLogin().equals(LogInUser.getLogin()) == true) {
 		if (LogInUser.getPass().equals(Old)) {
-		    user.setPass(NewPass);
-		    return true;
+		    if (!LogInUser.getPass().equals(NewPass)) {
+			user.setPass(NewPass);
+			return true;
+		    } else {
+			throw new UserExceptions(
+				Error.NEW_PASS_SAME_AS_PREVIOUS);
+		    }
+		} else {
+		    throw new UserExceptions(Error.WRONG_OLD_PASSWORD);
 		}
 	    }
 	}
-	return false;
+	throw new UserExceptions(Error.USER_NOT_FOUND);
     }
 
     public void checkLogin(String Name, String Pass) throws UserExceptions {
@@ -112,13 +125,13 @@ public class ServerSimulation {
 
     public void registrationNewUser(String Login, String Pass, String repeatPass)
 	    throws UserExceptions {
-	
+
 	try {
 	    Thread.sleep(5000);
 	} catch (InterruptedException e) {
 	    e.printStackTrace();
 	}
-	
+
 	boolean nameFree = true;
 	for (User user : Users) {
 	    if (user.getLogin().equals(Login)) {

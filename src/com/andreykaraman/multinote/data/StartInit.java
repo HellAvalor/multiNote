@@ -2,7 +2,7 @@ package com.andreykaraman.multinote.data;
 
 import android.app.Application;
 
-import com.andreykaraman.multinote.data.ServerSimulation;
+import com.andreykaraman.multinote.utils.ServerSimulation;
 
 public class StartInit extends Application {
 

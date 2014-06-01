@@ -1,4 +1,4 @@
-package com.andreykaraman.multinote;
+package com.andreykaraman.multinote.utils;
 
 import com.andreykaraman.multinote.model.Note;
 
@@ -19,7 +19,6 @@ public class DbHelperNew {
     public static final String NOTE_ID = "_id";
     public static final String NOTE_TITLE = "title";
     public static final String NOTE_CONTENT = "content";
-
     public static final String NOTE_TABLE_NAME = "notes";
 
     private static final String CREATE_TABLE_NOTE = "CREATE TABLE IF NOT EXISTS "
@@ -30,31 +29,31 @@ public class DbHelperNew {
 	    + NOTE_TITLE
 	    + " TEXT NOT NULL, " + NOTE_CONTENT + " TEXT NOT NULL " + ");";
 
-    private final Context mCtx;
+    private final Context context;
 
-    private DBHelper mDBHelper;
-    private static SQLiteDatabase mDB;
+    private DBHelper dbHelper;
+    private static SQLiteDatabase db;
 
-    public DbHelperNew(Context ctx) {
-	mCtx = ctx;
+    public DbHelperNew(Context context) {
+	this.context = context;
     }
 
     // открыть подключение
     public void open() {
-	mDBHelper = new DBHelper(mCtx, DB_NAME, null, DB_VERSION);
-	mDB = mDBHelper.getWritableDatabase();
+	dbHelper = new DBHelper(context, DB_NAME, null, DB_VERSION);
+	db = dbHelper.getWritableDatabase();
 
     }
 
     // закрыть подключение
     public void close() {
-	if (mDBHelper != null)
-	    mDBHelper.close();
+	if (dbHelper != null)
+	    dbHelper.close();
     }
 
     // получить все данные из таблицы DB_TABLE
     public Cursor getAllData() {
-	return mDB.query(NOTE_TABLE_NAME, null, null, null, null, null, null);
+	return db.query(NOTE_TABLE_NAME, null, null, null, null, null, null);
     }
 
     // добавить запись в DB_TABLE
@@ -70,8 +69,8 @@ public class DbHelperNew {
 	ContentValues cv = new ContentValues();
 	cv.put(NOTE_TITLE, title);
 	cv.put(NOTE_CONTENT, content);
-	mDB.insert(NOTE_TABLE_NAME, null, cv);
-	printTableLog(getCursor(mDB, NOTE_TABLE_NAME, null, null));
+	db.insert(NOTE_TABLE_NAME, null, cv);
+	printTableLog(getCursor(db, NOTE_TABLE_NAME, null, null));
     }
 
     // обновить запись в DB_TABLE
@@ -81,8 +80,8 @@ public class DbHelperNew {
 	cv.put(NOTE_TITLE, title);
 	cv.put(NOTE_CONTENT, content);
 
-	mDB.update(NOTE_TABLE_NAME, cv, NOTE_ID + " = " + id, null);
-	printTableLog(getCursor(mDB, NOTE_TABLE_NAME, null, null));
+	db.update(NOTE_TABLE_NAME, cv, NOTE_ID + " = " + id, null);
+	printTableLog(getCursor(db, NOTE_TABLE_NAME, null, null));
     }
 
     // обновить запись в DB_TABLE
@@ -92,8 +91,8 @@ public class DbHelperNew {
 	cv.put(NOTE_TITLE, note.getNoteTitle());
 	cv.put(NOTE_CONTENT, note.getNoteContent());
 
-	mDB.update(NOTE_TABLE_NAME, cv, NOTE_ID + " = " + note.getNoteId(), null);
-	printTableLog(getCursor(mDB, NOTE_TABLE_NAME, null, null));
+	db.update(NOTE_TABLE_NAME, cv, NOTE_ID + " = " + note.getNoteId(), null);
+	printTableLog(getCursor(db, NOTE_TABLE_NAME, null, null));
     }
     // удалить запись из DB_TABLE
     public void delRec(SQLiteDatabase db, long id) {
@@ -102,13 +101,13 @@ public class DbHelperNew {
 
     // удалить запись из DB_TABLE
     public static void delRec(long id) {
-	mDB.delete(NOTE_TABLE_NAME, NOTE_ID + " = " + id, null);
-	printTableLog(getCursor(mDB, NOTE_TABLE_NAME, null, null));
+	db.delete(NOTE_TABLE_NAME, NOTE_ID + " = " + id, null);
+	printTableLog(getCursor(db, NOTE_TABLE_NAME, null, null));
     }
 
     public static Note getNote(Context context, long noteId) {
 
-	Cursor cursor = getCursor(mDB, NOTE_TABLE_NAME, null,
+	Cursor cursor = getCursor(db, NOTE_TABLE_NAME, null,
 		NOTE_ID + " = " + noteId);
 	Note tempNote = new Note();
 	if (cursor != null) {

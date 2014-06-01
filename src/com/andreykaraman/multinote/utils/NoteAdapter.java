@@ -1,10 +1,14 @@
-package com.andreykaraman.multinote;
+package com.andreykaraman.multinote.utils;
 
 import java.util.ArrayList;
 
+import com.andreykaraman.multinote.R;
+import com.andreykaraman.multinote.R.id;
+import com.andreykaraman.multinote.R.layout;
 import com.andreykaraman.multinote.model.Note;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,24 +34,6 @@ public class NoteAdapter extends CursorAdapter {
 	// TODO Auto-generated constructor stub
     }
 
-    // ArrayList<Note> notes = new ArrayList<Note>();
-
-    // public NoteAdapter(Context context, ArrayList<Note> notes) {
-    // if (notes != null) {
-    // this.notes = notes;
-    // }
-
-    /*
-     * public void setNotesList(ArrayList<Note> notes) { this.notes = notes; }
-     * 
-     * public int getCount() { return notes.size(); }
-     * 
-     * public Object getItem(int num) { return notes.get(num); }
-     * 
-     * public long getItemId(int itemID) {
-     * 
-     * return notes.get(itemID).getNoteId(); }
-     */
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
@@ -139,10 +125,15 @@ public class NoteAdapter extends CursorAdapter {
 	    Toast.makeText(v.getContext(), "id " + id, Toast.LENGTH_SHORT)
 		    .show();
 
-	    DbHelperNew.delRec(id);
+	    Intent intent= new Intent(v.getContext(),
+		    ServerDBSimulation.class).putExtra("update_notes_on_remote", R.id.delete_note).putExtra("delId", id);
+
+	    v.getContext().startService(intent);
+	    
+	   // DbHelperNew.delRec(id);
 	    // context.getContentResolver().notifyChange(ActivityContentProvider.CONTENT_URI,
 	    // null);
-	    notifyDataSetChanged();
+	    //notifyDataSetChanged();
 	   
 	    // Note.dellNote(v.getContext(), note);
 

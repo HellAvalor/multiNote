@@ -3,6 +3,11 @@ package com.andreykaraman.multinote;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+import com.andreykaraman.multinote.model.DBnote;
+import com.andreykaraman.multinote.utils.DbHelperNew;
+import com.andreykaraman.multinote.utils.MyContentProvider;
+import com.andreykaraman.multinote.utils.NoteAdapter;
+import com.andreykaraman.multinote.utils.ServerDBSimulation;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -15,6 +20,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,7 +39,7 @@ public class NoteListActivity extends Activity {
     static NoteAdapter scAdapter;
     static ListView noteView;
     private static final int ACTIVITY_CREATE = 0;
-    
+    static final String LOG_SECTION = MainActivity.class.getName();
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +90,7 @@ public class NoteListActivity extends Activity {
 	    // Toast.LENGTH_SHORT).show();
 
 	    intent = new Intent(this, EditNoteActivity.class);
-	 //   startActivityForResult(intent, ACTIVITY_CREATE);
+	    // startActivityForResult(intent, ACTIVITY_CREATE);
 	    startActivity(intent);
 
 	    return true;
@@ -99,7 +105,7 @@ public class NoteListActivity extends Activity {
 	    OnItemClickListener, LoaderCallbacks<Cursor> {
 
 	private LoaderManager.LoaderCallbacks<Cursor> mCallbacks;
-	
+
 	public PlaceholderFragment() {
 	}
 
@@ -107,8 +113,11 @@ public class NoteListActivity extends Activity {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState) {
 
-	    db = new DbHelperNew(container.getContext());
-	    db.open();
+	    // TODO
+	    // myContentProvider = new MyContentProvider();
+
+	    // db = new DbHelperNew(container.getContext());
+	    // db.open();
 
 	    scAdapter = new NoteAdapter(container.getContext(), null);
 	    View rootView = inflater.inflate(R.layout.notes_list, container,
@@ -117,19 +126,29 @@ public class NoteListActivity extends Activity {
 	    noteView = (ListView) rootView.findViewById(R.id.listView1);
 
 	    noteView.setAdapter(scAdapter);
+	    fillData();
+
 	    noteView.setOnItemClickListener(this);
+
 	    mCallbacks = this;
+
 	    // создаем лоадер для чтения данных
 	    getLoaderManager().initLoader(0, null, mCallbacks);
+	    Log.d(LOG_SECTION, "Before service");
+	    
+	    intent= new Intent(getActivity().getBaseContext(),
+		    ServerDBSimulation.class).putExtra("update_notes_on_remote", R.id.update_notes);
 
+	    getActivity().getBaseContext().startService(intent);
+
+	    Log.d(LOG_SECTION, "After service");
 	    return rootView;
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 		long id) {
-	    
-	
+
 	    // TODO Auto-generated method stub
 	    Toast.makeText(view.getContext(),
 		    "tap on " + position + " id " + id, Toast.LENGTH_SHORT)
@@ -142,8 +161,18 @@ public class NoteListActivity extends Activity {
 	}
 
 	@Override
-	public Loader<Cursor> onCreateLoader(int id, Bundle bndl) {
-	    return new MyCursorLoader(getActivity(), db);
+	// public Loader<Cursor> onCreateLoader(int id, Bundle bndl) {
+	// return new MyCursorLoader(getActivity(), db);
+	// }
+	// ++++
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+	    String[] projection = { DBnote.NOTE_ID, DBnote.NOTE_TITLE,
+		    DBnote.NOTE_CONTENT };
+
+	    CursorLoader cursorLoader = new CursorLoader(this.getActivity()
+		    .getBaseContext(), MyContentProvider.URI_NOTE_TABLE,
+		    projection, null, null, null);
+	    return cursorLoader;
 	}
 
 	@Override
@@ -154,6 +183,7 @@ public class NoteListActivity extends Activity {
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
+	    scAdapter.swapCursor(null); // +++
 	    // scAdapter.notifyDataSetChanged();
 	}
 
@@ -162,8 +192,20 @@ public class NoteListActivity extends Activity {
 	// getLoaderManager().initLoader(0, null, this);
 	// }
 
+	// TODO -------------- added part ---------------
+	private void fillData() {
 
-	
+	    // Fields from the database (projection)
+	    // Must include the _id column for the adapter to work
+	    // String[] from = new String[] { TodoTable.COLUMN_SUMMARY };
+	    // Fields on the UI to which we map
+	    // int[] to = new int[] { R.id.label };
+
+	    getLoaderManager().initLoader(0, null, this);
+	    // scAdapter = new NoteAdapter(this, cursor);
+	    // noteView.setAdapter(scAdapter);
+	}
+
     }
 
     protected void onDestroy() {

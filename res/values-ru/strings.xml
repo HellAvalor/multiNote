@@ -10,6 +10,8 @@
     <string name="registration_tab">Регистрация</string>
     <string name="register_button">Зарегистрировать</string>
     <string name="password">Пароль</string>
+    <string name="passwords_not_match">Пароли не совпадают</string>
+    <string name="passwords_changed">Пароль изменен</string>
     <string name="old_pass">Старый пароль</string>
     <string name="new_pass">Новый пароль</string>
     <string name="rep_pass">Повтор пароля</string>
@@ -29,4 +31,6 @@
     <string name="add_note">Добавить заметку</string>
     <string name="save_note">Сохранит заметку?</string>
     <string name="note_added">Новая заметка добавлена</string>
+    <string name="note_updated">Заметка обновлена</string>
+
 </resources>

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.andreykaraman.multinote"
+<manifest package="com.andreykaraman.multinote"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="1.0" xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -55,6 +54,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.andreykaraman.multinote.MainActivity" />
         </activity>
+        <provider android:authorities="com.andreykaraman.multinote" android:name=".utils.MyContentProvider"></provider>
+        <service android:name=".utils.ServerDBSimulation"></service>
     </application>
 
 </manifest>

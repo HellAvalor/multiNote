@@ -2,9 +2,10 @@ package com.andreykaraman.multinote;
 
 import java.util.Locale;
 
-import com.andreykaraman.multinote.data.AddUserLoader;
-import com.andreykaraman.multinote.data.LoginLoader;
 import com.andreykaraman.multinote.data.UserExceptions.Error;
+import com.andreykaraman.multinote.model.ServerResponse;
+import com.andreykaraman.multinote.utils.AddUserLoader;
+import com.andreykaraman.multinote.utils.LoginLoader;
 
 import android.app.Activity;
 import android.app.ActionBar;
@@ -216,18 +217,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	String login;
     }
 
-    public static class LoginResponse {
 
-	Error status;
-
-	public Error getStatus() {
-	    return status;
-	}
-
-	public void setStatus(Error errorStatus) {
-	    this.status = errorStatus;
-	}
-    }
 
     public interface LoadingHandler<T> {
 	void onStartLoading();
@@ -338,7 +328,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	    // Log.d("test", "PlaceholderFragment.onPause");
 	}
 
-	private final LoadingHandler<LoginResponse> mLoginLoadingHandler = new LoadingHandler<LoginResponse>() {
+	private final LoadingHandler<ServerResponse> mLoginLoadingHandler = new LoadingHandler<ServerResponse>() {
 	    @Override
 	    public void onStartLoading() {
 		button.setEnabled(false);
@@ -350,11 +340,11 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	    }
 
 	    @Override
-	    public void onLoadingResult(LoginResponse result) {
-		Toast.makeText(getActivity(), result.status.toString(),
+	    public void onLoadingResult(ServerResponse result) {
+		Toast.makeText(getActivity(), result.getStatus().toString(),
 			Toast.LENGTH_SHORT).show();
 
-		if (result.status == Error.OK) {
+		if (result.getStatus() == Error.OK) {
 		    if (sharedPrefs.getBoolean("stay_login", false)) {
 			savedData.edit().putString(ARG_LOGIN, login).commit();
 		    }
@@ -370,9 +360,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
 	// loader callback
 
-	private final LoaderManager.LoaderCallbacks<LoginResponse> mLoginLoaderCallback = new LoaderManager.LoaderCallbacks<LoginResponse>() {
+	private final LoaderManager.LoaderCallbacks<ServerResponse> mLoginLoaderCallback = new LoaderManager.LoaderCallbacks<ServerResponse>() {
 	    @Override
-	    public Loader<LoginResponse> onCreateLoader(int id, Bundle args) {
+	    public Loader<ServerResponse> onCreateLoader(int id, Bundle args) {
 		// Log.d("test", String.format(
 		// "LoaderCallbacks.onCreateLoader %d, %s", id, args));
 		switch (id) {
@@ -386,8 +376,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	    }
 
 	    @Override
-	    public void onLoadFinished(Loader<LoginResponse> loader,
-		    LoginResponse data) {
+	    public void onLoadFinished(Loader<ServerResponse> loader,
+		    ServerResponse data) {
 		Log.d("test", String.format(
 			"LoaderCallbacks.onLoadFinished %d, %s",
 			loader.getId(), data));
@@ -403,7 +393,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	    }
 
 	    @Override
-	    public void onLoaderReset(Loader<LoginResponse> loader) {
+	    public void onLoaderReset(Loader<ServerResponse> loader) {
 		Log.d("test", String.format("LoaderCallbacks.onLoaderReset"));
 		switch (loader.getId()) {
 		case R.id.loader_login: {
@@ -493,7 +483,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	    initLoginLoader();
 	}
 
-	private final LoadingHandler<LoginResponse> mLoginLoadingHandler = new LoadingHandler<LoginResponse>() {
+	private final LoadingHandler<ServerResponse> mLoginLoadingHandler = new LoadingHandler<ServerResponse>() {
 	    @Override
 	    public void onStartLoading() {
 		registerButton.setEnabled(false);
@@ -505,11 +495,11 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	    }
 
 	    @Override
-	    public void onLoadingResult(LoginResponse result) {
-		Toast.makeText(getActivity(), result.status.toString(),
+	    public void onLoadingResult(ServerResponse result) {
+		Toast.makeText(getActivity(), result.getStatus().toString(),
 			Toast.LENGTH_SHORT).show();
 
-		if (result.status == Error.OK) {
+		if (result.getStatus() == Error.OK) {
 		    if (sharedPrefs.getBoolean("stay_login", false)) {
 			savedData.edit().putString(ARG_LOGIN, login).commit();
 		    }
@@ -525,9 +515,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
 	// loader callback
 
-	private final LoaderManager.LoaderCallbacks<LoginResponse> mLoginLoaderCallback = new LoaderManager.LoaderCallbacks<LoginResponse>() {
+	private final LoaderManager.LoaderCallbacks<ServerResponse> mLoginLoaderCallback = new LoaderManager.LoaderCallbacks<ServerResponse>() {
 	    @Override
-	    public Loader<LoginResponse> onCreateLoader(int id, Bundle args) {
+	    public Loader<ServerResponse> onCreateLoader(int id, Bundle args) {
 		// Log.d("test", String.format(
 		// "LoaderCallbacks.onCreateLoader %d, %s", id, args));
 		switch (id) {
@@ -543,8 +533,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	    }
 
 	    @Override
-	    public void onLoadFinished(Loader<LoginResponse> loader,
-		    LoginResponse data) {
+	    public void onLoadFinished(Loader<ServerResponse> loader,
+		    ServerResponse data) {
 		Log.d("test", String.format(
 			"LoaderCallbacks.onLoadFinished %d, %s",
 			loader.getId(), data));
@@ -560,7 +550,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	    }
 
 	    @Override
-	    public void onLoaderReset(Loader<LoginResponse> loader) {
+	    public void onLoaderReset(Loader<ServerResponse> loader) {
 		Log.d("test", String.format("LoaderCallbacks.onLoaderReset"));
 		switch (loader.getId()) {
 		case R.id.loader_new_user: {
