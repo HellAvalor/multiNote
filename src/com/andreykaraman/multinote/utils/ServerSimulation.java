@@ -5,9 +5,9 @@ import java.util.HashSet;
 
 import android.util.Log;
 
-import com.andreykaraman.multinote.MainActivity;
 import com.andreykaraman.multinote.model.Note;
 import com.andreykaraman.multinote.model.User;
+import com.andreykaraman.multinote.ui.login.MainActivity;
 import com.andreykaraman.multinote.data.UserExceptions;
 import com.andreykaraman.multinote.data.UserExceptions.Error;
 
@@ -97,6 +97,25 @@ public class ServerSimulation {
 	throw new UserExceptions(Error.USER_NOT_FOUND);
     }
 
+    public void checkLogin(User requestUser) throws UserExceptions {
+	try {
+	    Thread.sleep(5000);
+	} catch (InterruptedException e) {
+	    e.printStackTrace();
+	}
+	for (User user : Users) {
+	    if (user.getLogin().equals(requestUser.getLogin())) {
+		if (user.getPass().equals(requestUser.getPass())) {
+		    setUserInSystem(user);
+		    return;
+		} else {
+		    throw new UserExceptions(Error.WRONG_PASSWORD);
+		}
+	    }
+	}
+	throw new UserExceptions(Error.USER_NOT_FOUND);
+    }
+    
     public User getUserInSystem() {
 	return UserInSystem;
     }

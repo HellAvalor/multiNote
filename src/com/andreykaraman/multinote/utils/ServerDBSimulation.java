@@ -10,11 +10,11 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
-import com.andreykaraman.multinote.EditNoteActivity;
-import com.andreykaraman.multinote.MainActivity;
 import com.andreykaraman.multinote.R;
 import com.andreykaraman.multinote.model.DBNote;
 import com.andreykaraman.multinote.model.Note;
+import com.andreykaraman.multinote.ui.list.menu.EditNoteActivity;
+import com.andreykaraman.multinote.ui.login.MainActivity;
 
 public class ServerDBSimulation extends IntentService {
 
