@@ -16,7 +16,7 @@ public final class MyDatabaseHelper extends SQLiteOpenHelper {
 	    return mContext;
 	}
 
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 	private static final String DATABASE_NAME = "com.andreykaraman.multinote.database";
 
 	/*

@@ -5,6 +5,7 @@ import com.andreykaraman.multinote.R.id;
 import com.andreykaraman.multinote.R.layout;
 import com.andreykaraman.multinote.R.menu;
 import com.andreykaraman.multinote.R.string;
+import com.andreykaraman.multinote.data.APIStringConstants;
 import com.andreykaraman.multinote.model.Note;
 import com.andreykaraman.multinote.utils.ServerDBSimulation;
 
@@ -45,6 +46,7 @@ public class EditNoteActivity extends Activity {
     public final static String PARAM_STATUS = "status";
 
     Note note = new Note();
+    static int sessionId;
     static long noteId;
     static EditText titleText;
     static EditText contentText;
@@ -60,19 +62,19 @@ public class EditNoteActivity extends Activity {
 	    getFragmentManager().beginTransaction()
 		    .add(R.id.container, new PlaceholderFragment()).commit();
 	}
-
+ 
 	Intent intent = getIntent();
-	noteId = intent.getLongExtra("id", -1);
-
+	noteId = intent.getLongExtra(APIStringConstants.CONST_NOTE_ID, -1);
+	sessionId = intent.getIntExtra(APIStringConstants.CONST_SESSOIN_ID, -1);
 	if (noteId != -1) {
 	    // создаем фильтр для BroadcastReceiver
-	    final ProgressDialog ringProgressDialog = ProgressDialog.show(this, "", getResources().getString(R.string.loading), true);
+	    final ProgressDialog ringProgressDialog = ProgressDialog.show(this,
+		    "", getResources().getString(R.string.loading), true);
 	    ringProgressDialog.setCancelable(false);
 	    br = new BroadcastReceiver() {
-		
+
 		// действия при получении сообщений
 		public void onReceive(Context context, Intent intent) {
-
 
 		    // int task = intent.getIntExtra(PARAM_TASK, 0);
 		    int status = intent.getIntExtra(PARAM_STATUS, 0);
@@ -81,18 +83,18 @@ public class EditNoteActivity extends Activity {
 		    // Ловим сообщения о старте задач
 		    if (status == STATUS_START) {
 			// TODO add here loader screen
-					    }
+		    }
 
 		    // Ловим сообщения об окончании задач
 		    if (status == STATUS_FINISH) {
 
 			Log.d(TAG, "onReceive id= " + noteId + " title="
-				+ intent.getStringExtra("title") + " content="
-				+ intent.getStringExtra("content"));
+				+ intent.getStringExtra(APIStringConstants.CONST_NOTE_TITLE) + " content="
+				+ intent.getStringExtra(APIStringConstants.CONST_NOTE_CONTENT));
 			// int result = intent.getIntExtra(PARAM_RESULT, 0);
 			note.setNoteId(noteId);
-			note.setNoteTitle(intent.getStringExtra("title"));
-			note.setNoteContent(intent.getStringExtra("content"));
+			note.setNoteTitle(intent.getStringExtra(APIStringConstants.CONST_NOTE_TITLE));
+			note.setNoteContent(intent.getStringExtra(APIStringConstants.CONST_NOTE_CONTENT));
 
 			Log.d(TAG, "onReceive: task = " + ", status = "
 				+ status);
@@ -185,8 +187,8 @@ public class EditNoteActivity extends Activity {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState) {
-	    View rootView = inflater.inflate(R.layout.fragment_new_note, container,
-		    false);
+	    View rootView = inflater.inflate(R.layout.fragment_new_note,
+		    container, false);
 
 	    titleText = (EditText) rootView.findViewById(R.id.editTextNewTitle);
 	    contentText = (EditText) rootView
@@ -199,8 +201,9 @@ public class EditNoteActivity extends Activity {
 		Intent intent = new Intent(container.getContext(),
 			ServerDBSimulation.class)
 			.putExtra("update_notes_on_remote", R.id.load_note)
-			.putExtra("getNote", noteId).putExtra(PARAM_TIME, 7)
-			.putExtra(PARAM_TASK, TASK1_CODE);
+			.putExtra(APIStringConstants.CONST_SESSOIN_ID,
+				sessionId)
+			.putExtra(APIStringConstants.CONST_NOTE_ID, noteId);
 
 		container.getContext().startService(intent);
 
@@ -224,8 +227,8 @@ public class EditNoteActivity extends Activity {
     }
 
     private boolean isContentChanged() {
-	
-	//TODO add for new note
+
+	// TODO add for new note
 	if (!contentText.getText().toString().equals(note.getNoteContent())) {
 	    Toast.makeText(this, "Changed", Toast.LENGTH_SHORT).show();
 	    showCancelChangesDialog(this);
@@ -263,9 +266,10 @@ public class EditNoteActivity extends Activity {
 
 	    Intent intent = new Intent(this, ServerDBSimulation.class)
 		    .putExtra("update_notes_on_remote", R.id.edit_note)
-		    .putExtra("id", noteId)
-		    .putExtra("title", titleText.getText().toString())
-		    .putExtra("content", contentText.getText().toString());
+		    .putExtra(APIStringConstants.CONST_SESSOIN_ID, sessionId)
+		    .putExtra(APIStringConstants.CONST_NOTE_ID, noteId)
+		    .putExtra(APIStringConstants.CONST_NOTE_CONTENT,
+			    contentText.getText().toString());
 
 	    this.startService(intent);
 
@@ -274,8 +278,11 @@ public class EditNoteActivity extends Activity {
 
 	} else {
 
+	    Log.d(TAG, "sessionId = " + sessionId);
+
 	    Intent intent = new Intent(this, ServerDBSimulation.class)
 		    .putExtra("update_notes_on_remote", R.id.add_note)
+		    .putExtra(APIStringConstants.CONST_SESSOIN_ID, sessionId)
 		    .putExtra("title", titleText.getText().toString())
 		    .putExtra("content", contentText.getText().toString());
 

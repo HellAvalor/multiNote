@@ -1,15 +1,5 @@
 package com.andreykaraman.multinote.ui.list.menu;
 
-import com.andreykaraman.multinote.R;
-import com.andreykaraman.multinote.R.id;
-import com.andreykaraman.multinote.R.layout;
-import com.andreykaraman.multinote.R.string;
-import com.andreykaraman.multinote.data.UserExceptions.Error;
-import com.andreykaraman.multinote.model.ServerResponse;
-import com.andreykaraman.multinote.ui.login.MainActivity.LoadingHandler;
-import com.andreykaraman.multinote.utils.ServerSimulation;
-import com.andreykaraman.multinote.utils.loaders.ChangePassLoader;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
@@ -19,18 +9,28 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.andreykaraman.multinote.R;
+import com.andreykaraman.multinote.data.APIStringConstants;
+import com.andreykaraman.multinote.data.UserExceptions.Error;
+import com.andreykaraman.multinote.model.ChangePassClass;
+import com.andreykaraman.multinote.model.ServerResponse;
+import com.andreykaraman.multinote.ui.login.MainActivity.LoadingHandler;
+import com.andreykaraman.multinote.utils.loaders.ChPassLoader;
+
 public class EditPassActivity extends Activity {
 
+    static int sessionId;
     static EditText oldPasswordText;
     static EditText newPasswordText;
     static EditText repPasswordText;
     static Button button;
+    private final static String ARG_CHANGE_PASS = "change_pass";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +41,8 @@ public class EditPassActivity extends Activity {
 	    getFragmentManager().beginTransaction()
 		    .add(R.id.container, new PlaceholderFragment()).commit();
 	}
+	sessionId = getIntent().getIntExtra(
+		APIStringConstants.CONST_SESSOIN_ID, -1);
     }
 
     // @Override
@@ -71,10 +73,6 @@ public class EditPassActivity extends Activity {
      */
     public static class PlaceholderFragment extends Fragment {
 
-	private final static String ARG_LOGIN = "login";
-	private final static String ARG_PASSWORD = "password";
-	private final static String ARG_NEW_PASSWORD = "new_password";
-
 	private void initLoginLoader() {
 	    final Loader<?> loader = getLoaderManager().getLoader(
 		    R.id.loader_change_pass);
@@ -87,13 +85,14 @@ public class EditPassActivity extends Activity {
 	    }
 	}
 
-	private void executeLoginLoader(String login, String password,
+	private void executeLoginLoader(int sessionId, String oldPassword,
 		String newPassword) {
 	    mLoginLoadingHandler.onStartLoading();
 	    final Bundle args = new Bundle();
-	    args.putString(ARG_LOGIN, login);
-	    args.putString(ARG_PASSWORD, password);
-	    args.putString(ARG_NEW_PASSWORD, newPassword);
+
+	    args.putSerializable(ARG_CHANGE_PASS, new ChangePassClass(
+		    sessionId, oldPassword, newPassword));
+
 	    getLoaderManager().restartLoader(R.id.loader_change_pass, args,
 		    mLoginLoaderCallback);
 	}
@@ -105,8 +104,8 @@ public class EditPassActivity extends Activity {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState) {
 
-	    View rootView = inflater.inflate(R.layout.fragment_change_pass, container,
-		    false);
+	    View rootView = inflater.inflate(R.layout.fragment_change_pass,
+		    container, false);
 
 	    oldPasswordText = (EditText) rootView
 		    .findViewById(R.id.editTextOldPassword);
@@ -128,13 +127,11 @@ public class EditPassActivity extends Activity {
 				    + repPasswordText.getText(),
 			    Toast.LENGTH_SHORT).show();
 
-		    ServerSimulation ss = ServerSimulation.getInstance();
-		    if (newPasswordText.getText().toString().equals(
-			    repPasswordText.getText().toString())) {
+		    if (newPasswordText.getText().toString()
+			    .equals(repPasswordText.getText().toString())) {
 
 			// TODO
-			executeLoginLoader(ss.getUserInSystem().getLogin()
-				.toString(), oldPasswordText.getText()
+			executeLoginLoader(sessionId, oldPasswordText.getText()
 				.toString(), newPasswordText.getText()
 				.toString());
 
@@ -199,12 +196,10 @@ public class EditPassActivity extends Activity {
 		// "LoaderCallbacks.onCreateLoader %d, %s", id, args));
 		switch (id) {
 		case R.id.loader_change_pass: {
-		    ServerSimulation ss = ServerSimulation.getInstance();
 
-		    String pass = args.getString(ARG_PASSWORD);
-		    String newPass = args.getString(ARG_NEW_PASSWORD);
-		    return new ChangePassLoader(getActivity(),
-			    ss.getUserInSystem(), pass, newPass);
+		    ChangePassClass chPass = (ChangePassClass) args
+			    .getSerializable(ARG_CHANGE_PASS);
+		    return new ChPassLoader(getActivity(), chPass);
 		}
 		}
 		throw new RuntimeException("logic mistake");

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,12 +17,17 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.andreykaraman.multinote.R;
+import com.andreykaraman.multinote.data.APIStringConstants;
 import com.andreykaraman.multinote.data.UserExceptions.Error;
+import com.andreykaraman.multinote.model.RegisterClass;
 import com.andreykaraman.multinote.model.ServerResponse;
+import com.andreykaraman.multinote.model.User;
+import com.andreykaraman.multinote.ui.list.AltNoteListActivity;
 import com.andreykaraman.multinote.ui.list.NoteListActivity;
 import com.andreykaraman.multinote.ui.login.MainActivity.LoadingHandler;
 
-import com.andreykaraman.multinote.utils.loaders.AddUserLoader;
+import com.andreykaraman.multinote.utils.loaders.LogLoader;
+import com.andreykaraman.multinote.utils.loaders.RegisterLoader;
 
 public class RegisterFragment extends Fragment {
     static SharedPreferences savedData;
@@ -29,31 +35,38 @@ public class RegisterFragment extends Fragment {
     static String login;
     static Button registerButton;
 
+    private final static String ARG_REGISTER = "register";
     private final static String ARG_LOGIN = "login";
     private final static String ARG_PASSWORD = "password";
     private final static String ARG_REPEAT_PASSWORD = "repeat_password";
 
-    private void initLoginLoader() {
+    private void initRegisterLoader() {
 	final Loader<?> loader = getLoaderManager().getLoader(
 		R.id.loader_new_user);
 	if (loader != null && loader.isStarted()) {
-	    mLoginLoadingHandler.onStartLoading();
+	    mRegisterLoadingHandler.onStartLoading();
 	    getLoaderManager().initLoader(R.id.loader_new_user, null,
-		    mLoginLoaderCallback);
+		    mRegisterLoaderCallback);
 	} else {
-	    mLoginLoadingHandler.onStopLoading();
+	    mRegisterLoadingHandler.onStopLoading();
 	}
     }
 
-    private void executeLoginLoader(String login, String password,
+    private void executeRegisterLoader(String login, String password,
 	    String repeatPass) {
-	mLoginLoadingHandler.onStartLoading();
+	mRegisterLoadingHandler.onStartLoading();
 	final Bundle args = new Bundle();
-	args.putString(ARG_LOGIN, login);
-	args.putString(ARG_PASSWORD, password);
-	args.putString(ARG_REPEAT_PASSWORD, repeatPass);
+	
+	args.putSerializable(ARG_REGISTER, new RegisterClass(login, password, repeatPass));
+
+//	getLoaderManager().restartLoader(R.id.loader_login, args,
+//		mRegisterLoaderCallback);
+//	
+//	args.putString(ARG_LOGIN, login);
+//	args.putString(ARG_PASSWORD, password);
+//	args.putString(ARG_REPEAT_PASSWORD, repeatPass);
 	getLoaderManager().restartLoader(R.id.loader_new_user, args,
-		mLoginLoaderCallback);
+		mRegisterLoaderCallback);
     }
 
     public static RegisterFragment newInstance() {
@@ -69,7 +82,11 @@ public class RegisterFragment extends Fragment {
 	    Bundle savedInstanceState) {
 	View rootView = inflater.inflate(R.layout.fragment_register, container,
 		false);
-
+	
+	savedData = inflater.getContext().getSharedPreferences("settings", 0);
+	sharedPrefs = PreferenceManager.getDefaultSharedPreferences(container
+		.getContext());
+	
 	final EditText loginText = (EditText) rootView
 		.findViewById(R.id.editTextRegisterLogin);
 	final EditText passwordText = (EditText) rootView
@@ -84,7 +101,7 @@ public class RegisterFragment extends Fragment {
 	    public void onClick(View v) {
 		// TODO Auto-generated method stub
 
-		executeLoginLoader(loginText.getText().toString(), passwordText
+		executeRegisterLoader(loginText.getText().toString(), passwordText
 			.getText().toString(), newPasswordText.getText()
 			.toString());
 	    }
@@ -99,10 +116,10 @@ public class RegisterFragment extends Fragment {
 	super.onViewCreated(view, savedInstanceState);
 
 	// init loaders
-	initLoginLoader();
+	initRegisterLoader();
     }
 
-    private final LoadingHandler<ServerResponse> mLoginLoadingHandler = new LoadingHandler<ServerResponse>() {
+    private final LoadingHandler<ServerResponse> mRegisterLoadingHandler = new LoadingHandler<ServerResponse>() {
 	@Override
 	public void onStartLoading() {
 	    registerButton.setEnabled(false);
@@ -117,8 +134,9 @@ public class RegisterFragment extends Fragment {
 	public void onLoadingResult(ServerResponse result) {
 	    Toast.makeText(getActivity(), result.getStatus().toString(),
 		    Toast.LENGTH_SHORT).show();
-
+	    int sessionId = -1;
 	    if (result.getStatus() == Error.OK) {
+		sessionId = result.getSessionId();
 		if (sharedPrefs.getBoolean("stay_login", false)) {
 		    savedData.edit().putString(ARG_LOGIN, login).commit();
 		}
@@ -126,24 +144,38 @@ public class RegisterFragment extends Fragment {
 			savedData.getString(ARG_LOGIN, ""), Toast.LENGTH_SHORT)
 			.show();
 
-		startActivity(new Intent(getActivity(), NoteListActivity.class));
+		if (sharedPrefs.getBoolean("alt_UI", false)) {
+		    startActivity(new Intent(getActivity(),
+			    AltNoteListActivity.class).putExtra(APIStringConstants.CONST_SESSOIN_ID,
+			    sessionId));
+		} else {
+		    startActivity(new Intent(getActivity(),
+			    NoteListActivity.class).putExtra(APIStringConstants.CONST_SESSOIN_ID,
+			    sessionId));
+		}
 	    }
 	}
     };
 
     // loader callback
 
-    private final LoaderManager.LoaderCallbacks<ServerResponse> mLoginLoaderCallback = new LoaderManager.LoaderCallbacks<ServerResponse>() {
+    private final LoaderManager.LoaderCallbacks<ServerResponse> mRegisterLoaderCallback = new LoaderManager.LoaderCallbacks<ServerResponse>() {
 	@Override
 	public Loader<ServerResponse> onCreateLoader(int id, Bundle args) {
 	    // Log.d("test", String.format(
 	    // "LoaderCallbacks.onCreateLoader %d, %s", id, args));
 	    switch (id) {
 	    case R.id.loader_new_user: {
-		login = args.getString(ARG_LOGIN);
-		String pass = args.getString(ARG_PASSWORD);
-		String repPass = args.getString(ARG_REPEAT_PASSWORD);
-		return new AddUserLoader(getActivity(), login, pass, repPass);
+		
+
+		RegisterClass register = (RegisterClass) args.getSerializable(ARG_REGISTER);
+		// return new LoginLoader(getActivity(), login, pass);
+		return new RegisterLoader(getActivity(), register);
+		
+//		login = args.getString(ARG_LOGIN);
+//		String pass = args.getString(ARG_PASSWORD);
+//		String repPass = args.getString(ARG_REPEAT_PASSWORD);
+//		return new RegisterLoader(getActivity(), login, pass, repPass);
 	    }
 	    }
 	    throw new RuntimeException("logic mistake");
@@ -157,8 +189,8 @@ public class RegisterFragment extends Fragment {
 		    data));
 	    switch (loader.getId()) {
 	    case R.id.loader_new_user: {
-		mLoginLoadingHandler.onStopLoading();
-		mLoginLoadingHandler.onLoadingResult(data);
+		mRegisterLoadingHandler.onStopLoading();
+		mRegisterLoadingHandler.onLoadingResult(data);
 		getLoaderManager().destroyLoader(loader.getId());
 		return;
 	    }
@@ -171,7 +203,7 @@ public class RegisterFragment extends Fragment {
 	    Log.d("test", String.format("LoaderCallbacks.onLoaderReset"));
 	    switch (loader.getId()) {
 	    case R.id.loader_new_user: {
-		mLoginLoadingHandler.onStopLoading();
+		mRegisterLoadingHandler.onStopLoading();
 		return;
 	    }
 	    }

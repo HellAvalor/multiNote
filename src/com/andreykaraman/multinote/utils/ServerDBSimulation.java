@@ -11,6 +11,8 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.andreykaraman.multinote.R;
+import com.andreykaraman.multinote.data.APIStringConstants;
+import com.andreykaraman.multinote.data.UserExceptions;
 import com.andreykaraman.multinote.model.DBNote;
 import com.andreykaraman.multinote.model.Note;
 import com.andreykaraman.multinote.ui.list.menu.EditNoteActivity;
@@ -34,16 +36,18 @@ public class ServerDBSimulation extends IntentService {
 	Log.d(LOG_SECTION, "onHandleIntent");
 	int query = intent.getIntExtra("update_notes_on_remote",
 		R.id.update_notes);
-
+	int sessionId = intent.getIntExtra(APIStringConstants.CONST_SESSOIN_ID,
+		-1);
 	switch (query) {
 	case R.id.update_notes:
-	    getNotes();
+	    getNotes(sessionId);
 	    break;
 
 	case R.id.add_note:
 	    Log.d(LOG_SECTION, "Add element");
-	    addNote(intent.getStringExtra("title"),
-		    intent.getStringExtra("content"));
+	    addNote(sessionId,
+		    intent.getStringExtra(APIStringConstants.CONST_NOTE_TITLE),
+		    intent.getStringExtra(APIStringConstants.CONST_NOTE_CONTENT));
 	    break;
 
 	case R.id.load_note:
@@ -58,7 +62,9 @@ public class ServerDBSimulation extends IntentService {
 	    sendBroadcast(broadIntent);
 
 	    // начинаем выполнение задачи
-	    Note note = getNote(intent.getLongExtra("getNote", -1));
+	    Note note = getNote(
+		    intent.getIntExtra(APIStringConstants.CONST_SESSOIN_ID, -1),
+		    intent.getLongExtra(APIStringConstants.CONST_NOTE_ID, -1));
 
 	    // сообщаем об окончании задачи
 	    broadIntent.setAction(EditNoteActivity.BROADCAST_ACTION);
@@ -66,8 +72,10 @@ public class ServerDBSimulation extends IntentService {
 
 	    broadIntent.putExtra(EditNoteActivity.PARAM_STATUS,
 		    EditNoteActivity.STATUS_FINISH);
-	    broadIntent.putExtra("title", note.getNoteTitle());
-	    broadIntent.putExtra("content", note.getNoteContent());
+	    broadIntent.putExtra(APIStringConstants.CONST_NOTE_TITLE,
+		    note.getNoteTitle());
+	    broadIntent.putExtra(APIStringConstants.CONST_NOTE_CONTENT,
+		    note.getNoteContent());
 
 	    // intent.putExtra(EditNoteActivity.PARAM_RESULT, time * 100);
 	    sendBroadcast(broadIntent);
@@ -77,9 +85,10 @@ public class ServerDBSimulation extends IntentService {
 	case R.id.edit_note:
 	    Log.d(LOG_SECTION, "Edit element");
 
-	    saveNote(intent.getLongExtra("id", -1),
-		    intent.getStringExtra("title"),
-		    intent.getStringExtra("content"));
+	    saveNote(
+		    intent.getIntExtra(APIStringConstants.CONST_SESSOIN_ID, -1),
+		    intent.getLongExtra(APIStringConstants.CONST_NOTE_ID, -1),
+		    intent.getStringExtra(APIStringConstants.CONST_NOTE_CONTENT));
 	    break;
 
 	case R.id.delete_note:
@@ -90,10 +99,11 @@ public class ServerDBSimulation extends IntentService {
 
 	case R.id.delete_notes:
 	    Log.d(LOG_SECTION, "Delete elements");
-	    delNotes(intent.getStringArrayExtra("delId"));
+	    delNotes(sessionId,
+		    intent.getLongArrayExtra(APIStringConstants.CONST_NOTE_ID));
 
 	    break;
-	    
+
 	default:
 	    Log.d(LOG_SECTION, "Wrong id");
 	    break;
@@ -106,92 +116,18 @@ public class ServerDBSimulation extends IntentService {
 	Log.d(LOG_SECTION, "onDestroy");
     }
 
-    private void getNotes() {
-	Log.d(LOG_SECTION, "ThreadInit");
+    private Note getNote(int sessionId, long noteId) {
+	Note note = new Note();
+	ServerHelper ss = ServerHelper.getInstance();
+
 	try {
-	    
-	    //TODO update after server API connection
-	    Cursor cursor;
-
-	    TimeUnit.SECONDS.sleep(3);
-
-	    cursor = getContentResolver().query(
-		    MyContentProvider.URI_NOTE_TABLE, null, "1", null, null);
-	    if (cursor.getCount() == 0) {
-		ServerSimulation ss = ServerSimulation.getInstance();
-		ArrayList<Note> notes = ss.getNotes();
-		for (Note note : notes) {
-		    ContentValues cv = new ContentValues();
-
-		    cv.put(DBNote.NOTE_TITLE, note.getNoteTitle());
-		    cv.put(DBNote.NOTE_CONTENT, note.getNoteContent());
-
-		    Uri result = getContentResolver().insert(
-			    MyContentProvider.URI_NOTE_TABLE, cv);
-		    Log.d(LOG_SECTION, result.toString());
-		}
-	    }
-	} catch (InterruptedException e) {
+	    note = ss.getNote(sessionId, noteId);
+	} catch (UserExceptions e) {
+	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
-    }
+	return note;
 
-    private void addNote(String title, String content) {
-	Log.d(LOG_SECTION, "ThreadInit");
-	try {
-	    ServerSimulation ss = ServerSimulation.getInstance();
-
-	    ss.addNote(title, content);
-	    TimeUnit.SECONDS.sleep(3);
-	    ContentValues cv = new ContentValues();
-	    // cv.put(DBnote.NOTE_ID, note.getNoteTitle());
-	    cv.put(DBNote.NOTE_TITLE, title);
-	    cv.put(DBNote.NOTE_CONTENT, content);
-
-	    Uri result = getContentResolver().insert(
-		    MyContentProvider.URI_NOTE_TABLE, cv);
-	    Log.d(LOG_SECTION, result.toString());
-
-	} catch (InterruptedException e) {
-	    e.printStackTrace();
-	}
-    }
-
-    private void delNote(int id) {
-	Log.d(LOG_SECTION, "ThreadInit");
-	try {
-	    TimeUnit.SECONDS.sleep(3);
-	    int result = getContentResolver().delete(
-		    MyContentProvider.URI_NOTE_TABLE,
-		    DBNote.NOTE_ID + "=" + id, null);
-	    Log.d(LOG_SECTION, "" + result);
-
-	} catch (InterruptedException e) {
-	    e.printStackTrace();
-	}
-    }
-    
-    private void delNotes(String[] ids) {
-	Log.d(LOG_SECTION, "ThreadInit");
-	
-	
-	String selectionArgs[] = ids;
-	String selection = DBNote.NOTE_ID + " in (";
-	for(int i = 0; i < selectionArgs.length; i++)
-	    selection += "?, ";
-	selection = selection.substring(0, selection.length() - 2) + ")";
-	// selection is 'DBColumns.History._ID + " in (?, ?, ?)"'
-	
-	try {
-	    TimeUnit.SECONDS.sleep(3);
-	    int result = getContentResolver().delete(
-		    MyContentProvider.URI_NOTE_TABLE,
-		    selection , selectionArgs);
-	    Log.d(LOG_SECTION, "" + result);
-
-	} catch (InterruptedException e) {
-	    e.printStackTrace();
-	}
     }
 
     private Note getNote(long id) {
@@ -227,6 +163,147 @@ public class ServerDBSimulation extends IntentService {
 	return note;
     }
 
+    private void getNotes(int sessionID) {
+	Log.d(LOG_SECTION, "ThreadInit");
+	Cursor cursor;
+
+	getContentResolver()
+		.delete(MyContentProvider.URI_NOTE_TABLE, "1", null);
+	cursor = getContentResolver().query(MyContentProvider.URI_NOTE_TABLE,
+		null, "1", null, null);
+
+	if (cursor.getCount() == 0) {
+	    ServerHelper ss = ServerHelper.getInstance();
+	    ArrayList<Note> notes = ss.getNotes(sessionID);
+	    for (Note note : notes) {
+		ContentValues cv = new ContentValues();
+		cv.put(DBNote.NOTE_ID, note.getNoteId());
+		cv.put(DBNote.NOTE_TITLE, note.getNoteTitle());
+		cv.put(DBNote.NOTE_CONTENT, note.getNoteContent());
+
+		Uri result = getContentResolver().insert(
+			MyContentProvider.URI_NOTE_TABLE, cv);
+		Log.d(LOG_SECTION, result.toString());
+	    }
+	}
+    }
+
+    private void addNote(int sessionID, String title, String content) {
+	Log.d(LOG_SECTION, "ThreadInit");
+
+	ServerHelper ss = ServerHelper.getInstance();
+
+	int noteId;
+	try {
+
+	    noteId = ss.addNote(sessionID, title, content);
+	    ContentValues cv = new ContentValues();
+	    // cv.put(DBnote.NOTE_ID, note.getNoteTitle());
+	    cv.put(DBNote.NOTE_ID, noteId);
+	    cv.put(DBNote.NOTE_TITLE, title);
+	    cv.put(DBNote.NOTE_CONTENT, content);
+
+	    Uri result = getContentResolver().insert(
+		    MyContentProvider.URI_NOTE_TABLE, cv);
+	    Log.d(LOG_SECTION, result.toString());
+
+	} catch (UserExceptions e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+
+    }
+
+    private void delNote(int id) {
+	Log.d(LOG_SECTION, "ThreadInit");
+	try {
+	    TimeUnit.SECONDS.sleep(3);
+	    int result = getContentResolver().delete(
+		    MyContentProvider.URI_NOTE_TABLE,
+		    DBNote.NOTE_ID + "=" + id, null);
+	    Log.d(LOG_SECTION, "" + result);
+
+	} catch (InterruptedException e) {
+	    e.printStackTrace();
+	}
+    }
+
+    private void delNote(int sessionId, int noteId) {
+
+	ServerHelper ss = ServerHelper.getInstance();
+	try {
+	    ss.delNote(sessionId, noteId);
+	    getContentResolver().delete(MyContentProvider.URI_NOTE_TABLE,
+		    DBNote.NOTE_ID + "=" + noteId, null);
+	} catch (UserExceptions e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+
+    }
+
+    private void delNotes(String[] ids) {
+	Log.d(LOG_SECTION, "ThreadInit");
+
+	String selectionArgs[] = ids;
+	String selection = DBNote.NOTE_ID + " in (";
+	for (int i = 0; i < selectionArgs.length; i++)
+	    selection += "?, ";
+	selection = selection.substring(0, selection.length() - 2) + ")";
+	// selection is 'DBColumns.History._ID + " in (?, ?, ?)"'
+
+	try {
+	    TimeUnit.SECONDS.sleep(3);
+	    int result = getContentResolver().delete(
+		    MyContentProvider.URI_NOTE_TABLE, selection, selectionArgs);
+	    Log.d(LOG_SECTION, "" + result);
+
+	} catch (InterruptedException e) {
+	    e.printStackTrace();
+	}
+    }
+
+    private void delNotes(int sessionId, long[] ids) {
+
+	for (long noteId : ids) {
+	    delNote(sessionId, (int) noteId);
+	}
+
+	// String selectionArgs[] = ids;
+	// String selection = DBNote.NOTE_ID + " in (";
+	// for (int i = 0; i < selectionArgs.length; i++)
+	// selection += "?, ";
+	// selection = selection.substring(0, selection.length() - 2) + ")";
+	// // selection is 'DBColumns.History._ID + " in (?, ?, ?)"'
+	//
+	// int result = getContentResolver().delete(
+	// MyContentProvider.URI_NOTE_TABLE, selection, selectionArgs);
+	// Log.d(LOG_SECTION, "" + result);
+    }
+
+    private void saveNote(int sessionId, long id, String content) {
+	Log.d(LOG_SECTION, "ThreadInit");
+
+	ServerHelper ss = ServerHelper.getInstance();
+
+	try {
+
+	    ss.editNote(sessionId, id, content);
+	    ContentValues cv = new ContentValues();
+	    // cv.put(DBnote.NOTE_ID, note.getNoteTitle());
+
+	    cv.put(DBNote.NOTE_CONTENT, content);
+
+	    getContentResolver().update(MyContentProvider.URI_NOTE_TABLE, cv,
+		    DBNote.NOTE_ID + "=" + id, null);
+
+	} catch (UserExceptions e) {
+
+	    e.printStackTrace();
+	}
+
+    }
+
     private void saveNote(long id, String title, String content) {
 	try {
 
@@ -235,15 +312,16 @@ public class ServerDBSimulation extends IntentService {
 	    ContentValues cv = new ContentValues();
 
 	    // Defines a variable to contain the number of updated rows
-	  
 
 	    cv.put(DBNote.NOTE_ID, id);
 	    cv.put(DBNote.NOTE_TITLE, title);
 	    cv.put(DBNote.NOTE_CONTENT, content);
 
-	    getContentResolver().update(
-		    MyContentProvider.URI_NOTE_TABLE, // the user dictionary
-						      // content URI
+	    getContentResolver().update(MyContentProvider.URI_NOTE_TABLE, // the
+									  // user
+									  // dictionary
+									  // content
+									  // URI
 		    cv, // the columns to update
 		    DBNote.NOTE_ID + "=" + id, // the column to select on
 		    null // the value to compare to

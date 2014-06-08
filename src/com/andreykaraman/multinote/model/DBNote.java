@@ -15,7 +15,7 @@ public class DBNote extends AbsDBObject {
 
     public static final String CREATE_TABLE =
 	    "CREATE TABLE " + TABLE_NAME
-	    + "(" + NOTE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+	    + "(" + NOTE_ID + " INTEGER PRIMARY KEY,"
 	    + NOTE_TITLE + " TEXT NOT NULL,"
 	    + NOTE_CONTENT + " TEXT NOT NULL );";
 

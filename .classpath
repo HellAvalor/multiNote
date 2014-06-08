@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="com/andreykaraman/multinote/DbHelper.java|com/andreykaraman/multinote/LoaderExample.java|com/andreykaraman/multinote/data/ResponseLogin.java|com/andreykaraman/multinote/test/|com/andreykaraman/multinote/test/base/|com/andreykaraman/multinote/test/model/|com/andreykaraman/multinote/test/utils/|com/andreykaraman/multinote/utils/ExternalDBLoader.java|com/andreykaraman/multinote/utils/DbHelperNew.java|com/andreykaraman/multinote/utils/LoginLoader.java" kind="src" path="src"/>
+	<classpathentry excluding="com/andreykaraman/multinote/DbHelper.java|com/andreykaraman/multinote/LoaderExample.java|com/andreykaraman/multinote/data/ResponseLogin.java|com/andreykaraman/multinote/test/|com/andreykaraman/multinote/test/base/|com/andreykaraman/multinote/test/model/|com/andreykaraman/multinote/test/utils/|com/andreykaraman/multinote/utils/ExternalDBLoader.java|com/andreykaraman/multinote/utils/DbHelperNew.java|com/andreykaraman/multinote/utils/LoginLoader.java|com/andreykaraman/multinote/utils/loaders/LoginLoader.java|com/andreykaraman/multinote/utils/ServerSimulation.java|com/andreykaraman/multinote/data/StartInit.java|com/andreykaraman/multinote/utils/loaders/ChangePassLoader.java" kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>

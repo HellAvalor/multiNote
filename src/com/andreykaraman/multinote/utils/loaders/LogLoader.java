@@ -7,7 +7,8 @@ import com.andreykaraman.multinote.data.UserExceptions;
 import com.andreykaraman.multinote.model.AbsLoader;
 import com.andreykaraman.multinote.model.ServerResponse;
 import com.andreykaraman.multinote.model.User;
-import com.andreykaraman.multinote.utils.ServerSimulation;
+import com.andreykaraman.multinote.utils.ServerHelper;
+
 
 public class LogLoader extends AbsLoader<User, ServerResponse> {
 
@@ -18,16 +19,18 @@ public class LogLoader extends AbsLoader<User, ServerResponse> {
     @Override
     public ServerResponse loadInBackground() {
 	Log.d("LoginLoader", String.format("LoginLoader.loadInBackground"));
-	ServerSimulation ss = ServerSimulation.getInstance();
+	ServerHelper ss = ServerHelper.getInstance();
 	mResponse = new ServerResponse();
+	int sessionId = -1;
 
 	try {
-	    ss.checkLogin(getmRequest());
+	    sessionId = ss.checkLogin(getmRequest().getLogin(), getmRequest().getPass());
 
 	} catch (UserExceptions e) {
 	    // TODO Auto-generated catch block
 	    // e.printStackTrace();
 	    mResponse.setStatus(e.getError());
+	    mResponse.setSessionId(-1);
 	    return mResponse;
 	}
 
@@ -36,8 +39,8 @@ public class LogLoader extends AbsLoader<User, ServerResponse> {
 	} else {
 
 	    mResponse.setStatus(UserExceptions.Error.OK);
+	    mResponse.setSessionId(sessionId);
 	    return mResponse;
 	}
     }
-
 }

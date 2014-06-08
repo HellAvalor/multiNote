@@ -12,6 +12,13 @@ public class Note {
 	this.noteContent = noteContent;
     }
 
+    public Note(long noteId, String noteTitle, String noteContent) {
+	this.noteId = noteId;
+	this.noteTitle = noteTitle;
+	this.noteContent = noteContent;
+    }
+
+    
     public Note() {
     }
     

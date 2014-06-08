@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import com.andreykaraman.multinote.R;
+import com.andreykaraman.multinote.data.APIStringConstants;
 import com.andreykaraman.multinote.model.Note;
 import com.andreykaraman.multinote.utils.ServerDBSimulation;
 
@@ -23,6 +24,9 @@ public class AltNoteAdapter extends CursorAdapter {
     final static String LOG_TAG = "myLogs";
     Note note;
     Context context;
+    int sessionId;
+    
+    
     private HashMap<Integer, Boolean> mSelection = new HashMap<Integer, Boolean>();
 
     protected static class RowViewHolder {
@@ -32,9 +36,10 @@ public class AltNoteAdapter extends CursorAdapter {
     }
 
     @SuppressWarnings("deprecation")
-    public AltNoteAdapter(Context context, Cursor c) {
+    public AltNoteAdapter(Context context, Cursor c, int sessionId) {
 	super(context, c);
 	this.context = context;
+	this.sessionId = sessionId;
 	// TODO Auto-generated constructor stub
     }
 
@@ -114,21 +119,13 @@ public class AltNoteAdapter extends CursorAdapter {
 	notifyDataSetChanged();
     }
 
-    public void deleteItems(Context context, long[] ids) {
+    public void deleteItems(Context context, long[] ids, int sessionId) {
 
-	String[] string_list = new String[ids.length];
+	Intent intent = new Intent(context, ServerDBSimulation.class)
+		.putExtra("update_notes_on_remote", R.id.delete_notes)
+		.putExtra(APIStringConstants.CONST_NOTE_ID, ids)
+		.putExtra(APIStringConstants.CONST_SESSOIN_ID, sessionId);
 
-	for (int i = 0; i < ids.length; i++) {
-	    string_list[i] = String.valueOf(ids[i]);
-	}
-
-	Log.d(LOG_TAG, "delete ids " + string_list);
-
-	Intent intent = new Intent(context, ServerDBSimulation.class).putExtra(
-		"update_notes_on_remote", R.id.delete_notes).putExtra("delId",
-		string_list);
-
-	// notifyDataSetChanged();
 	context.startService(intent);
     }
 

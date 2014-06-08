@@ -33,6 +33,6 @@
     <!-- Custom setting strings -->
     <string name="pref_save_login">Save login</string>
  	<string name="pref_server_path">Server path</string>
-    <string name="pref_default_server_path">http://&#8230;</string>
+    <string name="pref_default_server_path">http://10.0.3.2:8080/</string>
     
 </resources>

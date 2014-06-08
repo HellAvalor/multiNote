@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.andreykaraman.multinote.R;
+import com.andreykaraman.multinote.data.APIStringConstants;
 import com.andreykaraman.multinote.data.UserExceptions.Error;
 import com.andreykaraman.multinote.model.ServerResponse;
 import com.andreykaraman.multinote.model.User;
@@ -33,7 +34,7 @@ public class LoginFragment extends Fragment {
     static SharedPreferences savedData;
     static Button button;
     static String login;
-    
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
 	// Log.d("test", "PlaceholderFragment.onViewCreated");
@@ -87,11 +88,11 @@ public class LoginFragment extends Fragment {
 
 	View rootView = inflater.inflate(R.layout.fragment_login, container,
 		false);
-	
-	savedData = inflater.getContext().getSharedPreferences("settings", 0);
-	sharedPrefs = PreferenceManager.getDefaultSharedPreferences(container.getContext());
 
-	
+	savedData = inflater.getContext().getSharedPreferences("settings", 0);
+	sharedPrefs = PreferenceManager.getDefaultSharedPreferences(container
+		.getContext());
+
 	loginText = (EditText) rootView.findViewById(R.id.editTextLogin);
 	passwordText = (EditText) rootView.findViewById(R.id.editTextPassword);
 	if (sharedPrefs.getBoolean("stay_login", false)) {
@@ -102,11 +103,10 @@ public class LoginFragment extends Fragment {
 	button.setOnClickListener(new OnClickListener() {
 	    @Override
 	    public void onClick(View v) {
-		
-		executeLoginLoader(new User(loginText.getText().toString(), passwordText
-			.getText().toString()));
-//		executeLoginLoader(loginText.getText().toString(), passwordText
-//			.getText().toString());
+
+		executeLoginLoader(new User(loginText.getText().toString(),
+			passwordText.getText().toString()));
+
 	    }
 	});
 
@@ -129,27 +129,16 @@ public class LoginFragment extends Fragment {
 	}
     }
 
-    private void executeLoginLoader(String login, String password) {
-	mLoginLoadingHandler.onStartLoading();
-	final Bundle args = new Bundle();
-	
-	args.putString(ARG_LOGIN, login);
-	args.putString(ARG_PASSWORD, password);
-	getLoaderManager().restartLoader(R.id.loader_login, args,
-		mLoginLoaderCallback);
-    }
-
     private void executeLoginLoader(User user) {
 	mLoginLoadingHandler.onStartLoading();
 	final Bundle args = new Bundle();
-	
+	login = user.getLogin();
 	args.putSerializable(ARG_USER, user);
-	
+
 	getLoaderManager().restartLoader(R.id.loader_login, args,
 		mLoginLoaderCallback);
     }
 
-    
     private final LoadingHandler<ServerResponse> mLoginLoadingHandler = new LoadingHandler<ServerResponse>() {
 	@Override
 	public void onStartLoading() {
@@ -165,10 +154,11 @@ public class LoginFragment extends Fragment {
 	public void onLoadingResult(ServerResponse result) {
 	    Toast.makeText(getActivity(), result.getStatus().toString(),
 		    Toast.LENGTH_SHORT).show();
-
+	    int sessionId = -1;
 	    if (result.getStatus() == Error.OK) {
-		passwordText.setText("");
 
+		passwordText.setText("");
+		sessionId = result.getSessionId();
 		if (sharedPrefs.getBoolean("stay_login", false)) {
 		    savedData.edit().putString(ARG_LOGIN, login).commit();
 		}
@@ -178,10 +168,12 @@ public class LoginFragment extends Fragment {
 
 		if (sharedPrefs.getBoolean("alt_UI", false)) {
 		    startActivity(new Intent(getActivity(),
-			    AltNoteListActivity.class));
+			    AltNoteListActivity.class).putExtra(
+			    APIStringConstants.CONST_SESSOIN_ID, sessionId));
 		} else {
 		    startActivity(new Intent(getActivity(),
-			    NoteListActivity.class));
+			    NoteListActivity.class).putExtra(
+			    APIStringConstants.CONST_SESSOIN_ID, sessionId));
 		}
 	    }
 	}
@@ -196,10 +188,9 @@ public class LoginFragment extends Fragment {
 	    // "LoaderCallbacks.onCreateLoader %d, %s", id, args));
 	    switch (id) {
 	    case R.id.loader_login: {
-		login = args.getString(ARG_LOGIN);
-		String pass = args.getString(ARG_PASSWORD);
+
 		User user = (User) args.getSerializable(ARG_USER);
-		//return new LoginLoader(getActivity(), login, pass);
+		// return new LoginLoader(getActivity(), login, pass);
 		return new LogLoader(getActivity(), user);
 	    }
 	    }
@@ -235,5 +226,4 @@ public class LoginFragment extends Fragment {
 	    throw new RuntimeException("logic mistake");
 	}
     };
-
 }

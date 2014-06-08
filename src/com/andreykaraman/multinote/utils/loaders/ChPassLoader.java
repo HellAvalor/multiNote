@@ -5,24 +5,25 @@ import android.util.Log;
 
 import com.andreykaraman.multinote.data.UserExceptions;
 import com.andreykaraman.multinote.model.AbsLoader;
+import com.andreykaraman.multinote.model.ChangePassClass;
 import com.andreykaraman.multinote.model.ServerResponse;
-import com.andreykaraman.multinote.model.User;
-import com.andreykaraman.multinote.utils.ServerSimulation;
+import com.andreykaraman.multinote.utils.ServerHelper;
 
-public class ChPassLoader extends AbsLoader<User, ServerResponse> {
+public class ChPassLoader extends AbsLoader<ChangePassClass, ServerResponse> {
 
-    public ChPassLoader(Context context, User request) {
+    public ChPassLoader(Context context, ChangePassClass request) {
 	super(context, request);
     }
 
     @Override
     public ServerResponse loadInBackground() {
 	Log.d("LoginLoader", String.format("LoginLoader.loadInBackground"));
-	ServerSimulation ss = ServerSimulation.getInstance();
+	ServerHelper ss = ServerHelper.getInstance();
 	mResponse = new ServerResponse();
 
 	try {
-	    ss.checkLogin(getmRequest());
+	    ss.changePass(getmRequest().getSessionId(), getmRequest()
+		    .getOldPassword(), getmRequest().getNewPassword());
 
 	} catch (UserExceptions e) {
 	    // TODO Auto-generated catch block
