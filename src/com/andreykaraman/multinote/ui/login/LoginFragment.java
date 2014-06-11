@@ -22,7 +22,6 @@ import com.andreykaraman.multinote.data.UserExceptions.Error;
 import com.andreykaraman.multinote.model.ServerResponse;
 import com.andreykaraman.multinote.model.User;
 import com.andreykaraman.multinote.ui.list.AltNoteListActivity;
-import com.andreykaraman.multinote.ui.list.NoteListActivity;
 import com.andreykaraman.multinote.ui.login.MainActivity.LoadingHandler;
 import com.andreykaraman.multinote.utils.loaders.LogLoader;
 
@@ -34,6 +33,9 @@ public class LoginFragment extends Fragment {
     static SharedPreferences savedData;
     static Button button;
     static String login;
+
+    private final static String ARG_LOGIN = "login";
+    private final static String ARG_USER = "user";
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -70,8 +72,7 @@ public class LoginFragment extends Fragment {
     }
 
     public static LoginFragment newInstance() {
-	LoginFragment fragment = new LoginFragment();
-	return fragment;
+	return new LoginFragment();
     }
 
     public LoginFragment() {
@@ -112,10 +113,6 @@ public class LoginFragment extends Fragment {
 
 	return rootView;
     }
-
-    private final static String ARG_LOGIN = "login";
-    private final static String ARG_PASSWORD = "password";
-    private final static String ARG_USER = "user";
 
     private void initLoginLoader() {
 	final Loader<?> loader = getLoaderManager()
@@ -166,15 +163,10 @@ public class LoginFragment extends Fragment {
 			savedData.getString(ARG_LOGIN, ""), Toast.LENGTH_SHORT)
 			.show();
 
-		if (sharedPrefs.getBoolean("alt_UI", false)) {
-		    startActivity(new Intent(getActivity(),
-			    AltNoteListActivity.class).putExtra(
-			    APIStringConstants.CONST_SESSOIN_ID, sessionId));
-		} else {
-		    startActivity(new Intent(getActivity(),
-			    NoteListActivity.class).putExtra(
-			    APIStringConstants.CONST_SESSOIN_ID, sessionId));
-		}
+		startActivity(new Intent(getActivity(),
+			AltNoteListActivity.class).putExtra(
+			APIStringConstants.CONST_SESSOIN_ID, sessionId));
+
 	    }
 	}
     };

@@ -10,8 +10,8 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -21,12 +21,8 @@ import com.andreykaraman.multinote.data.APIStringConstants;
 import com.andreykaraman.multinote.data.UserExceptions.Error;
 import com.andreykaraman.multinote.model.RegisterClass;
 import com.andreykaraman.multinote.model.ServerResponse;
-import com.andreykaraman.multinote.model.User;
 import com.andreykaraman.multinote.ui.list.AltNoteListActivity;
-import com.andreykaraman.multinote.ui.list.NoteListActivity;
 import com.andreykaraman.multinote.ui.login.MainActivity.LoadingHandler;
-
-import com.andreykaraman.multinote.utils.loaders.LogLoader;
 import com.andreykaraman.multinote.utils.loaders.RegisterLoader;
 
 public class RegisterFragment extends Fragment {
@@ -37,8 +33,6 @@ public class RegisterFragment extends Fragment {
 
     private final static String ARG_REGISTER = "register";
     private final static String ARG_LOGIN = "login";
-    private final static String ARG_PASSWORD = "password";
-    private final static String ARG_REPEAT_PASSWORD = "repeat_password";
 
     private void initRegisterLoader() {
 	final Loader<?> loader = getLoaderManager().getLoader(
@@ -56,15 +50,16 @@ public class RegisterFragment extends Fragment {
 	    String repeatPass) {
 	mRegisterLoadingHandler.onStartLoading();
 	final Bundle args = new Bundle();
-	
-	args.putSerializable(ARG_REGISTER, new RegisterClass(login, password, repeatPass));
 
-//	getLoaderManager().restartLoader(R.id.loader_login, args,
-//		mRegisterLoaderCallback);
-//	
-//	args.putString(ARG_LOGIN, login);
-//	args.putString(ARG_PASSWORD, password);
-//	args.putString(ARG_REPEAT_PASSWORD, repeatPass);
+	args.putSerializable(ARG_REGISTER, new RegisterClass(login, password,
+		repeatPass));
+
+	// getLoaderManager().restartLoader(R.id.loader_login, args,
+	// mRegisterLoaderCallback);
+	//
+	// args.putString(ARG_LOGIN, login);
+	// args.putString(ARG_PASSWORD, password);
+	// args.putString(ARG_REPEAT_PASSWORD, repeatPass);
 	getLoaderManager().restartLoader(R.id.loader_new_user, args,
 		mRegisterLoaderCallback);
     }
@@ -82,11 +77,11 @@ public class RegisterFragment extends Fragment {
 	    Bundle savedInstanceState) {
 	View rootView = inflater.inflate(R.layout.fragment_register, container,
 		false);
-	
+
 	savedData = inflater.getContext().getSharedPreferences("settings", 0);
 	sharedPrefs = PreferenceManager.getDefaultSharedPreferences(container
 		.getContext());
-	
+
 	final EditText loginText = (EditText) rootView
 		.findViewById(R.id.editTextRegisterLogin);
 	final EditText passwordText = (EditText) rootView
@@ -101,9 +96,9 @@ public class RegisterFragment extends Fragment {
 	    public void onClick(View v) {
 		// TODO Auto-generated method stub
 
-		executeRegisterLoader(loginText.getText().toString(), passwordText
-			.getText().toString(), newPasswordText.getText()
-			.toString());
+		executeRegisterLoader(loginText.getText().toString(),
+			passwordText.getText().toString(), newPasswordText
+				.getText().toString());
 	    }
 	});
 
@@ -144,15 +139,10 @@ public class RegisterFragment extends Fragment {
 			savedData.getString(ARG_LOGIN, ""), Toast.LENGTH_SHORT)
 			.show();
 
-		if (sharedPrefs.getBoolean("alt_UI", false)) {
-		    startActivity(new Intent(getActivity(),
-			    AltNoteListActivity.class).putExtra(APIStringConstants.CONST_SESSOIN_ID,
-			    sessionId));
-		} else {
-		    startActivity(new Intent(getActivity(),
-			    NoteListActivity.class).putExtra(APIStringConstants.CONST_SESSOIN_ID,
-			    sessionId));
-		}
+		startActivity(new Intent(getActivity(),
+			AltNoteListActivity.class).putExtra(
+			APIStringConstants.CONST_SESSOIN_ID, sessionId));
+
 	    }
 	}
     };
@@ -166,16 +156,17 @@ public class RegisterFragment extends Fragment {
 	    // "LoaderCallbacks.onCreateLoader %d, %s", id, args));
 	    switch (id) {
 	    case R.id.loader_new_user: {
-		
 
-		RegisterClass register = (RegisterClass) args.getSerializable(ARG_REGISTER);
+		RegisterClass register = (RegisterClass) args
+			.getSerializable(ARG_REGISTER);
 		// return new LoginLoader(getActivity(), login, pass);
 		return new RegisterLoader(getActivity(), register);
-		
-//		login = args.getString(ARG_LOGIN);
-//		String pass = args.getString(ARG_PASSWORD);
-//		String repPass = args.getString(ARG_REPEAT_PASSWORD);
-//		return new RegisterLoader(getActivity(), login, pass, repPass);
+
+		// login = args.getString(ARG_LOGIN);
+		// String pass = args.getString(ARG_PASSWORD);
+		// String repPass = args.getString(ARG_REPEAT_PASSWORD);
+		// return new RegisterLoader(getActivity(), login, pass,
+		// repPass);
 	    }
 	    }
 	    throw new RuntimeException("logic mistake");

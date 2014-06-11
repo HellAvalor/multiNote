@@ -16,7 +16,6 @@ import android.support.v4.app.NavUtils;
 import java.util.List;
 
 import com.andreykaraman.multinote.R;
-import com.andreykaraman.multinote.R.xml;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -94,7 +93,7 @@ public class SettingsActivity extends PreferenceActivity {
 	// In the simplified UI, fragments are not used at all and we instead
 	// use the older PreferenceActivity APIs.
 
-	addPreferencesFromResource(R.xml.pref_general);
+	//addPreferencesFromResource(R.xml.pref_general);
 	addPreferencesFromResource(R.xml.pref_data_sync);
 
 	bindPreferenceSummaryToValue(findPreference("sync_frequency"));
@@ -209,7 +208,7 @@ public class SettingsActivity extends PreferenceActivity {
 	}
     }
 
-    // @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

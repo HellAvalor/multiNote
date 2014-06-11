@@ -99,11 +99,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	Log.d(LOG_SECTION, "Activity.onResume");
     }
 
-    @Override
-    protected void onPause() {
-	super.onPause();
-	Log.d(LOG_SECTION, "Activity.onPause");
-    }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -139,12 +134,12 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
 	@Override
 	public CharSequence getPageTitle(int position) {
-	    Locale l = Locale.getDefault();
+	    Locale local = Locale.getDefault();
 	    switch (position) {
 	    case 0:
-		return getString(R.string.login).toUpperCase(l);
+		return getString(R.string.login).toUpperCase(local);
 	    case 1:
-		return getString(R.string.registration_tab).toUpperCase(l);
+		return getString(R.string.registration_tab).toUpperCase(local);
 	    }
 	    return null;
 	}

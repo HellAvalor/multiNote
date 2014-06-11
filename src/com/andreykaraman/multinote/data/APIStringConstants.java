@@ -11,6 +11,7 @@ public class APIStringConstants {
     public static final String CONST_SHORT_CONTENT= "shortContent";
     public static final String CONST_OLD_PASS= "oldPass";
     public static final String CONST_NEW_PASS= "newPass";
+    public static final String CONST_RESULT= "result";
     public static final String REQUEST_LOGIN = "/login";
     public static final String REQUEST_LOGOUT = "/logout";
     public static final String REQUEST_REGISTER = "/register";

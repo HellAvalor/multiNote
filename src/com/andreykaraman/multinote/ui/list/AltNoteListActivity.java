@@ -12,7 +12,7 @@ import com.andreykaraman.multinote.ui.login.MainActivity;
 import com.andreykaraman.multinote.ui.login.MainActivity.LoadingHandler;
 import com.andreykaraman.multinote.ui.login.menu.AboutDialogFragment;
 import com.andreykaraman.multinote.utils.MyContentProvider;
-import com.andreykaraman.multinote.utils.ServerDBSimulation;
+import com.andreykaraman.multinote.utils.ServerDBHelper;
 import com.andreykaraman.multinote.utils.adapters.AltNoteAdapter;
 import com.andreykaraman.multinote.utils.loaders.LogoutLoader;
 
@@ -252,7 +252,7 @@ public class AltNoteListActivity extends Activity {
 	    Log.d(LOG_SECTION, "Before service");
 
 	    intent = new Intent(getActivity().getBaseContext(),
-		    ServerDBSimulation.class).putExtra(
+		    ServerDBHelper.class).putExtra(
 		    "update_notes_on_remote", R.id.update_notes).putExtra(
 		    APIStringConstants.CONST_SESSOIN_ID, sessionId);
 

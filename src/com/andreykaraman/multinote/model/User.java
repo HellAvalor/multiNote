@@ -8,23 +8,23 @@ public class User implements Serializable{
      * 
      */
     private static final long serialVersionUID = 1L;
-	private String Login;
-	private String Password;
+	private String login;
+	private String password;
 
 	public User(String name, String pass) {
-		Login = name;
-		Password = pass;
+		login = name;
+		password = pass;
 	}
 
 	public String getLogin() {
-		return Login;
+		return login;
 	}
 
 	public String getPass() {
-		return Password;
+		return password;
 	}
 
-	public void setPass(String NewPass) {
-		Password = NewPass;
+	public void setPass(String pass) {
+		password = pass;
 	}
 }

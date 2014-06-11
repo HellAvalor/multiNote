@@ -153,7 +153,7 @@ public class MyContentProvider extends ContentProvider {
 
 		switch (matchQuery(uri)) {
 		case DB_NOTE:
-			return builder.table(Tables._DBNote);
+			return builder.table(Tables.TABLES_DBNOTE);
 
 //		case DB_ServiceGroup:
 //			return builder.table(Tables._DBServiceGroup);
@@ -167,7 +167,7 @@ public class MyContentProvider extends ContentProvider {
 	private String simpleGetTable(Uri uri) {
 		switch (matchQuery(uri)) {
 		case DB_NOTE:
-			return Tables._DBNote;
+			return Tables.TABLES_DBNOTE;
 
 //		case DB_ServiceGroup:
 //			return Tables._DBServiceGroup;

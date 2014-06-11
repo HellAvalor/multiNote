@@ -30,17 +30,17 @@ public final class R {
     }
     public static final class id {
         public static final int ScrollView01=0x7f06001c;
-        public static final int about=0x7f060027;
-        public static final int actionAddNote=0x7f06002a;
-        public static final int action_save_note=0x7f060025;
-        public static final int action_settings=0x7f060026;
+        public static final int about=0x7f060026;
+        public static final int actionAddNote=0x7f060029;
+        public static final int action_save_note=0x7f060024;
+        public static final int action_settings=0x7f060025;
         public static final int add_note=0x7f060009;
         public static final int buttonChangePassword=0x7f060014;
         public static final int buttonLogin=0x7f060018;
         public static final int buttonOK=0x7f06000d;
         public static final int buttonRateApp=0x7f06000c;
         public static final int buttonRegister=0x7f060020;
-        public static final int change_pass=0x7f060028;
+        public static final int change_pass=0x7f060027;
         public static final int container=0x7f06000e;
         public static final int delete_note=0x7f060007;
         public static final int delete_notes=0x7f060008;
@@ -55,15 +55,14 @@ public final class R {
         public static final int editTextRegisterPass=0x7f06001e;
         public static final int editTextRegisterRepPassword=0x7f06001f;
         public static final int edit_note=0x7f060006;
-        public static final int imageButtonDelete=0x7f060023;
-        public static final int item_delete=0x7f060024;
+        public static final int item_delete=0x7f060023;
         public static final int listView1=0x7f060010;
         public static final int load_note=0x7f060005;
         public static final int loader_change_pass=0x7f060002;
         public static final int loader_login=0x7f060000;
         public static final int loader_logout=0x7f060003;
         public static final int loader_new_user=0x7f060001;
-        public static final int logout=0x7f060029;
+        public static final int logout=0x7f060028;
         public static final int pager=0x7f06000f;
         public static final int scrollView1=0x7f06000a;
         public static final int section_label=0x7f060019;
@@ -79,16 +78,13 @@ public final class R {
         public static final int activity_edit_note=0x7f030002;
         public static final int activity_edit_pass=0x7f030003;
         public static final int activity_main=0x7f030004;
-        public static final int activity_note_list=0x7f030005;
-        public static final int fragment_alt_notes_list=0x7f030006;
-        public static final int fragment_change_pass=0x7f030007;
-        public static final int fragment_login=0x7f030008;
-        public static final int fragment_main=0x7f030009;
-        public static final int fragment_new_note=0x7f03000a;
-        public static final int fragment_notes_list=0x7f03000b;
-        public static final int fragment_register=0x7f03000c;
-        public static final int list_item_alt_note=0x7f03000d;
-        public static final int list_item_note=0x7f03000e;
+        public static final int fragment_alt_notes_list=0x7f030005;
+        public static final int fragment_change_pass=0x7f030006;
+        public static final int fragment_login=0x7f030007;
+        public static final int fragment_main=0x7f030008;
+        public static final int fragment_new_note=0x7f030009;
+        public static final int fragment_register=0x7f03000a;
+        public static final int list_item_alt_note=0x7f03000b;
     }
     public static final class menu {
         public static final int menu_alt_note_list=0x7f0a0000;

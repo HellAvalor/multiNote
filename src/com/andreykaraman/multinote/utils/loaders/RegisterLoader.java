@@ -18,12 +18,12 @@ public class RegisterLoader extends AbsLoader<RegisterClass, ServerResponse> {
     @Override
     public ServerResponse loadInBackground() {
 	Log.d("RegisterLoader", String.format("RegisterLoader.loadInBackground"));
-	ServerHelper ss = ServerHelper.getInstance();
+	ServerHelper sHelper = ServerHelper.getInstance();
 	mResponse = new ServerResponse();
 	
 	int sessionId = -1;
 	try {
-	    sessionId = ss.registrationNewUser(getmRequest().getLogin(), getmRequest().getPass(), getmRequest().getRepPassword());
+	    sessionId = sHelper.registrationNewUser(getmRequest().getLogin(), getmRequest().getPass(), getmRequest().getRepPassword());
 
 	} catch (UserExceptions e) {
 	    // TODO Auto-generated catch block

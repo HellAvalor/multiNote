@@ -19,12 +19,12 @@ public class LogLoader extends AbsLoader<User, ServerResponse> {
     @Override
     public ServerResponse loadInBackground() {
 	Log.d("LoginLoader", String.format("LoginLoader.loadInBackground"));
-	ServerHelper ss = ServerHelper.getInstance();
+	ServerHelper sHelper = ServerHelper.getInstance();
 	mResponse = new ServerResponse();
 	int sessionId = -1;
 
 	try {
-	    sessionId = ss.checkLogin(getmRequest().getLogin(), getmRequest().getPass());
+	    sessionId = sHelper.checkLogin(getmRequest().getLogin(), getmRequest().getPass());
 
 	} catch (UserExceptions e) {
 	    // TODO Auto-generated catch block

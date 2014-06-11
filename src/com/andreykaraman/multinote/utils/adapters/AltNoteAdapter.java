@@ -6,7 +6,7 @@ import java.util.Set;
 import com.andreykaraman.multinote.R;
 import com.andreykaraman.multinote.data.APIStringConstants;
 import com.andreykaraman.multinote.model.Note;
-import com.andreykaraman.multinote.utils.ServerDBSimulation;
+import com.andreykaraman.multinote.utils.ServerDBHelper;
 
 import android.content.Context;
 import android.content.Intent;
@@ -36,8 +36,8 @@ public class AltNoteAdapter extends CursorAdapter {
     }
 
     @SuppressWarnings("deprecation")
-    public AltNoteAdapter(Context context, Cursor c, int sessionId) {
-	super(context, c);
+    public AltNoteAdapter(Context context, Cursor cursor, int sessionId) {
+	super(context, cursor);
 	this.context = context;
 	this.sessionId = sessionId;
 	// TODO Auto-generated constructor stub
@@ -79,19 +79,19 @@ public class AltNoteAdapter extends CursorAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-	View v = super.getView(position, convertView, parent);// let the adapter
+	View view = super.getView(position, convertView, parent);// let the adapter
 							      // handle setting
 							      // up the row
 							      // views
-	v.setBackgroundColor(parent.getResources().getColor(
+	view.setBackgroundColor(parent.getResources().getColor(
 		android.R.color.background_light)); // default color
 
 	if (mSelection.get(position) != null) {
-	    v.setBackgroundColor(parent.getResources().getColor(
+	    view.setBackgroundColor(parent.getResources().getColor(
 		    android.R.color.holo_blue_light));// this is a selected
 						      // position so make it red
 	}
-	return v;
+	return view;
     }
 
     public void setNewSelection(int position, boolean value) {
@@ -121,7 +121,7 @@ public class AltNoteAdapter extends CursorAdapter {
 
     public void deleteItems(Context context, long[] ids, int sessionId) {
 
-	Intent intent = new Intent(context, ServerDBSimulation.class)
+	Intent intent = new Intent(context, ServerDBHelper.class)
 		.putExtra("update_notes_on_remote", R.id.delete_notes)
 		.putExtra(APIStringConstants.CONST_NOTE_ID, ids)
 		.putExtra(APIStringConstants.CONST_SESSOIN_ID, sessionId);

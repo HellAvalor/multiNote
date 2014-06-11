@@ -8,34 +8,34 @@ public class RegisterClass implements Serializable{
      * 
      */
     private static final long serialVersionUID = 1L;
-	private String Login;
-	private String Password;
-	private String RepPassword;
+	private String login;
+	private String password;
+	private String repPassword;
 	
 	
 	public RegisterClass(String name, String pass, String rep) {
-		Login = name;
-		Password = pass;
-		setRepPassword(rep);
+		this.login = name;
+		this.password = pass;
+		this.repPassword = rep;
 	}
 
 	public String getLogin() {
-		return Login;
+		return login;
 	}
 
 	public String getPass() {
-		return Password;
+		return password;
 	}
 
-	public void setPass(String NewPass) {
-		Password = NewPass;
+	public void setPass(String newPass) {
+		password = newPass;
 	}
 
 	public String getRepPassword() {
-	    return RepPassword;
+	    return repPassword;
 	}
 
 	public void setRepPassword(String repPassword) {
-	    RepPassword = repPassword;
+	    this.repPassword = repPassword;
 	}
 }

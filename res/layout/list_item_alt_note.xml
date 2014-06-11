@@ -14,14 +14,12 @@
             android:id="@+id/textNoteTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Title"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
             android:id="@+id/textNoteContent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Content"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
     </LinearLayout>

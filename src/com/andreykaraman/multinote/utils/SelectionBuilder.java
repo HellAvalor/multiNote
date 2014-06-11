@@ -146,12 +146,12 @@ public class SelectionBuilder {
 	public Cursor query(SQLiteDatabase db, String[] columns, String groupBy,
 			String having, String orderBy, String limit) {
 		assertTable();
-		//LogHelper.debugDatabase(TAG, "query " + mTable);
+		
 		Log.d(TAG, "query " + mTable);
 		if (columns != null)
 			mapColumns(columns);
 		Log.d(TAG, "query(columns=" + Arrays.toString(columns) + ") " + this);
-		//LogHelper.debugDatabase(TAG, "query(columns=" + Arrays.toString(columns) + ") " + this);
+	
 		return db.query(mTable, columns, getSelection(), getSelectionArgs(), groupBy, having,
 				orderBy, limit);
 	}
@@ -162,7 +162,7 @@ public class SelectionBuilder {
 	public int update(SQLiteDatabase db, ContentValues values) {
 		assertTable();
 		Log.d(TAG, "update() " + this);
-		//LogHelper.debugDatabase(TAG, "update() " + this);
+		
 		return db.update(mTable, values, getSelection(), getSelectionArgs());
 	}
 
@@ -171,7 +171,7 @@ public class SelectionBuilder {
 	 */
 	public int delete(SQLiteDatabase db) {
 		assertTable();
-		//LogHelper.debugDatabase(TAG, "delete() " + this);
+		
 		Log.d(TAG, "delete() " + this);
 		return db.delete(mTable, getSelection(), getSelectionArgs());
 	}

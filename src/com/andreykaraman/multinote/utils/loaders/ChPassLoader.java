@@ -18,11 +18,11 @@ public class ChPassLoader extends AbsLoader<ChangePassClass, ServerResponse> {
     @Override
     public ServerResponse loadInBackground() {
 	Log.d("LoginLoader", String.format("LoginLoader.loadInBackground"));
-	ServerHelper ss = ServerHelper.getInstance();
+	ServerHelper sHelper = ServerHelper.getInstance();
 	mResponse = new ServerResponse();
 
 	try {
-	    ss.changePass(getmRequest().getSessionId(), getmRequest()
+	    sHelper.changePass(getmRequest().getSessionId(), getmRequest()
 		    .getOldPassword(), getmRequest().getNewPassword());
 
 	} catch (UserExceptions e) {

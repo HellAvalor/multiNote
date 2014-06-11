@@ -1,62 +1,41 @@
 package com.andreykaraman.multinote.utils;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.andreykaraman.multinote.model.Note;
-import com.andreykaraman.multinote.model.User;
-import com.andreykaraman.multinote.ui.login.MainActivity;
 import com.andreykaraman.multinote.data.APIStringConstants;
 import com.andreykaraman.multinote.data.UserExceptions;
 import com.andreykaraman.multinote.data.UserExceptions.Error;
+import com.andreykaraman.multinote.model.Note;
+import com.andreykaraman.multinote.ui.login.MainActivity;
 
 public class ServerHelper {
     static final String LOG_SECTION = MainActivity.class.getName();
     private static ServerHelper sInstance;
 
     private final String SERVER_PATH = "http://10.0.3.2:8080";
-    
-    private final String SOAP_ACTION = SERVER_PATH + "/NotesWebService.1/REST";
 
-    private ArrayList<Note> Notes;// add
+    private final String SOAP_ACTION = SERVER_PATH + "/NotesWebService.1/REST";
 
     public static ServerHelper getInstance() {
 	if (sInstance == null) {
 	    sInstance = new ServerHelper();
 	}
 	return sInstance;
-    }
-
-    private ServerHelper() {
-	Notes = new ArrayList<Note>();
-
-    }
-
-    public ArrayList<Note> getNotes() {
-	Log.d(LOG_SECTION, "getNotes");
-	return Notes;
     }
 
     public ArrayList<Note> getNotes(int sessionID) {
@@ -73,35 +52,24 @@ public class ServerHelper {
 	    JSONObject jsonObject = new JSONObject(responce);
 
 	    JSONArray notesItems = new JSONArray(jsonObject.getString("notes"));
-
+	    Note note;
 	    // ---print out the content of the json feed---
 	    for (int i = 0; i < notesItems.length(); i++) {
 		JSONObject jsonNote = notesItems.getJSONObject(i);
 
-		Note note = new Note(
+		note = new Note(
 			jsonNote.getInt(APIStringConstants.CONST_NOTE_ID),
 			jsonNote.getString(APIStringConstants.CONST_NOTE_TITLE),
 			jsonNote.getString(APIStringConstants.CONST_SHORT_CONTENT));
 		notes.add(note);
 	    }
-	    // if (loginResponce.getInt("result") == 1) {
-	    // throw new UserExceptions(Error.USER_NOT_FOUND);
-	    // } else {
-	    // return loginResponce.getInt("sessionID");
-	    // }
 
 	} catch (JSONException e) {
 	    Log.d("getNotes", e.getLocalizedMessage());
 	}
-	// throw new UserExceptions(Error.UNKNOWN_ERROR);
 	return notes;
 
     }
-
-    // public void addNote(String noteName, String noteText) {
-    // Notes.add(new Note(noteName, noteText));
-    //
-    // }
 
     public int addNote(int sessionId, String title, String content)
 	    throws UserExceptions {
@@ -110,16 +78,16 @@ public class ServerHelper {
 		+ APIStringConstants.CONST_SESSOIN_ID + "=" + sessionId + "&"
 		+ APIStringConstants.CONST_NOTE_TITLE + "=" + title + "&"
 		+ APIStringConstants.CONST_NOTE_CONTENT + "=" + content;
-	Log.d("addNote", "url" + url);
+	Log.d("addNote", "url " + url);
 
 	String responce = getStringResponce(url);
 
-	Log.d("addNote", "responce " + responce.toString());
+	Log.d("addNote", "responce " + responce);
 
 	try {
 	    JSONObject jsonResponce = new JSONObject(responce);
 
-	    if (jsonResponce.getInt("result") == 1) {
+	    if (jsonResponce.getInt(APIStringConstants.CONST_RESULT) == 1) {
 		throw new UserExceptions(Error.ERROR_IN_WRITING_TO_EXT_DB);
 	    } else {
 		return jsonResponce.getInt(APIStringConstants.CONST_NOTE_ID);
@@ -141,12 +109,12 @@ public class ServerHelper {
 
 	String responce = getStringResponce(url);
 
-	Log.d("getNote", "responce " + responce.toString());
+	Log.d("getNote", "responce " + responce);
 
 	try {
 	    JSONObject jsonResponce = new JSONObject(responce);
 
-	    if (jsonResponce.getInt("result") != 0) {
+	    if (jsonResponce.getInt(APIStringConstants.CONST_RESULT) != 0) {
 		throw new UserExceptions(Error.ERROR_IN_WRITING_TO_EXT_DB);
 	    } else {
 		return new Note(
@@ -177,7 +145,7 @@ public class ServerHelper {
 	try {
 	    JSONObject loginResponce = new JSONObject(responce);
 
-	    if (loginResponce.getInt("result") != 0) {
+	    if (loginResponce.getInt(APIStringConstants.CONST_RESULT) != 0) {
 		throw new UserExceptions(Error.ERROR_IN_WRITING_TO_EXT_DB);
 	    } else {
 		return;
@@ -189,11 +157,11 @@ public class ServerHelper {
 	throw new UserExceptions(Error.UNKNOWN_ERROR);
     }
 
-    public int checkLogin(String Name, String Pass) throws UserExceptions {
+    public int checkLogin(String name, String pass) throws UserExceptions {
 
 	String url = SOAP_ACTION + APIStringConstants.REQUEST_LOGIN + "/?"
-		+ APIStringConstants.CONST_LOGIN + "=" + Name + "&"
-		+ APIStringConstants.CONST_PASSWORD + "=" + Pass;
+		+ APIStringConstants.CONST_LOGIN + "=" + name + "&"
+		+ APIStringConstants.CONST_PASSWORD + "=" + pass;
 
 	String responce = getStringResponce(url);
 
@@ -207,7 +175,7 @@ public class ServerHelper {
 			    + loginResponce
 				    .getString(APIStringConstants.CONST_SESSOIN_ID));
 
-	    if (loginResponce.getInt("result") == 1) {
+	    if (loginResponce.getInt(APIStringConstants.CONST_RESULT) == 1) {
 		throw new UserExceptions(Error.USER_NOT_FOUND_OR_WRONG_PASS);
 	    } else {
 		return loginResponce
@@ -218,20 +186,6 @@ public class ServerHelper {
 	    Log.d("checkLogin", e.getLocalizedMessage());
 	}
 	throw new UserExceptions(Error.UNKNOWN_ERROR);
-    }
-
-    private static String convertInputStreamToString(InputStream inputStream)
-	    throws IOException {
-	BufferedReader bufferedReader = new BufferedReader(
-		new InputStreamReader(inputStream));
-	String line = "";
-	String result = "";
-	while ((line = bufferedReader.readLine()) != null)
-	    result += line;
-
-	inputStream.close();
-	return result;
-
     }
 
     public int addUser(String login, String pass) throws UserExceptions {
@@ -274,12 +228,12 @@ public class ServerHelper {
 
 	String responce = getStringResponce(url);
 
-	Log.d("delNote", "responce " + responce.toString());
+	Log.d("delNote", "responce " + responce);
 
 	try {
 	    JSONObject jsonResponce = new JSONObject(responce);
 
-	    if (jsonResponce.getInt("result") == 0) {
+	    if (jsonResponce.getInt(APIStringConstants.CONST_RESULT) == 0) {
 		return;
 	    } else {
 		throw new UserExceptions(Error.ERROR_IN_WRITING_TO_EXT_DB);
@@ -291,10 +245,10 @@ public class ServerHelper {
 	throw new UserExceptions(Error.UNKNOWN_ERROR);
     }
 
-    public int registrationNewUser(String login, String Pass, String repeatPass)
+    public int registrationNewUser(String login, String pass, String repeatPass)
 	    throws UserExceptions {
 
-	if (Pass.equals(repeatPass)) {
+	if (pass.equals(repeatPass)) {
 	    return addUser(login, repeatPass);
 	} else {
 	    throw new UserExceptions(Error.PASSWORD_MISSMATCH);
@@ -343,7 +297,7 @@ public class ServerHelper {
 	try {
 	    JSONObject loginResponce = new JSONObject(responce);
 
-	    if (loginResponce.getInt("result") == 1) {
+	    if (loginResponce.getInt(APIStringConstants.CONST_RESULT) == 1) {
 		throw new UserExceptions(Error.UNKNOWN_ERROR);
 	    } else {
 		return;
@@ -367,14 +321,14 @@ public class ServerHelper {
 
 	String responce = getStringResponce(url);
 
-	Log.d("changePass", "responce " + responce.toString());
+	Log.d("changePass", "responce " + responce);
 
 	try {
 	    JSONObject loginResponce = new JSONObject(responce);
 
-	    if (loginResponce.getInt("result") == 2) {
+	    if (loginResponce.getInt(APIStringConstants.CONST_RESULT) == 2) {
 		throw new UserExceptions(Error.WRONG_OLD_PASSWORD);
-	    } else if (loginResponce.getInt("result") == 0) {
+	    } else if (loginResponce.getInt(APIStringConstants.CONST_RESULT) == 0) {
 		return;
 	    }
 	} catch (JSONException e) {

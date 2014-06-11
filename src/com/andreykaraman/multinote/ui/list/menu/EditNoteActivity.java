@@ -1,14 +1,5 @@
 package com.andreykaraman.multinote.ui.list.menu;
 
-import com.andreykaraman.multinote.R;
-import com.andreykaraman.multinote.R.id;
-import com.andreykaraman.multinote.R.layout;
-import com.andreykaraman.multinote.R.menu;
-import com.andreykaraman.multinote.R.string;
-import com.andreykaraman.multinote.data.APIStringConstants;
-import com.andreykaraman.multinote.model.Note;
-import com.andreykaraman.multinote.utils.ServerDBSimulation;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -28,6 +19,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.andreykaraman.multinote.R;
+import com.andreykaraman.multinote.data.APIStringConstants;
+import com.andreykaraman.multinote.model.Note;
+import com.andreykaraman.multinote.utils.ServerDBHelper;
 
 public class EditNoteActivity extends Activity {
 
@@ -199,7 +195,7 @@ public class EditNoteActivity extends Activity {
 		titleText.setVisibility(View.GONE);
 
 		Intent intent = new Intent(container.getContext(),
-			ServerDBSimulation.class)
+			ServerDBHelper.class)
 			.putExtra("update_notes_on_remote", R.id.load_note)
 			.putExtra(APIStringConstants.CONST_SESSOIN_ID,
 				sessionId)
@@ -264,7 +260,7 @@ public class EditNoteActivity extends Activity {
 
 	if (noteId != -1) {
 
-	    Intent intent = new Intent(this, ServerDBSimulation.class)
+	    Intent intent = new Intent(this, ServerDBHelper.class)
 		    .putExtra("update_notes_on_remote", R.id.edit_note)
 		    .putExtra(APIStringConstants.CONST_SESSOIN_ID, sessionId)
 		    .putExtra(APIStringConstants.CONST_NOTE_ID, noteId)
@@ -280,7 +276,7 @@ public class EditNoteActivity extends Activity {
 
 	    Log.d(TAG, "sessionId = " + sessionId);
 
-	    Intent intent = new Intent(this, ServerDBSimulation.class)
+	    Intent intent = new Intent(this, ServerDBHelper.class)
 		    .putExtra("update_notes_on_remote", R.id.add_note)
 		    .putExtra(APIStringConstants.CONST_SESSOIN_ID, sessionId)
 		    .putExtra("title", titleText.getText().toString())

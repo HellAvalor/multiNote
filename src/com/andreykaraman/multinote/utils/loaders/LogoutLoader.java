@@ -3,7 +3,6 @@ package com.andreykaraman.multinote.utils.loaders;
 import com.andreykaraman.multinote.data.UserExceptions;
 import com.andreykaraman.multinote.model.AbsLoader;
 import com.andreykaraman.multinote.model.LogoutClass;
-import com.andreykaraman.multinote.model.RegisterClass;
 import com.andreykaraman.multinote.model.ServerResponse;
 import com.andreykaraman.multinote.utils.ServerHelper;
 import android.content.Context;
@@ -19,11 +18,11 @@ public class LogoutLoader extends AbsLoader<LogoutClass, ServerResponse> {
     public ServerResponse loadInBackground() {
 	Log.d("RegisterLoader",
 		String.format("RegisterLoader.loadInBackground"));
-	ServerHelper ss = ServerHelper.getInstance();
+	ServerHelper sHelper = ServerHelper.getInstance();
 	mResponse = new ServerResponse();
 
 	try {
-	    ss.logout(getmRequest().getSessionId());
+	    sHelper.logout(getmRequest().getSessionId());
 
 	} catch (UserExceptions e) {
 	    // TODO Auto-generated catch block

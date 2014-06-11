@@ -24,7 +24,7 @@ public final class MyDatabaseHelper extends SQLiteOpenHelper {
 	 * with model class identifiers
 	 */
 	interface Tables {
-		String _DBNote = DBNote.TABLE_NAME;
+		String TABLES_DBNOTE = DBNote.TABLE_NAME;
 	//	String _DBServiceGroup = DBServiceGroup.TABLE_NAME;
 	}
 
