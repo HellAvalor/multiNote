@@ -4,13 +4,13 @@ import android.content.Context;
 
 import com.andreykaraman.multinote.data.UserExceptions;
 import com.andreykaraman.multinote.model.AbsLoader;
-import com.andreykaraman.multinote.model.RegisterClass;
 import com.andreykaraman.multinote.model.ServerResponse;
+import com.andreykaraman.multinote.model.User;
 import com.andreykaraman.multinote.utils.ServerHelper;
 
-public class RegisterLoader extends AbsLoader<RegisterClass, ServerResponse> {
+public class LoginLoader extends AbsLoader<User, ServerResponse> {
 
-    public RegisterLoader(Context context, RegisterClass request) {
+    public LoginLoader(Context context, User request) {
 	super(context, request);
     }
 
@@ -23,9 +23,9 @@ public class RegisterLoader extends AbsLoader<RegisterClass, ServerResponse> {
     public void onLoading(ServerHelper sHelper, ServerResponse respClass) {
 
 	try {
-	    int sessionId = sHelper.registrationNewUser(getmRequest()
-		    .getLogin(), getmRequest().getPass(), getmRequest()
-		    .getRepPassword());
+	    int sessionId = sHelper.checkLogin(getmRequest().getLogin(),
+		    getmRequest().getPass());
+
 	    respClass.setStatus(UserExceptions.Error.OK);
 	    respClass.setSessionId(sessionId);
 	} catch (UserExceptions e) {

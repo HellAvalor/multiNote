@@ -1,7 +1,6 @@
 package com.andreykaraman.multinote.utils;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 import android.app.IntentService;
 import android.content.ContentValues;
@@ -23,7 +22,7 @@ public class ServerDBHelper extends IntentService {
     static final String LOG_SECTION = MainActivity.class.getName();
 
     public ServerDBHelper() {
-	super("ServerDBSimulation");
+	super("ServerDBHelper");
     }
 
     public void onCreate() {
@@ -56,7 +55,6 @@ public class ServerDBHelper extends IntentService {
 	    Intent broadIntent = new Intent();
 	    broadIntent.setAction(EditNoteActivity.BROADCAST_ACTION);
 	    broadIntent.addCategory(Intent.CATEGORY_DEFAULT);
-	    // intent.putExtra(EditNoteActivity.PARAM_TASK, task);
 	    broadIntent.putExtra(EditNoteActivity.PARAM_STATUS,
 		    EditNoteActivity.STATUS_START);
 	    sendBroadcast(broadIntent);
@@ -77,14 +75,11 @@ public class ServerDBHelper extends IntentService {
 	    broadIntent.putExtra(APIStringConstants.CONST_NOTE_CONTENT,
 		    note.getNoteContent());
 
-	    // intent.putExtra(EditNoteActivity.PARAM_RESULT, time * 100);
 	    sendBroadcast(broadIntent);
-
 	    break;
 
 	case R.id.edit_note:
 	    Log.d(LOG_SECTION, "Edit element");
-
 	    saveNote(
 		    intent.getIntExtra(APIStringConstants.CONST_SESSOIN_ID, -1),
 		    intent.getLongExtra(APIStringConstants.CONST_NOTE_ID, -1),
@@ -95,7 +90,6 @@ public class ServerDBHelper extends IntentService {
 	    Log.d(LOG_SECTION, "Delete elements");
 	    delNotes(sessionId,
 		    intent.getLongArrayExtra(APIStringConstants.CONST_NOTE_ID));
-
 	    break;
 
 	default:
@@ -117,16 +111,13 @@ public class ServerDBHelper extends IntentService {
 	try {
 	    note = sHelper.getNote(sessionId, noteId);
 	} catch (UserExceptions e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
 	return note;
 
     }
 
-
     private void getNotes(int sessionID) {
-	Log.d(LOG_SECTION, "ThreadInit");
 	Cursor cursor;
 
 	getContentResolver()
@@ -138,6 +129,8 @@ public class ServerDBHelper extends IntentService {
 	    ServerHelper sHelper = ServerHelper.getInstance();
 	    ArrayList<Note> notes = sHelper.getNotes(sessionID);
 	    for (Note note : notes) {
+		Log.d(LOG_SECTION, note.getNoteId() + "/" + note.getNoteTitle()
+			+ "/" + note.getNoteContent());
 		ContentValues cv = new ContentValues();
 		cv.put(DBNote.NOTE_ID, note.getNoteId());
 		cv.put(DBNote.NOTE_TITLE, note.getNoteTitle());
@@ -151,16 +144,13 @@ public class ServerDBHelper extends IntentService {
     }
 
     private void addNote(int sessionID, String title, String content) {
-	Log.d(LOG_SECTION, "ThreadInit");
 
 	ServerHelper sHelper = ServerHelper.getInstance();
 
 	int noteId;
 	try {
-
 	    noteId = sHelper.addNote(sessionID, title, content);
 	    ContentValues cv = new ContentValues();
-
 	    cv.put(DBNote.NOTE_ID, noteId);
 	    cv.put(DBNote.NOTE_TITLE, title);
 	    cv.put(DBNote.NOTE_CONTENT, content);
@@ -168,14 +158,11 @@ public class ServerDBHelper extends IntentService {
 	    Uri result = getContentResolver().insert(
 		    MyContentProvider.URI_NOTE_TABLE, cv);
 	    Log.d(LOG_SECTION, result.toString());
-
 	} catch (UserExceptions e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
 
     }
-
 
     private void delNote(int sessionId, int noteId) {
 
@@ -210,8 +197,6 @@ public class ServerDBHelper extends IntentService {
     }
 
     private void saveNote(int sessionId, long id, String content) {
-	Log.d(LOG_SECTION, "ThreadInit");
-
 	ServerHelper sHelper = ServerHelper.getInstance();
 
 	try {

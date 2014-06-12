@@ -25,33 +25,17 @@ import com.andreykaraman.multinote.utils.loaders.ChPassLoader;
 
 public class EditPassActivity extends Activity {
 
-    static int sessionId;
-    static EditText oldPasswordText;
-    static EditText newPasswordText;
-    static EditText repPasswordText;
-    static Button button;
     private final static String ARG_CHANGE_PASS = "change_pass";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.activity_edit_pass);
-
 	if (savedInstanceState == null) {
 	    getFragmentManager().beginTransaction()
 		    .add(R.id.container, new PlaceholderFragment()).commit();
 	}
-	sessionId = getIntent().getIntExtra(
-		APIStringConstants.CONST_SESSOIN_ID, -1);
     }
-
-    // @Override
-    // public boolean onCreateOptionsMenu(Menu menu) {
-
-    // Inflate the menu; this adds items to the action bar if it is present.
-    // getMenuInflater().inflate(R.menu.edit_pass, menu);
-    // return true;
-    // }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -64,7 +48,6 @@ public class EditPassActivity extends Activity {
 
 	    return true;
 	}
-
 	return super.onOptionsItemSelected(item);
     }
 
@@ -72,6 +55,16 @@ public class EditPassActivity extends Activity {
      * A placeholder fragment containing a simple view.
      */
     public static class PlaceholderFragment extends Fragment {
+
+	private EditText oldPasswordText;
+	private EditText newPasswordText;
+	private EditText repPasswordText;
+	private Button button;
+	private int sessionId;
+
+	public PlaceholderFragment() {
+
+	}
 
 	private void initLoginLoader() {
 	    final Loader<?> loader = getLoaderManager().getLoader(
@@ -92,30 +85,24 @@ public class EditPassActivity extends Activity {
 
 	    args.putSerializable(ARG_CHANGE_PASS, new ChangePassClass(
 		    sessionId, oldPassword, newPassword));
-
 	    getLoaderManager().restartLoader(R.id.loader_change_pass, args,
 		    mLoginLoaderCallback);
-	}
-
-	public PlaceholderFragment() {
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState) {
-
+	    sessionId = getActivity().getIntent().getIntExtra(
+		    APIStringConstants.CONST_SESSOIN_ID, -1);
 	    View rootView = inflater.inflate(R.layout.fragment_change_pass,
 		    container, false);
-
 	    oldPasswordText = (EditText) rootView
 		    .findViewById(R.id.editTextOldPassword);
 	    newPasswordText = (EditText) rootView
 		    .findViewById(R.id.editTextNewPassword);
 	    repPasswordText = (EditText) rootView
 		    .findViewById(R.id.editTextNewRepPassword);
-
 	    button = (Button) rootView.findViewById(R.id.buttonChangePassword);
-
 	    button.setOnClickListener(new OnClickListener() {
 		@Override
 		public void onClick(View v) {
@@ -130,7 +117,6 @@ public class EditPassActivity extends Activity {
 		    if (newPasswordText.getText().toString()
 			    .equals(repPasswordText.getText().toString())) {
 
-			// TODO
 			executeLoginLoader(sessionId, oldPasswordText.getText()
 				.toString(), newPasswordText.getText()
 				.toString());
@@ -140,13 +126,6 @@ public class EditPassActivity extends Activity {
 				R.string.passwords_not_match,
 				Toast.LENGTH_SHORT).show();
 		    }
-		    // TODO Auto-generated method stub
-		    // check passChange
-
-		    // Intent intent = new Intent(v.getContext(),
-		    // NoteListActivity.class);
-		    // startActivity(intent);
-
 		}
 	    });
 	    return rootView;
@@ -154,9 +133,7 @@ public class EditPassActivity extends Activity {
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
-	    // Log.d("test", "PlaceholderFragment.onViewCreated");
 	    super.onViewCreated(view, savedInstanceState);
-
 	    // init loaders
 	    initLoginLoader();
 	}
@@ -188,7 +165,6 @@ public class EditPassActivity extends Activity {
 	};
 
 	// loader callback
-
 	private final LoaderManager.LoaderCallbacks<ServerResponse> mLoginLoaderCallback = new LoaderManager.LoaderCallbacks<ServerResponse>() {
 	    @Override
 	    public Loader<ServerResponse> onCreateLoader(int id, Bundle args) {
@@ -235,5 +211,4 @@ public class EditPassActivity extends Activity {
 	    }
 	};
     }
-
 }

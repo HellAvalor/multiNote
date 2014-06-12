@@ -4,14 +4,10 @@ import java.io.Serializable;
 
 public class RegisterClass implements Serializable{
 
-	/**
-     * 
-     */
     private static final long serialVersionUID = 1L;
 	private String login;
 	private String password;
 	private String repPassword;
-	
 	
 	public RegisterClass(String name, String pass, String rep) {
 		this.login = name;

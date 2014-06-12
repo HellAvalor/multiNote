@@ -18,7 +18,6 @@ public class Note {
 	this.noteContent = noteContent;
     }
 
-    
     public Note() {
     }
     

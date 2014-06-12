@@ -29,10 +29,6 @@ public class EditNoteActivity extends Activity {
 
     protected final String TAG = this.getClass().getSimpleName();
 
-    final static int TASK1_CODE = 1;
-    final static int TASK2_CODE = 2;
-    final static int TASK3_CODE = 3;
-
     public final static int STATUS_START = 100;
     public final static int STATUS_FINISH = 200;
 
@@ -157,11 +153,11 @@ public class EditNoteActivity extends Activity {
     }
 
     protected void onPause() {
-	super.onPause();
+	
 	if (br != null) {
 	    unregisterReceiver(br);
 	}
-
+	super.onPause();
     }
 
     protected void onResume() {
@@ -178,6 +174,7 @@ public class EditNoteActivity extends Activity {
     public static class PlaceholderFragment extends Fragment {
 
 	public PlaceholderFragment() {
+	    super();
 	}
 
 	@Override

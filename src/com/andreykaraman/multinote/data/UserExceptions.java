@@ -19,5 +19,4 @@ public class UserExceptions extends Exception {
     public Error getError() {
 	return error;
     }
-
 }

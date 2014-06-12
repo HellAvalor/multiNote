@@ -2,29 +2,34 @@ package com.andreykaraman.multinote.model;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.util.Log;
 
+import com.andreykaraman.multinote.utils.ServerHelper;
 
 public abstract class AbsLoader<RequestClass, ResponseClass> extends
 	AsyncTaskLoader<ResponseClass> {
 
     private RequestClass mRequest;
-    public ResponseClass mResponse;
+    private ResponseClass mResponse;
+
+    public abstract ResponseClass creatEmtpyRespose();
+
+    public abstract void onLoading(ServerHelper sHelper, ResponseClass respClass);
 
     public AbsLoader(Context context, RequestClass request) {
 	super(context);
 	mRequest = request;
     }
-    
+
     public RequestClass getmRequest() {
 	return mRequest;
     }
 
     @Override
     protected void onStartLoading() {
-	Log.d("test", String.format("LoginLoader.onStartLoading"));
+
 	super.onStartLoading();
 	if (mResponse == null) {
+	    mResponse = creatEmtpyRespose();
 	    forceLoad();
 	} else {
 	    deliverResult(mResponse);
@@ -33,14 +38,24 @@ public abstract class AbsLoader<RequestClass, ResponseClass> extends
 
     @Override
     protected void onStopLoading() {
-	Log.d("test", String.format("LoginLoader.onStopLoading"));
 	super.onStopLoading();
     }
 
     @Override
     protected void onReset() {
-	Log.d("test", String.format("LoginLoader.onReset"));
 	super.onReset();
 	mResponse = null;
+    }
+
+    @Override
+    public ResponseClass loadInBackground() {
+
+	onLoading(ServerHelper.getInstance(), mResponse);
+
+	if (isReset()) {
+	    return null;
+	} else {
+	    return mResponse;
+	}
     }
 }

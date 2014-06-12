@@ -21,14 +21,12 @@ import com.andreykaraman.multinote.data.APIStringConstants;
 import com.andreykaraman.multinote.data.UserExceptions;
 import com.andreykaraman.multinote.data.UserExceptions.Error;
 import com.andreykaraman.multinote.model.Note;
-import com.andreykaraman.multinote.ui.login.MainActivity;
 
 public class ServerHelper {
-    static final String LOG_SECTION = MainActivity.class.getName();
+    static final String LOG_SECTION = ServerHelper.class.getName();
     private static ServerHelper sInstance;
 
     private final String SERVER_PATH = "http://10.0.3.2:8080";
-
     private final String SOAP_ACTION = SERVER_PATH + "/NotesWebService.1/REST";
 
     public static ServerHelper getInstance() {
@@ -52,12 +50,11 @@ public class ServerHelper {
 	    JSONObject jsonObject = new JSONObject(responce);
 
 	    JSONArray notesItems = new JSONArray(jsonObject.getString("notes"));
-	    Note note;
+
 	    // ---print out the content of the json feed---
 	    for (int i = 0; i < notesItems.length(); i++) {
 		JSONObject jsonNote = notesItems.getJSONObject(i);
-
-		note = new Note(
+		Note note = new Note(
 			jsonNote.getInt(APIStringConstants.CONST_NOTE_ID),
 			jsonNote.getString(APIStringConstants.CONST_NOTE_TITLE),
 			jsonNote.getString(APIStringConstants.CONST_SHORT_CONTENT));
@@ -68,7 +65,6 @@ public class ServerHelper {
 	    Log.d("getNotes", e.getLocalizedMessage());
 	}
 	return notes;
-
     }
 
     public int addNote(int sessionId, String title, String content)
@@ -79,7 +75,7 @@ public class ServerHelper {
 		+ APIStringConstants.CONST_NOTE_TITLE + "=" + title + "&"
 		+ APIStringConstants.CONST_NOTE_CONTENT + "=" + content;
 	Log.d("addNote", "url " + url);
-
+	url = url.replace(" ", "%20");
 	String responce = getStringResponce(url);
 
 	Log.d("addNote", "responce " + responce);
@@ -93,11 +89,9 @@ public class ServerHelper {
 		return jsonResponce.getInt(APIStringConstants.CONST_NOTE_ID);
 	    }
 	} catch (JSONException e) {
-
 	    Log.d("addNote", e.getLocalizedMessage());
 	}
 	throw new UserExceptions(Error.UNKNOWN_ERROR);
-
     }
 
     public Note getNote(int sessionId, long noteId) throws UserExceptions {
@@ -125,11 +119,9 @@ public class ServerHelper {
 				.getString(APIStringConstants.CONST_NOTE_CONTENT));
 	    }
 	} catch (JSONException e) {
-
 	    Log.d("getNote", e.getLocalizedMessage());
 	}
 	throw new UserExceptions(Error.UNKNOWN_ERROR);
-
     }
 
     public void editNote(int sessionId, long noteId, String content)
@@ -139,7 +131,7 @@ public class ServerHelper {
 		+ APIStringConstants.CONST_SESSOIN_ID + "=" + sessionId + "&"
 		+ APIStringConstants.CONST_NOTE_ID + "=" + noteId + "&"
 		+ APIStringConstants.CONST_NOTE_TEXT + "=" + content;
-
+	url = url.replace(" ", "%20");
 	String responce = getStringResponce(url);
 
 	try {
@@ -151,7 +143,6 @@ public class ServerHelper {
 		return;
 	    }
 	} catch (JSONException e) {
-
 	    Log.d("editNote", e.getLocalizedMessage());
 	}
 	throw new UserExceptions(Error.UNKNOWN_ERROR);
@@ -168,13 +159,6 @@ public class ServerHelper {
 	try {
 	    JSONObject loginResponce = new JSONObject(responce);
 
-	    Log.d("checkLogin",
-		    "Result "
-			    + loginResponce.getInt("result")
-			    + " sessionID "
-			    + loginResponce
-				    .getString(APIStringConstants.CONST_SESSOIN_ID));
-
 	    if (loginResponce.getInt(APIStringConstants.CONST_RESULT) == 1) {
 		throw new UserExceptions(Error.USER_NOT_FOUND_OR_WRONG_PASS);
 	    } else {
@@ -182,7 +166,6 @@ public class ServerHelper {
 			.getInt(APIStringConstants.CONST_SESSOIN_ID);
 	    }
 	} catch (JSONException e) {
-
 	    Log.d("checkLogin", e.getLocalizedMessage());
 	}
 	throw new UserExceptions(Error.UNKNOWN_ERROR);
@@ -198,7 +181,6 @@ public class ServerHelper {
 
 	try {
 	    JSONObject registerResponce = new JSONObject(responce);
-
 	    switch (registerResponce.getInt("result")) {
 	    case 1:
 		throw new UserExceptions(Error.THIS_LOGIN_NOT_FREE);
@@ -213,9 +195,7 @@ public class ServerHelper {
 	} catch (JSONException e) {
 	    Log.d("addUser", e.getLocalizedMessage());
 	}
-
 	throw new UserExceptions(Error.UNKNOWN_ERROR);
-
     }
 
     public void delNote(int sessionId, int noteId) throws UserExceptions {
@@ -227,7 +207,6 @@ public class ServerHelper {
 	Log.d("delNote", "url" + url);
 
 	String responce = getStringResponce(url);
-
 	Log.d("delNote", "responce " + responce);
 
 	try {
@@ -239,7 +218,6 @@ public class ServerHelper {
 		throw new UserExceptions(Error.ERROR_IN_WRITING_TO_EXT_DB);
 	    }
 	} catch (JSONException e) {
-
 	    Log.d("delNote", e.getLocalizedMessage());
 	}
 	throw new UserExceptions(Error.UNKNOWN_ERROR);
@@ -283,7 +261,6 @@ public class ServerHelper {
 	} catch (Exception e) {
 	    Log.d("readJSONFeed", e.getLocalizedMessage());
 	}
-
 	return stringBuilder.toString();
     }
 
@@ -325,7 +302,6 @@ public class ServerHelper {
 
 	try {
 	    JSONObject loginResponce = new JSONObject(responce);
-
 	    if (loginResponce.getInt(APIStringConstants.CONST_RESULT) == 2) {
 		throw new UserExceptions(Error.WRONG_OLD_PASSWORD);
 	    } else if (loginResponce.getInt(APIStringConstants.CONST_RESULT) == 0) {

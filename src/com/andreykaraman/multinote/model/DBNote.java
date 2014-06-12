@@ -6,7 +6,7 @@ import android.database.Cursor;
 public class DBNote extends AbsDBObject {
 
     public static final String TABLE_NAME = "DBNote";
-
+    
     public static final String NOTE_ID = "_id";
     public static final String NOTE_TITLE = "title";
     public static final String NOTE_CONTENT = "content";
@@ -31,7 +31,6 @@ public class DBNote extends AbsDBObject {
     public DBNote(final Cursor cursor) {
 	fillFromCursor(cursor);
     }
-
 
     @Override
     public void fillFromCursor(Cursor cursor) {
@@ -70,5 +69,4 @@ public class DBNote extends AbsDBObject {
     public String getCreateQuery() {
 	return CREATE_TABLE;
     }
-
 }

@@ -1,7 +1,6 @@
 package com.andreykaraman.multinote.utils.loaders;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.andreykaraman.multinote.data.UserExceptions;
 import com.andreykaraman.multinote.model.AbsLoader;
@@ -16,29 +15,19 @@ public class ChPassLoader extends AbsLoader<ChangePassClass, ServerResponse> {
     }
 
     @Override
-    public ServerResponse loadInBackground() {
-	Log.d("LoginLoader", String.format("LoginLoader.loadInBackground"));
-	ServerHelper sHelper = ServerHelper.getInstance();
-	mResponse = new ServerResponse();
+    public ServerResponse creatEmtpyRespose() {
+	return new ServerResponse();
+    }
+
+    @Override
+    public void onLoading(ServerHelper sHelper, ServerResponse respClass) {
 
 	try {
 	    sHelper.changePass(getmRequest().getSessionId(), getmRequest()
 		    .getOldPassword(), getmRequest().getNewPassword());
-
+	    respClass.setStatus(UserExceptions.Error.OK);
 	} catch (UserExceptions e) {
-	    // TODO Auto-generated catch block
-	    // e.printStackTrace();
-	    mResponse.setStatus(e.getError());
-	    return mResponse;
-	}
-
-	if (isReset()) {
-	    return null;
-	} else {
-
-	    mResponse.setStatus(UserExceptions.Error.OK);
-	    return mResponse;
+	    respClass.setStatus(e.getError());
 	}
     }
-
 }

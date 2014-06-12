@@ -16,7 +16,6 @@ public class AboutDialogFragment extends DialogFragment {
 
     public static AboutDialogFragment newInstance() {
 	return new AboutDialogFragment();
-
     }
 
     @Override
@@ -32,7 +31,6 @@ public class AboutDialogFragment extends DialogFragment {
 
 	// Watch for button clicks.
 	Button buttonOK = (Button) view.findViewById(R.id.buttonOK);
-
 	buttonOK.setOnClickListener(new OnClickListener() {
 	    @Override
 	    public void onClick(View v) {
@@ -41,7 +39,6 @@ public class AboutDialogFragment extends DialogFragment {
 	});
 
 	Button buttonRate = (Button) view.findViewById(R.id.buttonRateApp);
-
 	buttonRate.setOnClickListener(new OnClickListener() {
 	    @Override
 	    public void onClick(View v) {
@@ -51,8 +48,6 @@ public class AboutDialogFragment extends DialogFragment {
 		startActivity(intent);
 	    }
 	});
-
 	return view;
     }
-
 }

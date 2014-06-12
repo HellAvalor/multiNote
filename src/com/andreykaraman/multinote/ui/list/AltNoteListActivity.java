@@ -46,11 +46,7 @@ import android.widget.Toast;
 
 public class AltNoteListActivity extends Activity {
 
-    static Intent intent;
-    static AltNoteAdapter scAdapter;
-    static ListView noteView;
-    static int sessionId;
-    static final String LOG_SECTION = MainActivity.class.getName();
+    private final static String LOG_SECTION = MainActivity.class.getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,12 +57,6 @@ public class AltNoteListActivity extends Activity {
 	    getFragmentManager().beginTransaction()
 		    .add(R.id.container, new PlaceholderFragment()).commit();
 	}
-
-	Intent intent = getIntent();
-
-	sessionId = intent.getIntExtra(APIStringConstants.CONST_SESSOIN_ID, -1);
-	;
-
     }
 
     @Override
@@ -74,7 +64,6 @@ public class AltNoteListActivity extends Activity {
 
 	// Inflate the menu; this adds items to the action bar if it is present.
 	getMenuInflater().inflate(R.menu.menu_note_list, menu);
-
 	return true;
     }
 
@@ -89,37 +78,35 @@ public class AltNoteListActivity extends Activity {
 	if (id == R.id.change_pass) {
 	    Toast.makeText(this, "going to change pass", Toast.LENGTH_SHORT)
 		    .show();
-	    Intent intent = new Intent(this, EditPassActivity.class).putExtra(
-		    APIStringConstants.CONST_SESSOIN_ID, sessionId);
-	    startActivity(intent);
 
+	    startActivity(new Intent(this, EditPassActivity.class).putExtra(
+		    APIStringConstants.CONST_SESSOIN_ID,
+		    getIntent().getIntExtra(
+			    APIStringConstants.CONST_SESSOIN_ID, -1)));
 	    return true;
 	}
 
 	if (id == R.id.logout) {
-	    // TODO add asynktask
 	    Toast.makeText(this, "Logging out", Toast.LENGTH_SHORT).show();
-	    executeLoader(sessionId);
-
+	    executeLoader(getIntent().getIntExtra(
+		    APIStringConstants.CONST_SESSOIN_ID, -1));
 	    return true;
 	}
 
 	if (id == R.id.about) {
 	    showAboutDialog();
-
 	    return true;
 	}
 
 	if (id == R.id.actionAddNote) {
-
-	    intent = new Intent(this, EditNoteActivity.class).putExtra(
-		    APIStringConstants.CONST_SESSOIN_ID, sessionId);
-	    startActivity(intent);
-
+	    startActivity(new Intent(this, EditNoteActivity.class).putExtra(
+		    APIStringConstants.CONST_SESSOIN_ID,
+		    getIntent().getIntExtra(
+			    APIStringConstants.CONST_SESSOIN_ID, -1)));
 	    return true;
 	}
 	return super.onOptionsItemSelected(item);
-    }//
+    }
 
     void showAboutDialog() {
 
@@ -129,7 +116,6 @@ public class AltNoteListActivity extends Activity {
 	    ft.remove(prev);
 	}
 	ft.addToBackStack(null);
-
 	// Create and show the dialog.
 	DialogFragment newFragment = AboutDialogFragment.newInstance();
 	newFragment.show(ft, "aboutDialog");
@@ -140,7 +126,6 @@ public class AltNoteListActivity extends Activity {
 	if (keyCode == KeyEvent.KEYCODE_BACK) {
 	    moveTaskToBack(true);
 	}
-
 	return super.onKeyDown(keyCode, event);
     }
 
@@ -151,6 +136,9 @@ public class AltNoteListActivity extends Activity {
 	    OnItemClickListener, LoaderCallbacks<Cursor> {
 
 	private LoaderManager.LoaderCallbacks<Cursor> mCallbacks;
+	private AltNoteAdapter scAdapter;
+	private ListView noteView;
+	private int sessionId;
 
 	public PlaceholderFragment() {
 	}
@@ -158,19 +146,17 @@ public class AltNoteListActivity extends Activity {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState) {
-
+	    sessionId = getActivity().getIntent().getIntExtra(
+		    APIStringConstants.CONST_SESSOIN_ID, -1);
 	    scAdapter = new AltNoteAdapter(container.getContext(), null,
 		    sessionId);
 	    View rootView = inflater.inflate(R.layout.fragment_alt_notes_list,
 		    container, false);
 
 	    noteView = (ListView) rootView.findViewById(R.id.listView1);
-
 	    noteView.setAdapter(scAdapter);
 	    noteView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-
 	    noteView.setMultiChoiceModeListener(new MultiChoiceModeListener() {
-
 		private int nr = 0;
 
 		@Override
@@ -181,16 +167,12 @@ public class AltNoteListActivity extends Activity {
 
 		@Override
 		public void onDestroyActionMode(ActionMode mode) {
-		    // TODO Auto-generated method stub
 		    scAdapter.clearSelection();
 		}
 
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-		    // TODO Auto-generated method stub
-
 		    nr = 0;
-
 		    MenuInflater inflater = getActivity().getMenuInflater();
 		    inflater.inflate(R.menu.menu_alt_note_list, menu);
 		    return true;
@@ -215,7 +197,6 @@ public class AltNoteListActivity extends Activity {
 		@Override
 		public void onItemCheckedStateChanged(ActionMode mode,
 			int position, long id, boolean checked) {
-		    // TODO Auto-generated method stub
 		    if (checked) {
 			nr++;
 			scAdapter.setNewSelection(position, checked);
@@ -224,7 +205,6 @@ public class AltNoteListActivity extends Activity {
 			scAdapter.removeSelection(position);
 		    }
 		    mode.setTitle(nr + " selected");
-
 		}
 	    });
 
@@ -233,7 +213,6 @@ public class AltNoteListActivity extends Activity {
 		@Override
 		public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 			int position, long arg3) {
-		    // TODO Auto-generated method stub
 
 		    noteView.setItemChecked(position,
 			    !scAdapter.isPositionChecked(position));
@@ -242,18 +221,16 @@ public class AltNoteListActivity extends Activity {
 	    });
 
 	    fillData();
-
 	    noteView.setOnItemClickListener(this);
-
 	    mCallbacks = this;
 
 	    // создаем лоадер для чтения данных
 	    getLoaderManager().initLoader(0, null, mCallbacks);
 	    Log.d(LOG_SECTION, "Before service");
 
-	    intent = new Intent(getActivity().getBaseContext(),
-		    ServerDBHelper.class).putExtra(
-		    "update_notes_on_remote", R.id.update_notes).putExtra(
+	    Intent intent = new Intent(getActivity().getBaseContext(),
+		    ServerDBHelper.class).putExtra("update_notes_on_remote",
+		    R.id.update_notes).putExtra(
 		    APIStringConstants.CONST_SESSOIN_ID, sessionId);
 
 	    getActivity().getBaseContext().startService(intent);
@@ -270,8 +247,9 @@ public class AltNoteListActivity extends Activity {
 		    "tap on " + position + " id " + id, Toast.LENGTH_SHORT)
 		    .show();
 
-	    intent = new Intent(view.getContext(), EditNoteActivity.class)
-		    .putExtra(APIStringConstants.CONST_SESSOIN_ID, sessionId);
+	    Intent intent = new Intent(view.getContext(),
+		    EditNoteActivity.class).putExtra(
+		    APIStringConstants.CONST_SESSOIN_ID, sessionId);
 	    intent.putExtra(APIStringConstants.CONST_NOTE_ID, id);
 	    startActivity(intent);
 
@@ -291,7 +269,6 @@ public class AltNoteListActivity extends Activity {
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 	    scAdapter.swapCursor(cursor);
-
 	}
 
 	@Override
@@ -299,16 +276,13 @@ public class AltNoteListActivity extends Activity {
 	    scAdapter.swapCursor(null);
 	}
 
-	// TODO -------------- added part ---------------
 	private void fillData() {
 	    getLoaderManager().initLoader(0, null, this);
 	}
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
-	    // Log.d("test", "PlaceholderFragment.onViewCreated");
 	    super.onViewCreated(view, savedInstanceState);
-
 	}
     }
 
@@ -339,7 +313,6 @@ public class AltNoteListActivity extends Activity {
     }
 
     private final LoadingHandler<ServerResponse> mLoginLoadingHandler = new LoadingHandler<ServerResponse>() {
-
 	ProgressDialog ringProgressDialog;
 
 	@Override
@@ -368,12 +341,9 @@ public class AltNoteListActivity extends Activity {
     };
 
     // loader callback
-
     private final LoaderManager.LoaderCallbacks<ServerResponse> mLoginLoaderCallback = new LoaderManager.LoaderCallbacks<ServerResponse>() {
 	@Override
 	public Loader<ServerResponse> onCreateLoader(int id, Bundle args) {
-	    // Log.d("test", String.format(
-	    // "LoaderCallbacks.onCreateLoader %d, %s", id, args));
 	    switch (id) {
 	    case R.id.loader_logout: {
 		int sessionId = args
@@ -415,5 +385,4 @@ public class AltNoteListActivity extends Activity {
 	    throw new RuntimeException("logic mistake");
 	}
     };
-
 }

@@ -26,10 +26,10 @@ import com.andreykaraman.multinote.ui.login.MainActivity.LoadingHandler;
 import com.andreykaraman.multinote.utils.loaders.RegisterLoader;
 
 public class RegisterFragment extends Fragment {
-    static SharedPreferences savedData;
-    static SharedPreferences sharedPrefs;
-    static String login;
-    static Button registerButton;
+    private SharedPreferences savedData;
+    private SharedPreferences sharedPrefs;
+    private String login;
+    private Button registerButton;
 
     private final static String ARG_REGISTER = "register";
     private final static String ARG_LOGIN = "login";
@@ -53,13 +53,6 @@ public class RegisterFragment extends Fragment {
 
 	args.putSerializable(ARG_REGISTER, new RegisterClass(login, password,
 		repeatPass));
-
-	// getLoaderManager().restartLoader(R.id.loader_login, args,
-	// mRegisterLoaderCallback);
-	//
-	// args.putString(ARG_LOGIN, login);
-	// args.putString(ARG_PASSWORD, password);
-	// args.putString(ARG_REPEAT_PASSWORD, repeatPass);
 	getLoaderManager().restartLoader(R.id.loader_new_user, args,
 		mRegisterLoaderCallback);
     }
@@ -90,26 +83,20 @@ public class RegisterFragment extends Fragment {
 		.findViewById(R.id.editTextRegisterRepPassword);
 
 	registerButton = (Button) rootView.findViewById(R.id.buttonRegister);
-
 	registerButton.setOnClickListener(new OnClickListener() {
 	    @Override
 	    public void onClick(View v) {
-		// TODO Auto-generated method stub
-
 		executeRegisterLoader(loginText.getText().toString(),
 			passwordText.getText().toString(), newPasswordText
 				.getText().toString());
 	    }
 	});
-
 	return rootView;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-	// Log.d("test", "PlaceholderFragment.onViewCreated");
 	super.onViewCreated(view, savedInstanceState);
-
 	// init loaders
 	initRegisterLoader();
     }
@@ -138,17 +125,14 @@ public class RegisterFragment extends Fragment {
 		Toast.makeText(getActivity(),
 			savedData.getString(ARG_LOGIN, ""), Toast.LENGTH_SHORT)
 			.show();
-
 		startActivity(new Intent(getActivity(),
 			AltNoteListActivity.class).putExtra(
 			APIStringConstants.CONST_SESSOIN_ID, sessionId));
-
 	    }
 	}
     };
 
     // loader callback
-
     private final LoaderManager.LoaderCallbacks<ServerResponse> mRegisterLoaderCallback = new LoaderManager.LoaderCallbacks<ServerResponse>() {
 	@Override
 	public Loader<ServerResponse> onCreateLoader(int id, Bundle args) {
@@ -156,17 +140,9 @@ public class RegisterFragment extends Fragment {
 	    // "LoaderCallbacks.onCreateLoader %d, %s", id, args));
 	    switch (id) {
 	    case R.id.loader_new_user: {
-
 		RegisterClass register = (RegisterClass) args
 			.getSerializable(ARG_REGISTER);
-		// return new LoginLoader(getActivity(), login, pass);
 		return new RegisterLoader(getActivity(), register);
-
-		// login = args.getString(ARG_LOGIN);
-		// String pass = args.getString(ARG_PASSWORD);
-		// String repPass = args.getString(ARG_REPEAT_PASSWORD);
-		// return new RegisterLoader(getActivity(), login, pass,
-		// repPass);
 	    }
 	    }
 	    throw new RuntimeException("logic mistake");
