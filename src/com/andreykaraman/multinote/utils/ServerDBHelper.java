@@ -12,8 +12,8 @@ import android.util.Log;
 import com.andreykaraman.multinote.R;
 import com.andreykaraman.multinote.data.APIStringConstants;
 import com.andreykaraman.multinote.data.UserExceptions;
-import com.andreykaraman.multinote.model.DBNote;
 import com.andreykaraman.multinote.model.Note;
+import com.andreykaraman.multinote.model.db.DBNote;
 import com.andreykaraman.multinote.ui.list.menu.EditNoteActivity;
 import com.andreykaraman.multinote.ui.login.MainActivity;
 

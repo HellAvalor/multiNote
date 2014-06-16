@@ -1,13 +1,10 @@
 package com.andreykaraman.multinote.ui.login;
 
 import android.app.Fragment;
-import android.app.LoaderManager;
 import android.content.Intent;
-import android.content.Loader;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,43 +15,38 @@ import android.widget.Toast;
 
 import com.andreykaraman.multinote.R;
 import com.andreykaraman.multinote.data.APIStringConstants;
+import com.andreykaraman.multinote.data.UserExceptions;
 import com.andreykaraman.multinote.data.UserExceptions.Error;
-import com.andreykaraman.multinote.model.RegisterClass;
-import com.andreykaraman.multinote.model.ServerResponse;
+import com.andreykaraman.multinote.model.req.RegisterReq;
+import com.andreykaraman.multinote.model.resp.RegisterResp;
 import com.andreykaraman.multinote.ui.list.AltNoteListActivity;
-import com.andreykaraman.multinote.ui.login.MainActivity.LoadingHandler;
-import com.andreykaraman.multinote.utils.loaders.RegisterLoader;
+import com.andreykaraman.multinote.utils.ServerHelper;
+
+import de.greenrobot.event.EventBus;
 
 public class RegisterFragment extends Fragment {
     private SharedPreferences savedData;
     private SharedPreferences sharedPrefs;
     private String login;
     private Button registerButton;
+    private EventBus bus;
 
-    private final static String ARG_REGISTER = "register";
-    private final static String ARG_LOGIN = "login";
-
-    private void initRegisterLoader() {
-	final Loader<?> loader = getLoaderManager().getLoader(
-		R.id.loader_new_user);
-	if (loader != null && loader.isStarted()) {
-	    mRegisterLoadingHandler.onStartLoading();
-	    getLoaderManager().initLoader(R.id.loader_new_user, null,
-		    mRegisterLoaderCallback);
-	} else {
-	    mRegisterLoadingHandler.onStopLoading();
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	bus = EventBus.getDefault();
     }
 
-    private void executeRegisterLoader(String login, String password,
-	    String repeatPass) {
-	mRegisterLoadingHandler.onStartLoading();
-	final Bundle args = new Bundle();
+    @Override
+    public void onResume() {
+	super.onResume();
+	bus.registerSticky(this);
+    }
 
-	args.putSerializable(ARG_REGISTER, new RegisterClass(login, password,
-		repeatPass));
-	getLoaderManager().restartLoader(R.id.loader_new_user, args,
-		mRegisterLoaderCallback);
+    @Override
+    public void onPause() {
+	bus.unregister(this);
+	super.onPause();
     }
 
     public static RegisterFragment newInstance() {
@@ -86,9 +78,10 @@ public class RegisterFragment extends Fragment {
 	registerButton.setOnClickListener(new OnClickListener() {
 	    @Override
 	    public void onClick(View v) {
-		executeRegisterLoader(loginText.getText().toString(),
+		registerButton.setEnabled(false);
+		bus.postSticky(new RegisterReq(loginText.getText().toString(),
 			passwordText.getText().toString(), newPasswordText
-				.getText().toString());
+				.getText().toString()));
 	    }
 	});
 	return rootView;
@@ -97,84 +90,45 @@ public class RegisterFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
 	super.onViewCreated(view, savedInstanceState);
-	// init loaders
-	initRegisterLoader();
     }
 
-    private final LoadingHandler<ServerResponse> mRegisterLoadingHandler = new LoadingHandler<ServerResponse>() {
-	@Override
-	public void onStartLoading() {
-	    registerButton.setEnabled(false);
-	}
+    public void onEventMainThread(RegisterResp event) {
 
-	@Override
-	public void onStopLoading() {
-	    registerButton.setEnabled(true);
-	}
+	registerButton.setEnabled(true);
+	bus.removeStickyEvent(event);
+	if (event.getStatus() == Error.OK) {
 
-	@Override
-	public void onLoadingResult(ServerResponse result) {
-	    Toast.makeText(getActivity(), result.getStatus().toString(),
+	    if (sharedPrefs.getBoolean("stay_login", false)) {
+		savedData.edit().putString(APIStringConstants.ARG_LOGIN, login)
+			.commit();
+	    }
+	
+	    startActivity(new Intent(getActivity(), AltNoteListActivity.class)
+		    .putExtra(APIStringConstants.CONST_SESSOIN_ID,
+			    event.getSessionId()));
+	} else {
+	    Toast.makeText(getActivity(), event.getStatus().resource(getActivity()),
 		    Toast.LENGTH_SHORT).show();
-	    int sessionId = -1;
-	    if (result.getStatus() == Error.OK) {
-		sessionId = result.getSessionId();
-		if (sharedPrefs.getBoolean("stay_login", false)) {
-		    savedData.edit().putString(ARG_LOGIN, login).commit();
-		}
-		Toast.makeText(getActivity(),
-			savedData.getString(ARG_LOGIN, ""), Toast.LENGTH_SHORT)
-			.show();
-		startActivity(new Intent(getActivity(),
-			AltNoteListActivity.class).putExtra(
-			APIStringConstants.CONST_SESSOIN_ID, sessionId));
-	    }
 	}
-    };
+    }
 
-    // loader callback
-    private final LoaderManager.LoaderCallbacks<ServerResponse> mRegisterLoaderCallback = new LoaderManager.LoaderCallbacks<ServerResponse>() {
-	@Override
-	public Loader<ServerResponse> onCreateLoader(int id, Bundle args) {
-	    // Log.d("test", String.format(
-	    // "LoaderCallbacks.onCreateLoader %d, %s", id, args));
-	    switch (id) {
-	    case R.id.loader_new_user: {
-		RegisterClass register = (RegisterClass) args
-			.getSerializable(ARG_REGISTER);
-		return new RegisterLoader(getActivity(), register);
-	    }
-	    }
-	    throw new RuntimeException("logic mistake");
-	}
+    public void onEventBackgroundThread(RegisterReq registerClass) {
+	bus.removeStickyEvent(registerClass);
+	RegisterResp event = new RegisterResp();
+	try {
+	    ServerHelper sHelper = ServerHelper.getInstance();
 
-	@Override
-	public void onLoadFinished(Loader<ServerResponse> loader,
-		ServerResponse data) {
-	    Log.d("test", String.format(
-		    "LoaderCallbacks.onLoadFinished %d, %s", loader.getId(),
-		    data));
-	    switch (loader.getId()) {
-	    case R.id.loader_new_user: {
-		mRegisterLoadingHandler.onStopLoading();
-		mRegisterLoadingHandler.onLoadingResult(data);
-		getLoaderManager().destroyLoader(loader.getId());
-		return;
-	    }
-	    }
-	    throw new RuntimeException("logic mistake");
-	}
+	    event.setSessionId(sHelper.registrationNewUser(
+		    registerClass.getLogin(), registerClass.getPass(),
+		    registerClass.getRepPassword()));
+	    event.setStatus(Error.OK);
+	    EventBus.getDefault().postSticky(event);
 
-	@Override
-	public void onLoaderReset(Loader<ServerResponse> loader) {
-	    Log.d("test", String.format("LoaderCallbacks.onLoaderReset"));
-	    switch (loader.getId()) {
-	    case R.id.loader_new_user: {
-		mRegisterLoadingHandler.onStopLoading();
-		return;
-	    }
-	    }
-	    throw new RuntimeException("logic mistake");
+	} catch (UserExceptions e) {
+
+	    event.setSessionId(-1);
+	    event.setStatus(e.getError());
+	    EventBus.getDefault().postSticky(event);
 	}
-    };
+    }
 }

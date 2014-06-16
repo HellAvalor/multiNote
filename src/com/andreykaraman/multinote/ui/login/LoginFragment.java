@@ -1,9 +1,7 @@
 package com.andreykaraman.multinote.ui.login;
 
 import android.app.Fragment;
-import android.app.LoaderManager;
 import android.content.Intent;
-import android.content.Loader;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -18,12 +16,14 @@ import android.widget.Toast;
 
 import com.andreykaraman.multinote.R;
 import com.andreykaraman.multinote.data.APIStringConstants;
+import com.andreykaraman.multinote.data.UserExceptions;
 import com.andreykaraman.multinote.data.UserExceptions.Error;
-import com.andreykaraman.multinote.model.ServerResponse;
-import com.andreykaraman.multinote.model.User;
+import com.andreykaraman.multinote.model.req.LoginReq;
+import com.andreykaraman.multinote.model.resp.LoginResp;
 import com.andreykaraman.multinote.ui.list.AltNoteListActivity;
-import com.andreykaraman.multinote.ui.login.MainActivity.LoadingHandler;
-import com.andreykaraman.multinote.utils.loaders.LoginLoader;
+import com.andreykaraman.multinote.utils.ServerHelper;
+
+import de.greenrobot.event.EventBus;
 
 public class LoginFragment extends Fragment {
 
@@ -33,21 +33,18 @@ public class LoginFragment extends Fragment {
     private SharedPreferences savedData;
     private Button button;
     private String login;
-
-    private final static String ARG_LOGIN = "login";
-    private final static String ARG_USER = "user";
+    private EventBus bus;
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
 	super.onViewCreated(view, savedInstanceState);
-	// init loaders
-	initLoginLoader();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-	// Log.d("test", "PlaceholderFragment.onCreate");
 	super.onCreate(savedInstanceState);
+	bus = EventBus.getDefault();
+
     }
 
     public static LoginFragment newInstance() {
@@ -63,6 +60,18 @@ public class LoginFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+	super.onResume();
+	bus.registerSticky(this);
+    }
+
+    @Override
+    public void onPause() {
+	bus.unregister(this);
+	super.onPause();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	    Bundle savedInstanceState) {
 
@@ -74,116 +83,52 @@ public class LoginFragment extends Fragment {
 	loginText = (EditText) rootView.findViewById(R.id.editTextLogin);
 	passwordText = (EditText) rootView.findViewById(R.id.editTextPassword);
 	if (sharedPrefs.getBoolean("stay_login", false)) {
-	    loginText.setText(savedData.getString(ARG_LOGIN, ""));
+	    loginText.setText(savedData.getString(APIStringConstants.ARG_LOGIN,
+		    ""));
 	}
 	button = (Button) rootView.findViewById(R.id.buttonLogin);
-
 	button.setOnClickListener(new OnClickListener() {
 	    @Override
 	    public void onClick(View v) {
-
-		executeLoginLoader(new User(loginText.getText().toString(),
+		button.setEnabled(false);
+		bus.postSticky(new LoginReq(loginText.getText().toString(),
 			passwordText.getText().toString()));
 	    }
 	});
 	return rootView;
     }
 
-    private void initLoginLoader() {
-	final Loader<?> loader = getLoaderManager()
-		.getLoader(R.id.loader_login);
-	if (loader != null && loader.isStarted()) {
-	    mLoginLoadingHandler.onStartLoading();
-	    getLoaderManager().initLoader(R.id.loader_login, null,
-		    mLoginLoaderCallback);
+    public void onEventMainThread(LoginResp event) {
+	Log.d("onEventMainThread", "onEventMainThread start");
+	button.setEnabled(true);
+	bus.removeStickyEvent(event);
+	if (event.getStatus() == Error.OK) {
+	    passwordText.setText("");
+	    if (sharedPrefs.getBoolean("stay_login", false)) {
+		savedData.edit().putString(APIStringConstants.ARG_LOGIN, login)
+			.commit();
+	    }
+	    startActivity(new Intent(getActivity(), AltNoteListActivity.class)
+		    .putExtra(APIStringConstants.CONST_SESSOIN_ID,
+			    event.getSessionId()));
 	} else {
-	    mLoginLoadingHandler.onStopLoading();
-	}
-    }
-
-    private void executeLoginLoader(User user) {
-	mLoginLoadingHandler.onStartLoading();
-	final Bundle args = new Bundle();
-	login = user.getLogin();
-	args.putSerializable(ARG_USER, user);
-	getLoaderManager().restartLoader(R.id.loader_login, args,
-		mLoginLoaderCallback);
-    }
-
-    private final LoadingHandler<ServerResponse> mLoginLoadingHandler = new LoadingHandler<ServerResponse>() {
-	@Override
-	public void onStartLoading() {
-	    button.setEnabled(false);
-	}
-
-	@Override
-	public void onStopLoading() {
-	    button.setEnabled(true);
-	}
-
-	@Override
-	public void onLoadingResult(ServerResponse result) {
-	    Toast.makeText(getActivity(), result.getStatus().toString(),
+	    Toast.makeText(getActivity(), event.getStatus().resource(getActivity()),
 		    Toast.LENGTH_SHORT).show();
-	    int sessionId = -1;
-	    if (result.getStatus() == Error.OK) {
-		passwordText.setText("");
-		sessionId = result.getSessionId();
-		if (sharedPrefs.getBoolean("stay_login", false)) {
-		    savedData.edit().putString(ARG_LOGIN, login).commit();
-		}
-		Toast.makeText(getActivity(),
-			savedData.getString(ARG_LOGIN, ""), Toast.LENGTH_SHORT)
-			.show();
-
-		startActivity(new Intent(getActivity(),
-			AltNoteListActivity.class).putExtra(
-			APIStringConstants.CONST_SESSOIN_ID, sessionId));
-	    }
 	}
-    };
+    }
 
-    // loader callback
-    private final LoaderManager.LoaderCallbacks<ServerResponse> mLoginLoaderCallback = new LoaderManager.LoaderCallbacks<ServerResponse>() {
-	@Override
-	public Loader<ServerResponse> onCreateLoader(int id, Bundle args) {
-	    switch (id) {
-	    case R.id.loader_login: {
-
-		User user = (User) args.getSerializable(ARG_USER);
-		return new LoginLoader(getActivity(), user);
-	    }
-	    }
-	    throw new RuntimeException("logic mistake");
+    public void onEventBackgroundThread(LoginReq req) {
+	bus.removeStickyEvent(req);
+	LoginResp event = new LoginResp();
+	try {
+	    ServerHelper sHelper = ServerHelper.getInstance();
+	    event.setSessionId(sHelper.checkLogin(req.getLogin(), req.getPass()));
+	    event.setStatus(Error.OK);
+	    EventBus.getDefault().postSticky(event);
+	} catch (UserExceptions e) {
+	    event.setSessionId(-1);
+	    event.setStatus(e.getError());
+	    EventBus.getDefault().postSticky(event);
 	}
-
-	@Override
-	public void onLoadFinished(Loader<ServerResponse> loader,
-		ServerResponse data) {
-	    Log.d("test", String.format(
-		    "LoaderCallbacks.onLoadFinished %d, %s", loader.getId(),
-		    data));
-	    switch (loader.getId()) {
-	    case R.id.loader_login: {
-		mLoginLoadingHandler.onStopLoading();
-		mLoginLoadingHandler.onLoadingResult(data);
-		getLoaderManager().destroyLoader(loader.getId());
-		return;
-	    }
-	    }
-	    throw new RuntimeException("logic mistake");
-	}
-
-	@Override
-	public void onLoaderReset(Loader<ServerResponse> loader) {
-	    Log.d("test", String.format("LoaderCallbacks.onLoaderReset"));
-	    switch (loader.getId()) {
-	    case R.id.loader_login: {
-		mLoginLoadingHandler.onStopLoading();
-		return;
-	    }
-	    }
-	    throw new RuntimeException("logic mistake");
-	}
-    };
+    }
 }

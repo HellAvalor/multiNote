@@ -21,7 +21,6 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
 
@@ -160,18 +159,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 	// as you specify a parent activity in AndroidManifest.xml.
 	int id = item.getItemId();
 	if (id == R.id.action_settings) {
-	    Toast.makeText(this, "go to settings", Toast.LENGTH_SHORT).show();
 	    Intent intent = new Intent(this, SettingsActivity.class);
-
 	    startActivity(intent);
 	    return true;
 	} else if (id == R.id.about) {
-
 	    showAboutDialog();
-
 	    return true;
 	}
-
 	return super.onOptionsItemSelected(item);
     }
 

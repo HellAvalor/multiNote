@@ -2,7 +2,7 @@ package com.andreykaraman.multinote.utils;
 
 import java.util.ArrayList;
 
-import com.andreykaraman.multinote.model.DBNote;
+import com.andreykaraman.multinote.model.db.DBNote;
 import com.andreykaraman.multinote.utils.MyDatabaseHelper.Tables;
 
 import android.content.ContentProvider;

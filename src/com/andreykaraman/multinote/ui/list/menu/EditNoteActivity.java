@@ -122,34 +122,19 @@ public class EditNoteActivity extends Activity {
 	case android.R.id.home:
 
 	    if (isContentChanged()) {
-		// return false;
-		Toast.makeText(this, "back Changed true", Toast.LENGTH_SHORT)
-			.show();
 		getActionBar().setDisplayHomeAsUpEnabled(false);
 		showCancelChangesDialog(this);
 	    } else {
-		Toast.makeText(this, "back Changed false", Toast.LENGTH_SHORT)
-			.show();
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		finish();
 		return true;
 	    }
-
-	    Toast.makeText(this, "back Changed out", Toast.LENGTH_SHORT).show();
 	    break;
 
 	case R.id.action_save_note:
-	    saveNote();
+	    saveNoteCheck();
 	}
-
 	return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onDestroy() {
-	// дерегистрируем (выключаем) BroadcastReceiver
-	super.onDestroy();
-
     }
 
     protected void onPause() {
@@ -223,11 +208,9 @@ public class EditNoteActivity extends Activity {
 
 	// TODO add for new note
 	if (!contentText.getText().toString().equals(note.getNoteContent())) {
-	    Toast.makeText(this, "Changed", Toast.LENGTH_SHORT).show();
 	    showCancelChangesDialog(this);
 	    return true;
 	}
-	Toast.makeText(this, "Not Changed", Toast.LENGTH_SHORT).show();
 	return false;
     }
 
@@ -239,7 +222,7 @@ public class EditNoteActivity extends Activity {
 		new DialogInterface.OnClickListener() {
 
 		    public void onClick(DialogInterface arg0, int arg1) {
-			saveNote();
+			saveNoteCheck();
 		    }
 		});
 	myAlertDialog.setNegativeButton(getText(R.string.cancel),
@@ -253,7 +236,7 @@ public class EditNoteActivity extends Activity {
 
     }
 
-    private void saveNote() {
+    private void saveNoteCheck() {
 
 	if (noteId != -1) {
 

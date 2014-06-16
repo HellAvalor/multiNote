@@ -106,9 +106,11 @@ public final class R {
         public static final int deteting=0x7f070015;
         public static final int enter_button=0x7f070005;
         public static final int enter_name_text=0x7f070002;
+        public static final int error_db=0x7f070027;
         public static final int exit=0x7f070010;
         public static final int loading=0x7f07001f;
         public static final int login=0x7f070004;
+        public static final int login_not_free=0x7f070026;
         public static final int new_note=0x7f070013;
         public static final int new_pass=0x7f07000c;
         public static final int note=0x7f070012;
@@ -121,29 +123,33 @@ public final class R {
         public static final int password=0x7f070008;
         public static final int passwords_changed=0x7f07000a;
         public static final int passwords_not_match=0x7f070009;
-        public static final int pref_alt_notes_screen=0x7f070025;
-        public static final int pref_default_server_path=0x7f07002b;
+        public static final int pref_alt_notes_screen=0x7f07002b;
+        public static final int pref_default_server_path=0x7f070031;
         /**  Example settings for Data & Sync 
  Example settings for Data & Sync 
          */
-        public static final int pref_header_data_sync=0x7f070026;
-        public static final int pref_header_general=0x7f070024;
+        public static final int pref_header_data_sync=0x7f07002c;
+        public static final int pref_header_general=0x7f07002a;
         /**  Custom setting strings 
  Custom setting strings 
          */
-        public static final int pref_save_login=0x7f070029;
-        public static final int pref_server_path=0x7f07002a;
-        public static final int pref_title_sync_frequency=0x7f070027;
-        public static final int pref_title_system_sync_settings=0x7f070028;
+        public static final int pref_save_login=0x7f07002f;
+        public static final int pref_server_path=0x7f070030;
+        public static final int pref_title_sync_frequency=0x7f07002d;
+        public static final int pref_title_system_sync_settings=0x7f07002e;
         public static final int register_button=0x7f070007;
         public static final int register_user_text=0x7f070003;
         public static final int registration_tab=0x7f070006;
         public static final int rep_pass=0x7f07000d;
+        public static final int same_password=0x7f070024;
         public static final int save=0x7f070014;
         public static final int save_note=0x7f07001c;
         public static final int select_all=0x7f07001a;
-        public static final int title_activity_settings=0x7f070023;
+        public static final int title_activity_settings=0x7f070029;
+        public static final int unknown_error=0x7f070028;
         public static final int wrong_login_pass=0x7f070019;
+        public static final int wrong_old_password=0x7f070025;
+        public static final int wrong_password=0x7f070023;
     }
     public static final class style {
         /** 

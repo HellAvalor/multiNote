@@ -60,6 +60,8 @@
 
         <service android:name=".utils.ServerDBHelper" >
         </service>
+        <service android:name=".utils.ServerDBService" >
+        </service>
     </application>
 
 </manifest>

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.andreykaraman.multinote.model.DBNote;
+import com.andreykaraman.multinote.model.db.DBNote;
 
 public final class MyDatabaseHelper extends SQLiteOpenHelper {
 

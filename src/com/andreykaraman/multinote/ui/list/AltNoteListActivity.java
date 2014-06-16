@@ -1,27 +1,10 @@
 package com.andreykaraman.multinote.ui.list;
 
-import com.andreykaraman.multinote.R;
-import com.andreykaraman.multinote.data.APIStringConstants;
-import com.andreykaraman.multinote.data.UserExceptions.Error;
-import com.andreykaraman.multinote.model.DBNote;
-import com.andreykaraman.multinote.model.LogoutClass;
-import com.andreykaraman.multinote.model.ServerResponse;
-import com.andreykaraman.multinote.ui.list.menu.EditNoteActivity;
-import com.andreykaraman.multinote.ui.list.menu.EditPassActivity;
-import com.andreykaraman.multinote.ui.login.MainActivity;
-import com.andreykaraman.multinote.ui.login.MainActivity.LoadingHandler;
-import com.andreykaraman.multinote.ui.login.menu.AboutDialogFragment;
-import com.andreykaraman.multinote.utils.MyContentProvider;
-import com.andreykaraman.multinote.utils.ServerDBHelper;
-import com.andreykaraman.multinote.utils.adapters.AltNoteAdapter;
-import com.andreykaraman.multinote.utils.loaders.LogoutLoader;
-
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager;
-import android.app.ProgressDialog;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -44,15 +27,34 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.andreykaraman.multinote.R;
+import com.andreykaraman.multinote.data.APIStringConstants;
+import com.andreykaraman.multinote.data.UserExceptions;
+import com.andreykaraman.multinote.data.UserExceptions.Error;
+import com.andreykaraman.multinote.model.db.DBNote;
+import com.andreykaraman.multinote.model.req.LogoutReq;
+import com.andreykaraman.multinote.model.resp.LogoutResp;
+import com.andreykaraman.multinote.ui.list.menu.EditNoteActivity;
+import com.andreykaraman.multinote.ui.list.menu.EditPassActivity;
+import com.andreykaraman.multinote.ui.login.MainActivity;
+import com.andreykaraman.multinote.ui.login.menu.AboutDialogFragment;
+import com.andreykaraman.multinote.utils.MyContentProvider;
+import com.andreykaraman.multinote.utils.ServerDBHelper;
+import com.andreykaraman.multinote.utils.ServerHelper;
+import com.andreykaraman.multinote.utils.adapters.AltNoteAdapter;
+
+import de.greenrobot.event.EventBus;
+
 public class AltNoteListActivity extends Activity {
 
     private final static String LOG_SECTION = MainActivity.class.getName();
+    private EventBus bus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.activity_alt_note_list);
-
+	bus = EventBus.getDefault();
 	if (savedInstanceState == null) {
 	    getFragmentManager().beginTransaction()
 		    .add(R.id.container, new PlaceholderFragment()).commit();
@@ -60,8 +62,19 @@ public class AltNoteListActivity extends Activity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public void onResume() {
+	super.onResume();
+	bus.registerSticky(this);
+    }
 
+    @Override
+    public void onPause() {
+	bus.unregister(this);
+	super.onPause();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
 	// Inflate the menu; this adds items to the action bar if it is present.
 	getMenuInflater().inflate(R.menu.menu_note_list, menu);
 	return true;
@@ -72,13 +85,9 @@ public class AltNoteListActivity extends Activity {
 	// Handle action bar item clicks here. The action bar will
 	// automatically handle clicks on the Home/Up button, so long
 	// as you specify a parent activity in AndroidManifest.xml.
-	initLoginLoader();
 
 	int id = item.getItemId();
 	if (id == R.id.change_pass) {
-	    Toast.makeText(this, "going to change pass", Toast.LENGTH_SHORT)
-		    .show();
-
 	    startActivity(new Intent(this, EditPassActivity.class).putExtra(
 		    APIStringConstants.CONST_SESSOIN_ID,
 		    getIntent().getIntExtra(
@@ -87,9 +96,8 @@ public class AltNoteListActivity extends Activity {
 	}
 
 	if (id == R.id.logout) {
-	    Toast.makeText(this, "Logging out", Toast.LENGTH_SHORT).show();
-	    executeLoader(getIntent().getIntExtra(
-		    APIStringConstants.CONST_SESSOIN_ID, -1));
+	    bus.postSticky(new LogoutReq(getIntent().getIntExtra(
+		    APIStringConstants.CONST_SESSOIN_ID, -1)));
 	    return true;
 	}
 
@@ -161,7 +169,6 @@ public class AltNoteListActivity extends Activity {
 
 		@Override
 		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-		    // TODO Auto-generated method stub
 		    return false;
 		}
 
@@ -181,7 +188,6 @@ public class AltNoteListActivity extends Activity {
 		@Override
 		public boolean onActionItemClicked(ActionMode mode,
 			MenuItem item) {
-		    // TODO Auto-generated method stub
 		    switch (item.getItemId()) {
 
 		    case R.id.item_delete:
@@ -243,16 +249,11 @@ public class AltNoteListActivity extends Activity {
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 		long id) {
 
-	    Toast.makeText(view.getContext(),
-		    "tap on " + position + " id " + id, Toast.LENGTH_SHORT)
-		    .show();
-
 	    Intent intent = new Intent(view.getContext(),
 		    EditNoteActivity.class).putExtra(
 		    APIStringConstants.CONST_SESSOIN_ID, sessionId);
 	    intent.putExtra(APIStringConstants.CONST_NOTE_ID, id);
 	    startActivity(intent);
-
 	}
 
 	@Override
@@ -286,103 +287,27 @@ public class AltNoteListActivity extends Activity {
 	}
     }
 
-    protected void onDestroy() {
-	super.onDestroy();
-    }
-
-    private void initLoginLoader() {
-	final Loader<?> loader = getLoaderManager().getLoader(
-		R.id.loader_logout);
-	if (loader != null && loader.isStarted()) {
-	    mLoginLoadingHandler.onStartLoading();
-	    getLoaderManager().initLoader(R.id.loader_logout, null,
-		    mLoginLoaderCallback);
+    public void onEventMainThread(LogoutResp event) {
+	bus.removeStickyEvent(event);
+	if (event.getStatus() == Error.OK) {
+	    finish();
 	} else {
-	    mLoginLoadingHandler.onStopLoading();
+	    Toast.makeText(this, event.getStatus().resource(getApplication()),
+		    Toast.LENGTH_SHORT).show();
 	}
     }
 
-    private void executeLoader(int sessionId) {
-	mLoginLoadingHandler.onStartLoading();
-	final Bundle args = new Bundle();
-
-	args.putInt(APIStringConstants.CONST_SESSOIN_ID, sessionId);
-
-	getLoaderManager().restartLoader(R.id.loader_logout, args,
-		mLoginLoaderCallback);
+    public void onEventBackgroundThread(LogoutReq logout) {
+	bus.removeStickyEvent(logout);
+	LogoutResp event = new LogoutResp();
+	try {
+	    ServerHelper sHelper = ServerHelper.getInstance();
+	    sHelper.logout(logout.getSessionId());
+	    event.setStatus(Error.OK);
+	    EventBus.getDefault().postSticky(event);
+	} catch (UserExceptions e) {
+	    event.setStatus(e.getError());
+	    EventBus.getDefault().postSticky(event);
+	}
     }
-
-    private final LoadingHandler<ServerResponse> mLoginLoadingHandler = new LoadingHandler<ServerResponse>() {
-	ProgressDialog ringProgressDialog;
-
-	@Override
-	public void onStartLoading() {
-	    ringProgressDialog = ProgressDialog.show(AltNoteListActivity.this,
-		    "", getResources().getString(R.string.loading), true);
-	    ringProgressDialog.setCancelable(false);
-	}
-
-	@Override
-	public void onStopLoading() {
-	    if (ringProgressDialog != null) {
-		ringProgressDialog.dismiss();
-	    }
-	}
-
-	@Override
-	public void onLoadingResult(ServerResponse result) {
-	    Toast.makeText(AltNoteListActivity.this,
-		    result.getStatus().toString(), Toast.LENGTH_SHORT).show();
-
-	    if (result.getStatus() == Error.OK) {
-		finish();
-	    }
-	}
-    };
-
-    // loader callback
-    private final LoaderManager.LoaderCallbacks<ServerResponse> mLoginLoaderCallback = new LoaderManager.LoaderCallbacks<ServerResponse>() {
-	@Override
-	public Loader<ServerResponse> onCreateLoader(int id, Bundle args) {
-	    switch (id) {
-	    case R.id.loader_logout: {
-		int sessionId = args
-			.getInt(APIStringConstants.CONST_SESSOIN_ID);
-
-		return new LogoutLoader(AltNoteListActivity.this,
-			new LogoutClass(sessionId));
-	    }
-	    }
-	    throw new RuntimeException("logic mistake");
-	}
-
-	@Override
-	public void onLoadFinished(Loader<ServerResponse> loader,
-		ServerResponse data) {
-	    Log.d("loader_logout", String.format(
-		    "LoaderCallbacks.onLoadFinished %d, %s", loader.getId(),
-		    data));
-	    switch (loader.getId()) {
-	    case R.id.loader_logout: {
-		mLoginLoadingHandler.onStopLoading();
-		mLoginLoadingHandler.onLoadingResult(data);
-		getLoaderManager().destroyLoader(loader.getId());
-		return;
-	    }
-	    }
-	    throw new RuntimeException("logic mistake");
-	}
-
-	@Override
-	public void onLoaderReset(Loader<ServerResponse> loader) {
-	    Log.d("test", String.format("LoaderCallbacks.onLoaderReset"));
-	    switch (loader.getId()) {
-	    case R.id.loader_logout: {
-		mLoginLoadingHandler.onStopLoading();
-		return;
-	    }
-	    }
-	    throw new RuntimeException("logic mistake");
-	}
-    };
 }

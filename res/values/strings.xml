@@ -56,4 +56,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.</string>
     <string name="about_rate_app">Rate app</string>
+    <string name="wrong_password">Wrong password</string>
+    <string name="same_password">Same password to previous</string>
+    <string name="wrong_old_password">Wrong old password</string>
+    <string name="login_not_free">Login not free</string>
+    <string name="error_db">Error while connectin server</string>
+    <string name="unknown_error">Unknown error</string>
+
 </resources>

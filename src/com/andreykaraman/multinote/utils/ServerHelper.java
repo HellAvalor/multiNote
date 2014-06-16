@@ -3,6 +3,8 @@ package com.andreykaraman.multinote.utils;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import org.apache.http.HttpEntity;
@@ -70,26 +72,33 @@ public class ServerHelper {
     public int addNote(int sessionId, String title, String content)
 	    throws UserExceptions {
 
-	String url = SOAP_ACTION + APIStringConstants.REQUEST_ADD_NOTE + "/?"
-		+ APIStringConstants.CONST_SESSOIN_ID + "=" + sessionId + "&"
-		+ APIStringConstants.CONST_NOTE_TITLE + "=" + title + "&"
-		+ APIStringConstants.CONST_NOTE_CONTENT + "=" + content;
-	Log.d("addNote", "url " + url);
-	url = url.replace(" ", "%20");
-	String responce = getStringResponce(url);
-
-	Log.d("addNote", "responce " + responce);
-
+	String url;
 	try {
-	    JSONObject jsonResponce = new JSONObject(responce);
+	    url = SOAP_ACTION + APIStringConstants.REQUEST_ADD_NOTE + "/?"
+		    + APIStringConstants.CONST_SESSOIN_ID + "=" + sessionId
+		    + "&" + APIStringConstants.CONST_NOTE_TITLE + "="
+		    + URLEncoder.encode(title, "utf-8") + "&"
+		    + APIStringConstants.CONST_NOTE_CONTENT + "="
+		    + URLEncoder.encode(content, "utf-8");
 
-	    if (jsonResponce.getInt(APIStringConstants.CONST_RESULT) == 1) {
-		throw new UserExceptions(Error.ERROR_IN_WRITING_TO_EXT_DB);
-	    } else {
-		return jsonResponce.getInt(APIStringConstants.CONST_NOTE_ID);
+	    String responce = getStringResponce(url);
+
+	    Log.d("addNote", "responce " + responce);
+
+	    try {
+		JSONObject jsonResponce = new JSONObject(responce);
+
+		if (jsonResponce.getInt(APIStringConstants.CONST_RESULT) == 1) {
+		    throw new UserExceptions(Error.ERROR_IN_WRITING_TO_EXT_DB);
+		} else {
+		    return jsonResponce
+			    .getInt(APIStringConstants.CONST_NOTE_ID);
+		}
+	    } catch (JSONException e) {
+		Log.d("addNote", e.getLocalizedMessage());
 	    }
-	} catch (JSONException e) {
-	    Log.d("addNote", e.getLocalizedMessage());
+	} catch (UnsupportedEncodingException e1) {
+	    e1.printStackTrace();
 	}
 	throw new UserExceptions(Error.UNKNOWN_ERROR);
     }
@@ -127,73 +136,97 @@ public class ServerHelper {
     public void editNote(int sessionId, long noteId, String content)
 	    throws UserExceptions {
 
-	String url = SOAP_ACTION + APIStringConstants.REQUEST_EDIT_NOTE + "/?"
-		+ APIStringConstants.CONST_SESSOIN_ID + "=" + sessionId + "&"
-		+ APIStringConstants.CONST_NOTE_ID + "=" + noteId + "&"
-		+ APIStringConstants.CONST_NOTE_TEXT + "=" + content;
-	url = url.replace(" ", "%20");
-	String responce = getStringResponce(url);
-
+	String url;
 	try {
-	    JSONObject loginResponce = new JSONObject(responce);
+	    url = SOAP_ACTION + APIStringConstants.REQUEST_EDIT_NOTE + "/?"
+		    + APIStringConstants.CONST_SESSOIN_ID + "=" + sessionId
+		    + "&" + APIStringConstants.CONST_NOTE_ID + "=" + noteId
+		    + "&" + APIStringConstants.CONST_NOTE_TEXT + "="
+		    + URLEncoder.encode(content, "utf-8");
 
-	    if (loginResponce.getInt(APIStringConstants.CONST_RESULT) != 0) {
-		throw new UserExceptions(Error.ERROR_IN_WRITING_TO_EXT_DB);
-	    } else {
-		return;
+	    String responce = getStringResponce(url);
+
+	    try {
+		JSONObject loginResponce = new JSONObject(responce);
+
+		if (loginResponce.getInt(APIStringConstants.CONST_RESULT) != 0) {
+		    throw new UserExceptions(Error.ERROR_IN_WRITING_TO_EXT_DB);
+		} else {
+		    return;
+		}
+	    } catch (JSONException e) {
+		Log.d("editNote", e.getLocalizedMessage());
 	    }
-	} catch (JSONException e) {
-	    Log.d("editNote", e.getLocalizedMessage());
+	} catch (UnsupportedEncodingException e1) {
+	    // TODO Auto-generated catch block
+	    e1.printStackTrace();
 	}
+
 	throw new UserExceptions(Error.UNKNOWN_ERROR);
     }
 
     public int checkLogin(String name, String pass) throws UserExceptions {
 
-	String url = SOAP_ACTION + APIStringConstants.REQUEST_LOGIN + "/?"
-		+ APIStringConstants.CONST_LOGIN + "=" + name + "&"
-		+ APIStringConstants.CONST_PASSWORD + "=" + pass;
-
-	String responce = getStringResponce(url);
-
+	String url;
 	try {
-	    JSONObject loginResponce = new JSONObject(responce);
+	    url = SOAP_ACTION + APIStringConstants.REQUEST_LOGIN + "/?"
+		    + APIStringConstants.CONST_LOGIN + "="
+		    + URLEncoder.encode(name, "utf-8") + "&"
+		    + APIStringConstants.CONST_PASSWORD + "="
+		    + URLEncoder.encode(pass, "utf-8");
 
-	    if (loginResponce.getInt(APIStringConstants.CONST_RESULT) == 1) {
-		throw new UserExceptions(Error.USER_NOT_FOUND_OR_WRONG_PASS);
-	    } else {
-		return loginResponce
-			.getInt(APIStringConstants.CONST_SESSOIN_ID);
+	    String responce = getStringResponce(url);
+
+	    try {
+		JSONObject loginResponce = new JSONObject(responce);
+
+		if (loginResponce.getInt(APIStringConstants.CONST_RESULT) == 1) {
+		    throw new UserExceptions(Error.USER_NOT_FOUND_OR_WRONG_PASS);
+		} else {
+		    return loginResponce
+			    .getInt(APIStringConstants.CONST_SESSOIN_ID);
+		}
+	    } catch (JSONException e) {
+		Log.d("checkLogin", e.getLocalizedMessage());
 	    }
-	} catch (JSONException e) {
-	    Log.d("checkLogin", e.getLocalizedMessage());
+	} catch (UnsupportedEncodingException e1) {
+	    e1.printStackTrace();
 	}
+
 	throw new UserExceptions(Error.UNKNOWN_ERROR);
     }
 
     public int addUser(String login, String pass) throws UserExceptions {
 
-	String url = SOAP_ACTION + APIStringConstants.REQUEST_REGISTER + "/?"
-		+ APIStringConstants.CONST_LOGIN + "=" + login + "&"
-		+ APIStringConstants.CONST_PASSWORD + "=" + pass;
-
-	String responce = getStringResponce(url);
-
+	String url;
 	try {
-	    JSONObject registerResponce = new JSONObject(responce);
-	    switch (registerResponce.getInt("result")) {
-	    case 1:
-		throw new UserExceptions(Error.THIS_LOGIN_NOT_FREE);
-	    case 2:
-		throw new UserExceptions(Error.WRONG_PASSWORD);
-	    case 0:
-		return checkLogin(login, pass);
-	    default:
-		throw new UserExceptions(Error.UNKNOWN_ERROR);
-	    }
+	    url = SOAP_ACTION + APIStringConstants.REQUEST_REGISTER + "/?"
+		    + APIStringConstants.CONST_LOGIN + "="
+		    + URLEncoder.encode(login, "utf-8") + "&"
+		    + APIStringConstants.CONST_PASSWORD + "="
+		    + URLEncoder.encode(pass, "utf-8");
 
-	} catch (JSONException e) {
-	    Log.d("addUser", e.getLocalizedMessage());
+	    String responce = getStringResponce(url);
+
+	    try {
+		JSONObject registerResponce = new JSONObject(responce);
+		switch (registerResponce.getInt("result")) {
+		case 1:
+		    throw new UserExceptions(Error.THIS_LOGIN_NOT_FREE);
+		case 2:
+		    throw new UserExceptions(Error.WRONG_PASSWORD);
+		case 0:
+		    return checkLogin(login, pass);
+		default:
+		    throw new UserExceptions(Error.UNKNOWN_ERROR);
+		}
+
+	    } catch (JSONException e) {
+		Log.d("addUser", e.getLocalizedMessage());
+	    }
+	} catch (UnsupportedEncodingException e1) {
+	    // TODO Auto-generated catch block
+	    e1.printStackTrace();
 	}
 	throw new UserExceptions(Error.UNKNOWN_ERROR);
     }
@@ -231,7 +264,6 @@ public class ServerHelper {
 	} else {
 	    throw new UserExceptions(Error.PASSWORD_MISSMATCH);
 	}
-
     }
 
     private String getStringResponce(String query) {
@@ -289,28 +321,37 @@ public class ServerHelper {
     public void changePass(int sessionId, String oldPass, String newPass)
 	    throws UserExceptions {
 
-	String url = SOAP_ACTION + APIStringConstants.REQUEST_CHANGE_PASSWORD
-		+ "/?" + APIStringConstants.CONST_SESSOIN_ID + "=" + sessionId
-		+ "&" + APIStringConstants.CONST_OLD_PASS + "=" + oldPass + "&"
-		+ APIStringConstants.CONST_NEW_PASS + "=" + newPass;
-
-	Log.d("changePass", "url" + url);
-
-	String responce = getStringResponce(url);
-
-	Log.d("changePass", "responce " + responce);
-
+	String url;
 	try {
-	    JSONObject loginResponce = new JSONObject(responce);
-	    if (loginResponce.getInt(APIStringConstants.CONST_RESULT) == 2) {
-		throw new UserExceptions(Error.WRONG_OLD_PASSWORD);
-	    } else if (loginResponce.getInt(APIStringConstants.CONST_RESULT) == 0) {
-		return;
-	    }
-	} catch (JSONException e) {
+	    url = SOAP_ACTION + APIStringConstants.REQUEST_CHANGE_PASSWORD
+		    + "/?" + APIStringConstants.CONST_SESSOIN_ID + "="
+		    + sessionId + "&" + APIStringConstants.CONST_OLD_PASS + "="
+		    + URLEncoder.encode(oldPass, "utf-8") + "&"
+		    + APIStringConstants.CONST_NEW_PASS + "="
+		    + URLEncoder.encode(newPass, "utf-8");
 
-	    Log.d("logout", e.getLocalizedMessage());
+	    Log.d("changePass", "url" + url);
+
+	    String responce = getStringResponce(url);
+
+	    Log.d("changePass", "responce " + responce);
+
+	    try {
+		JSONObject loginResponce = new JSONObject(responce);
+		if (loginResponce.getInt(APIStringConstants.CONST_RESULT) == 2) {
+		    throw new UserExceptions(Error.WRONG_OLD_PASSWORD);
+		} else if (loginResponce
+			.getInt(APIStringConstants.CONST_RESULT) == 0) {
+		    return;
+		}
+	    } catch (JSONException e) {
+
+		Log.d("changePass", e.getLocalizedMessage());
+	    }
+	} catch (UnsupportedEncodingException e1) {
+	    e1.printStackTrace();
 	}
+
 	throw new UserExceptions(Error.UNKNOWN_ERROR);
     }
 }

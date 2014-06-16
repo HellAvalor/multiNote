@@ -21,4 +21,5 @@ public class APIStringConstants {
     public static final String REQUEST_EDIT_NOTE = "/editNote";
     public static final String REQUEST_DELETE_NOTE = "/deleteNote";
     public static final String REQUEST_CHANGE_PASSWORD = "/changePassword";
+    public static final String ARG_LOGIN = "login";
 }
