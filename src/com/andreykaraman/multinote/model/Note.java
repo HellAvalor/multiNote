@@ -20,9 +20,9 @@ public class Note {
 
     public Note() {
     }
-    
+
     public void setNoteId(long noteId) {
-        this.noteId = noteId;
+	this.noteId = noteId;
     }
 
     public String getNoteTitle() {

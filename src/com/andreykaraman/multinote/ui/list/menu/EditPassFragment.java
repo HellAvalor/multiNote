@@ -2,6 +2,7 @@ package com.andreykaraman.multinote.ui.list.menu;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,9 +15,8 @@ import com.andreykaraman.multinote.R;
 import com.andreykaraman.multinote.data.APIStringConstants;
 import com.andreykaraman.multinote.data.UserExceptions;
 import com.andreykaraman.multinote.data.UserExceptions.Error;
-import com.andreykaraman.multinote.model.req.ChangePassReq;
-import com.andreykaraman.multinote.model.resp.ChangePassResp;
-import com.andreykaraman.multinote.utils.ServerHelper;
+import com.andreykaraman.multinote.remote.ServerHelper;
+import com.andreykaraman.multinote.ui.list.menu.Events.*;
 
 import de.greenrobot.event.EventBus;
 
@@ -57,21 +57,30 @@ public class EditPassFragment extends Fragment {
 		APIStringConstants.CONST_SESSOIN_ID, -1);
 	View rootView = inflater.inflate(R.layout.fragment_change_pass,
 		container, false);
-	oldPasswordText = (EditText) rootView
+
+	return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+
+	super.onViewCreated(view, savedInstanceState);
+
+	oldPasswordText = (EditText) view
 		.findViewById(R.id.editTextOldPassword);
-	newPasswordText = (EditText) rootView
+	newPasswordText = (EditText) view
 		.findViewById(R.id.editTextNewPassword);
-	repPasswordText = (EditText) rootView
+	repPasswordText = (EditText) view
 		.findViewById(R.id.editTextNewRepPassword);
-	button = (Button) rootView.findViewById(R.id.buttonChangePassword);
+	button = (Button) view.findViewById(R.id.buttonChangePassword);
 	button.setOnClickListener(new OnClickListener() {
 	    @Override
 	    public void onClick(View v) {
 
-		if (newPasswordText.getText().toString()
-			.equals(repPasswordText.getText().toString())) {
+		if (TextUtils.equals(newPasswordText.getText(),
+			repPasswordText.getText())) {
 		    button.setEnabled(false);
-		    bus.postSticky(new ChangePassReq(sessionId, oldPasswordText
+		    bus.postSticky(new ChangePassRequest(sessionId, oldPasswordText
 			    .getText().toString(), newPasswordText.getText()
 			    .toString()));
 		} else {
@@ -81,10 +90,9 @@ public class EditPassFragment extends Fragment {
 		}
 	    }
 	});
-	return rootView;
     }
 
-    public void onEventMainThread(ChangePassResp event) {
+    public void onEventMainThread(ChangePassResponse event) {
 	button.setEnabled(true);
 	bus.removeStickyEvent(event);
 	if (event.getStatus() == Error.OK) {
@@ -92,14 +100,15 @@ public class EditPassFragment extends Fragment {
 		    Toast.LENGTH_SHORT).show();
 	    getActivity().finish();
 	} else {
-	    Toast.makeText(getActivity(), event.getStatus().resource(getActivity()),
+	    Toast.makeText(getActivity(),
+		    event.getStatus().resource(getActivity()),
 		    Toast.LENGTH_SHORT).show();
 	}
     }
 
-    public void onEventBackgroundThread(ChangePassReq changePass) {
+    public void onEventBackgroundThread(ChangePassRequest changePass) {
 	bus.removeStickyEvent(changePass);
-	ChangePassResp event = new ChangePassResp();
+	ChangePassResponse event = new ChangePassResponse();
 	try {
 	    ServerHelper sHelper = ServerHelper.getInstance();
 	    sHelper.changePass(changePass.getSessionId(),

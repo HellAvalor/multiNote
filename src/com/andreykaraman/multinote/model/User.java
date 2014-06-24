@@ -1,27 +1,24 @@
 package com.andreykaraman.multinote.model;
 
-import java.io.Serializable;
+public class User {
 
-public class User implements Serializable{
+    private String login;
+    private String password;
 
-    private static final long serialVersionUID = 1L;
-	private String login;
-	private String password;
+    public User(String name, String pass) {
+	login = name;
+	password = pass;
+    }
 
-	public User(String name, String pass) {
-		login = name;
-		password = pass;
-	}
+    public String getLogin() {
+	return login;
+    }
 
-	public String getLogin() {
-		return login;
-	}
+    public String getPass() {
+	return password;
+    }
 
-	public String getPass() {
-		return password;
-	}
-
-	public void setPass(String pass) {
-		password = pass;
-	}
+    public void setPass(String pass) {
+	password = pass;
+    }
 }

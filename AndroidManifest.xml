@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.andreykaraman.multinote.ui.list.AltNoteListActivity"
+            android:name="com.andreykaraman.multinote.ui.list.NoteListActivity"
             android:label="@string/app_name" >
         </activity>
         <activity
@@ -54,13 +54,13 @@
         </activity>
 
         <provider
-            android:name=".utils.MyContentProvider"
+            android:name="com.andreykaraman.multinote.model.MyContentProvider"
             android:authorities="com.andreykaraman.multinote" >
         </provider>
 
-        <service android:name=".utils.ServerDBHelper" >
+        <service android:name="com.andreykaraman.multinote.model.ServerDBHelper" >
         </service>
-        <service android:name=".utils.ServerDBService" >
+        <service android:name="com.andreykaraman.multinote.remote.ServerHelper" >
         </service>
     </application>
 

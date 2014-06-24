@@ -18,10 +18,9 @@ import com.andreykaraman.multinote.R;
 import com.andreykaraman.multinote.data.APIStringConstants;
 import com.andreykaraman.multinote.data.UserExceptions;
 import com.andreykaraman.multinote.data.UserExceptions.Error;
-import com.andreykaraman.multinote.model.req.LoginReq;
-import com.andreykaraman.multinote.model.resp.LoginResp;
-import com.andreykaraman.multinote.ui.list.AltNoteListActivity;
-import com.andreykaraman.multinote.utils.ServerHelper;
+import com.andreykaraman.multinote.remote.ServerHelper;
+import com.andreykaraman.multinote.ui.list.NoteListActivity;
+import com.andreykaraman.multinote.ui.login.Events.*;
 
 import de.greenrobot.event.EventBus;
 
@@ -34,11 +33,6 @@ public class LoginFragment extends Fragment {
     private Button button;
     private String login;
     private EventBus bus;
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-	super.onViewCreated(view, savedInstanceState);
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,28 +71,35 @@ public class LoginFragment extends Fragment {
 
 	View rootView = inflater.inflate(R.layout.fragment_login, container,
 		false);
-	savedData = inflater.getContext().getSharedPreferences("settings", 0);
-	sharedPrefs = PreferenceManager.getDefaultSharedPreferences(container
-		.getContext());
-	loginText = (EditText) rootView.findViewById(R.id.editTextLogin);
-	passwordText = (EditText) rootView.findViewById(R.id.editTextPassword);
+
+	return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+	super.onViewCreated(view, savedInstanceState);
+
+	savedData = getActivity().getSharedPreferences("settings", 0);
+	sharedPrefs = PreferenceManager
+		.getDefaultSharedPreferences(getActivity());
+	loginText = (EditText) view.findViewById(R.id.editTextLogin);
+	passwordText = (EditText) view.findViewById(R.id.editTextPassword);
 	if (sharedPrefs.getBoolean("stay_login", false)) {
 	    loginText.setText(savedData.getString(APIStringConstants.ARG_LOGIN,
 		    ""));
 	}
-	button = (Button) rootView.findViewById(R.id.buttonLogin);
+	button = (Button) view.findViewById(R.id.buttonLogin);
 	button.setOnClickListener(new OnClickListener() {
 	    @Override
 	    public void onClick(View v) {
 		button.setEnabled(false);
-		bus.postSticky(new LoginReq(loginText.getText().toString(),
+		bus.postSticky(new LoginRequest(loginText.getText().toString(),
 			passwordText.getText().toString()));
 	    }
 	});
-	return rootView;
     }
 
-    public void onEventMainThread(LoginResp event) {
+    public void onEventMainThread(LoginResponse event) {
 	Log.d("onEventMainThread", "onEventMainThread start");
 	button.setEnabled(true);
 	bus.removeStickyEvent(event);
@@ -108,18 +109,19 @@ public class LoginFragment extends Fragment {
 		savedData.edit().putString(APIStringConstants.ARG_LOGIN, login)
 			.commit();
 	    }
-	    startActivity(new Intent(getActivity(), AltNoteListActivity.class)
+	    startActivity(new Intent(getActivity(), NoteListActivity.class)
 		    .putExtra(APIStringConstants.CONST_SESSOIN_ID,
 			    event.getSessionId()));
 	} else {
-	    Toast.makeText(getActivity(), event.getStatus().resource(getActivity()),
+	    Toast.makeText(getActivity(),
+		    event.getStatus().resource(getActivity()),
 		    Toast.LENGTH_SHORT).show();
 	}
     }
 
-    public void onEventBackgroundThread(LoginReq req) {
+    public void onEventBackgroundThread(LoginRequest req) {
 	bus.removeStickyEvent(req);
-	LoginResp event = new LoginResp();
+	LoginResponse event = new LoginResponse();
 	try {
 	    ServerHelper sHelper = ServerHelper.getInstance();
 	    event.setSessionId(sHelper.checkLogin(req.getLogin(), req.getPass()));

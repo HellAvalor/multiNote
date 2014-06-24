@@ -17,10 +17,9 @@ import com.andreykaraman.multinote.R;
 import com.andreykaraman.multinote.data.APIStringConstants;
 import com.andreykaraman.multinote.data.UserExceptions;
 import com.andreykaraman.multinote.data.UserExceptions.Error;
-import com.andreykaraman.multinote.model.req.RegisterReq;
-import com.andreykaraman.multinote.model.resp.RegisterResp;
-import com.andreykaraman.multinote.ui.list.AltNoteListActivity;
-import com.andreykaraman.multinote.utils.ServerHelper;
+import com.andreykaraman.multinote.remote.ServerHelper;
+import com.andreykaraman.multinote.ui.list.NoteListActivity;
+import com.andreykaraman.multinote.ui.login.Events.*;
 
 import de.greenrobot.event.EventBus;
 
@@ -63,36 +62,37 @@ public class RegisterFragment extends Fragment {
 	View rootView = inflater.inflate(R.layout.fragment_register, container,
 		false);
 
-	savedData = inflater.getContext().getSharedPreferences("settings", 0);
-	sharedPrefs = PreferenceManager.getDefaultSharedPreferences(container
-		.getContext());
-
-	final EditText loginText = (EditText) rootView
-		.findViewById(R.id.editTextRegisterLogin);
-	final EditText passwordText = (EditText) rootView
-		.findViewById(R.id.editTextRegisterPass);
-	final EditText newPasswordText = (EditText) rootView
-		.findViewById(R.id.editTextRegisterRepPassword);
-
-	registerButton = (Button) rootView.findViewById(R.id.buttonRegister);
-	registerButton.setOnClickListener(new OnClickListener() {
-	    @Override
-	    public void onClick(View v) {
-		registerButton.setEnabled(false);
-		bus.postSticky(new RegisterReq(loginText.getText().toString(),
-			passwordText.getText().toString(), newPasswordText
-				.getText().toString()));
-	    }
-	});
 	return rootView;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
 	super.onViewCreated(view, savedInstanceState);
+
+	savedData = getActivity().getSharedPreferences("settings", 0);
+	sharedPrefs = PreferenceManager
+		.getDefaultSharedPreferences(getActivity());
+
+	final EditText loginText = (EditText) view
+		.findViewById(R.id.editTextRegisterLogin);
+	final EditText passwordText = (EditText) view
+		.findViewById(R.id.editTextRegisterPass);
+	final EditText newPasswordText = (EditText) view
+		.findViewById(R.id.editTextRegisterRepPassword);
+
+	registerButton = (Button) view.findViewById(R.id.buttonRegister);
+	registerButton.setOnClickListener(new OnClickListener() {
+	    @Override
+	    public void onClick(View v) {
+		registerButton.setEnabled(false);
+		bus.postSticky(new RegisterRequest(loginText.getText().toString(),
+			passwordText.getText().toString(), newPasswordText
+				.getText().toString()));
+	    }
+	});
     }
 
-    public void onEventMainThread(RegisterResp event) {
+    public void onEventMainThread(RegisterResponse event) {
 
 	registerButton.setEnabled(true);
 	bus.removeStickyEvent(event);
@@ -102,19 +102,20 @@ public class RegisterFragment extends Fragment {
 		savedData.edit().putString(APIStringConstants.ARG_LOGIN, login)
 			.commit();
 	    }
-	
-	    startActivity(new Intent(getActivity(), AltNoteListActivity.class)
+
+	    startActivity(new Intent(getActivity(), NoteListActivity.class)
 		    .putExtra(APIStringConstants.CONST_SESSOIN_ID,
 			    event.getSessionId()));
 	} else {
-	    Toast.makeText(getActivity(), event.getStatus().resource(getActivity()),
+	    Toast.makeText(getActivity(),
+		    event.getStatus().resource(getActivity()),
 		    Toast.LENGTH_SHORT).show();
 	}
     }
 
-    public void onEventBackgroundThread(RegisterReq registerClass) {
+    public void onEventBackgroundThread(RegisterRequest registerClass) {
 	bus.removeStickyEvent(registerClass);
-	RegisterResp event = new RegisterResp();
+	RegisterResponse event = new RegisterResponse();
 	try {
 	    ServerHelper sHelper = ServerHelper.getInstance();
 

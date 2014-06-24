@@ -6,18 +6,16 @@ import android.database.Cursor;
 public class DBNote extends AbsDBObject {
 
     public static final String TABLE_NAME = "DBNote";
-    
+
     public static final String NOTE_ID = "_id";
     public static final String NOTE_TITLE = "title";
     public static final String NOTE_CONTENT = "content";
 
     public static final String[] FIELDS = { NOTE_ID, NOTE_TITLE, NOTE_CONTENT };
 
-    public static final String CREATE_TABLE =
-	    "CREATE TABLE " + TABLE_NAME
-	    + "(" + NOTE_ID + " INTEGER PRIMARY KEY,"
-	    + NOTE_TITLE + " TEXT NOT NULL,"
-	    + NOTE_CONTENT + " TEXT NOT NULL );";
+    public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME
+	    + "(" + NOTE_ID + " INTEGER PRIMARY KEY," + NOTE_TITLE
+	    + " TEXT NOT NULL," + NOTE_CONTENT + " TEXT NOT NULL );";
 
     public long id = EMPTY_ID;
     public String title;
@@ -43,6 +41,7 @@ public class DBNote extends AbsDBObject {
      * Return the fields in a ContentValues object, suitable for insertion into
      * the database.
      */
+    @Override
     public ContentValues getContent() {
 	final ContentValues values = new ContentValues();
 	if (id != EMPTY_ID) {

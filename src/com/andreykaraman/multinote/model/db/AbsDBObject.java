@@ -16,6 +16,7 @@ public abstract class AbsDBObject implements DBItem {
 	return tableName + "." + fieldName;
     }
 
+    @Override
     public Long getIdAsObject() {
 	return objectId(getId());
     }
