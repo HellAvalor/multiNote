@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.andreykaraman.multinote.EditNoteActivity" >
+    tools:context="com.andreykaraman.multinote.ItemDetailActivity" >
 
     <item
         android:id="@+id/action_save_note"
