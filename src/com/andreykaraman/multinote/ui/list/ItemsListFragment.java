@@ -15,10 +15,12 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 
 import com.andreykaraman.multinote.R;
@@ -28,8 +30,9 @@ import com.andreykaraman.multinote.model.ServerDBHelper;
 import com.andreykaraman.multinote.model.db.DBNote;
 import com.andreykaraman.multinote.ui.login.MainActivity;
 
-public class ItemsListFragment extends Fragment implements LoaderCallbacks<Cursor> {
-  //  private ArrayAdapter<Item> adapterItems;
+public class ItemsListFragment extends Fragment implements
+	LoaderCallbacks<Cursor> {
+    // private ArrayAdapter<Item> adapterItems;
     private ListView lvItems;
     private final static String LOG_SECTION = MainActivity.class.getName();
     private LoaderManager.LoaderCallbacks<Cursor> mCallbacks;
@@ -43,10 +46,10 @@ public class ItemsListFragment extends Fragment implements LoaderCallbacks<Curso
 	super.onCreate(savedInstanceState);
 
 	// Create arraylist from item fixtures
-	//ArrayList<Item> items = Item.getItems();
+	// ArrayList<Item> items = Item.getItems();
 	// Create adapter based on items
-	//adapterItems = new ArrayAdapter<Item>(getActivity(),
-	//	android.R.layout.simple_list_item_activated_1, items);
+	// adapterItems = new ArrayAdapter<Item>(getActivity(),
+	// android.R.layout.simple_list_item_activated_1, items);
     }
 
     @Override
@@ -77,7 +80,7 @@ public class ItemsListFragment extends Fragment implements LoaderCallbacks<Curso
 	    @Override
 	    public void onItemClick(AdapterView<?> adapterView, View item,
 		    int position, long rowId) {
-		//Item item1 = adapterItems.getItem(position);
+		// Item item1 = adapterItems.getItem(position);
 		// Fire selected listener event with item
 		listener.onItemSelected(rowId); // <--------------
 	    }
@@ -196,21 +199,21 @@ public class ItemsListFragment extends Fragment implements LoaderCallbacks<Curso
      * Turns on activate-on-click mode. When this mode is on, list items will be
      * given the 'activated' state when touched.
      */
-//    public void setActivateOnItemClick(boolean activateOnItemClick) {
-//	// When setting CHOICE_MODE_SINGLE, ListView will automatically
-//	// give items the 'activated' state when touched.
+    public void setActivateOnItemClick(boolean activateOnItemClick) {
+	// When setting CHOICE_MODE_SINGLE, ListView will automatically
+	// give items the 'activated' state when touched.
 //	lvItems.setChoiceMode(activateOnItemClick ? ListView.CHOICE_MODE_SINGLE
-//		: ListView.CHOICE_MODE_NONE);
-//    }
+//		: ListView.CHOICE_MODE_MULTIPLE_MODAL);
+    }
 
-//    @Override
-//    public void onItemClick(AdapterView<?> parent, View view, int position,
-//	    long id) {
-//	
-//	// TODO change for multi
-//	Intent intent = new Intent(view.getContext(), EditNoteActivity.class)
-//		.putExtra(APIStringConstants.CONST_SESSOIN_ID, sessionId);
-//	intent.putExtra(APIStringConstants.CONST_NOTE_ID, id);
-//	startActivity(intent);
-//    }
+    // @Override
+    // public void onItemClick(AdapterView<?> parent, View view, int position,
+    // long id) {
+    //
+    // // TODO change for multi
+    // Intent intent = new Intent(view.getContext(), EditNoteActivity.class)
+    // .putExtra(APIStringConstants.CONST_SESSOIN_ID, sessionId);
+    // intent.putExtra(APIStringConstants.CONST_NOTE_ID, id);
+    // startActivity(intent);
+    // }
 }

@@ -33,13 +33,13 @@ import de.greenrobot.event.EventBus;
 public class ItemDetailFragment extends Fragment {
 
     protected final String TAG = this.getClass().getSimpleName();
-    private static boolean isTwoPane = false;
+    private boolean isTwoPane = true;
     private EditText titleText;
     private EditText contentText;
     private Note note = new Note();
     private int sessionId;
     private long noteId;
-    private static EventBus bus;
+    private EventBus bus = EventBus.getDefault();
     private ProgressDialog ringProgressDialog;
 
     // private Item item;
@@ -48,7 +48,7 @@ public class ItemDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	setHasOptionsMenu(true);
-	bus = EventBus.getDefault();
+	// bus = EventBus.getDefault();
 	Log.d("onCreate", "onCreate");
 	// item = (Item) getArguments().getSerializable("item");
     }
@@ -115,9 +115,17 @@ public class ItemDetailFragment extends Fragment {
 		APIStringConstants.CONST_NOTE_ID, -1);
 	sessionId = getActivity().getIntent().getIntExtra(
 		APIStringConstants.CONST_SESSOIN_ID, -1);
+	isTwoPane = getActivity().getIntent().getBooleanExtra(
+		APIStringConstants.PARAM_TABLET, true);
+
 	Log.d("onViewCreated", "sessionId " + sessionId + " noteId " + noteId);
 
 	if (noteId != -1) {
+	    
+	    ringProgressDialog = ProgressDialog.show(getActivity(), "",
+		    getResources().getString(R.string.loading), true);
+	    ringProgressDialog.setCancelable(false);
+	    
 	    updateNote(sessionId, noteId);
 	} else {
 	    getActivity().setTitle(getString(R.string.new_note));
@@ -130,7 +138,7 @@ public class ItemDetailFragment extends Fragment {
     // ItemDetailFragment.newInstance(item)
     public static ItemDetailFragment newInstance(int sessionId, long noteId,
 	    boolean isLarge) {
-	isTwoPane = isLarge;
+
 	// TODO to note item on select
 	ItemDetailFragment fragmentDemo = new ItemDetailFragment();
 
@@ -155,7 +163,7 @@ public class ItemDetailFragment extends Fragment {
     private static void updateNote(int sessionId, long noteId) {
 
 	Log.d("updateNote", "sessionId " + sessionId + " noteId " + noteId);
-	bus.postSticky(new GetNoteRequest(sessionId, noteId));
+	EventBus.getDefault().postSticky(new GetNoteRequest(sessionId, noteId));
     }
 
     public void showCancelChangesDialog(Context context) {
@@ -215,7 +223,7 @@ public class ItemDetailFragment extends Fragment {
     }
 
     public void onEventMainThread(GetNoteResponse event) {
-	Log.d("onEventMainThread", "onEventMainThread start");
+	Log.d("onEventMainThread", "onEventMainThread GetNoteResponse start");
 
 	titleText.setVisibility(View.GONE);
 	if (ringProgressDialog != null) {
@@ -257,11 +265,4 @@ public class ItemDetailFragment extends Fragment {
 	    EventBus.getDefault().postSticky(event);
 	}
     }
-
-    // public void onEventMainThread(GetNoteRequest req) {
-    // ringProgressDialog = ProgressDialog.show(getActivity(), "",
-    // getResources().getString(R.string.loading), true);
-    // ringProgressDialog.setCancelable(false);
-    // }
-
 }

@@ -76,6 +76,7 @@ public class ItemsListActivity extends FragmentActivity implements
 	    i.putExtra(APIStringConstants.CONST_SESSOIN_ID, getIntent()
 		    .getIntExtra(APIStringConstants.CONST_SESSOIN_ID, -1));
 	    i.putExtra(APIStringConstants.CONST_NOTE_ID, id);
+	    i.putExtra(APIStringConstants.PARAM_TABLET, isTwoPane);
 	    startActivity(i);
 	}
     }
@@ -84,10 +85,10 @@ public class ItemsListActivity extends FragmentActivity implements
 	FrameLayout fragmentItemDetail = (FrameLayout) findViewById(R.id.flDetailContainer);
 	if (fragmentItemDetail != null) {
 	    isTwoPane = true;
-	    // ItemsListFragment fragmentItemsList = (ItemsListFragment)
-	    // getFragmentManager()
-	    // .findFragmentById(R.id.fragmentItemsList);
-	    // fragmentItemsList.setActivateOnItemClick(true);
+	     ItemsListFragment fragmentItemsList = (ItemsListFragment)
+	     getFragmentManager()
+	     .findFragmentById(R.id.fragmentItemsList);
+	    fragmentItemsList.setActivateOnItemClick(true);
 	}
     }
 
