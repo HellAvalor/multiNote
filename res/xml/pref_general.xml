@@ -1,0 +1,10 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/pref_header_general" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="alt_UI"
+            android:title="@string/pref_alt_notes_screen" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

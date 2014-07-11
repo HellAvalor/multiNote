@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.andreykaraman.multinote"
+    android:versionCode="2"
+    android:versionName="1.1" >
+
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="19" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="com.andreykaraman.multinote.ui.login.MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.andreykaraman.multinote.ui.list.AltNoteActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name="com.andreykaraman.multinote.ui.list.menu.EditPassActivity"
+            android:label="@string/change_pass"
+            android:parentActivityName="com.andreykaraman.multinote.ui.list.AltNoteActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.andreykaraman.multinote.AltNoteActivity" />
+        </activity>
+        <activity
+            android:name="com.andreykaraman.multinote.ui.list.menu.AltNoteActivity"
+            android:label="@string/note"
+            android:parentActivityName="com.andreykaraman.multinote.ui.list.AltNoteActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.andreykaraman.multinote.AltNoteActivity" />
+        </activity>
+        <activity
+            android:name="com.andreykaraman.multinote.ui.login.menu.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName="com.andreykaraman.multinote.ui.login.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.andreykaraman.multinote.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.andreykaraman.multinote.ui.list.ItemsListActivity"
+            android:label="@string/title_activity_items_list" >
+        </activity>
+        <activity
+            android:name="com.andreykaraman.multinote.ui.list.menu.ItemDetailActivity"
+            android:label="@string/title_activity_item_detail" >
+        </activity>
+
+        <provider
+            android:name="com.andreykaraman.multinote.model.MyContentProvider"
+            android:authorities="com.andreykaraman.multinote" >
+        </provider>
+
+        <service android:name="com.andreykaraman.multinote.model.ServerDBHelper" >
+        </service>
+        <service android:name="com.andreykaraman.multinote.remote.ServerHelper" >
+        </service>
+    </application>
+
+</manifest>
