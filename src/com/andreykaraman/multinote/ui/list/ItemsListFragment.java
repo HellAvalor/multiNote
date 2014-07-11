@@ -1,5 +1,6 @@
 package com.andreykaraman.multinote.ui.list;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -14,10 +15,12 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 
 import com.andreykaraman.multinote.R;
@@ -25,46 +28,68 @@ import com.andreykaraman.multinote.data.APIStringConstants;
 import com.andreykaraman.multinote.model.MyContentProvider;
 import com.andreykaraman.multinote.model.ServerDBHelper;
 import com.andreykaraman.multinote.model.db.DBNote;
-import com.andreykaraman.multinote.ui.list.menu.EditNoteActivity;
 import com.andreykaraman.multinote.ui.login.MainActivity;
 
-public class NoteListFragment extends Fragment implements OnItemClickListener,
+public class ItemsListFragment extends Fragment implements
 	LoaderCallbacks<Cursor> {
-
+    // private ArrayAdapter<Item> adapterItems;
+    private ListView lvItems;
     private final static String LOG_SECTION = MainActivity.class.getName();
     private LoaderManager.LoaderCallbacks<Cursor> mCallbacks;
     private NoteAdapter scAdapter;
-    private ListView noteView;
     private int sessionId;
     protected Object mActionMode;
-    public NoteListFragment() {
+    private OnListItemSelectedListener listener;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+
+	// Create arraylist from item fixtures
+	// ArrayList<Item> items = Item.getItems();
+	// Create adapter based on items
+	// adapterItems = new ArrayAdapter<Item>(getActivity(),
+	// android.R.layout.simple_list_item_activated_1, items);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	    Bundle savedInstanceState) {
-
-	View rootView = inflater.inflate(R.layout.fragment_alt_notes_list,
-		container, false);
-	return rootView;
+	// Inflate view
+	View view = inflater.inflate(R.layout.fragment_item_list, container,
+		false);
+	// Return view
+	return view;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+	// TODO Auto-generated method stub
 	super.onViewCreated(view, savedInstanceState);
 	sessionId = getActivity().getIntent().getIntExtra(
 		APIStringConstants.CONST_SESSOIN_ID, -1);
 	scAdapter = new NoteAdapter(getActivity(), null);
 
-	noteView = (ListView) view.findViewById(R.id.listView1);
-	noteView.setAdapter(scAdapter);
+	// Attach adapter to listview
+	lvItems = (ListView) view.findViewById(R.id.lvItems);
+	// lvItems.setAdapter(adapterItems);
+	lvItems.setAdapter(scAdapter);
+	lvItems.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+	lvItems.setOnItemClickListener(new OnItemClickListener() {
 
-	noteView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-	// Capture ListView item click
-	noteView.setMultiChoiceModeListener(new MultiSelectListener());
+	    @Override
+	    public void onItemClick(AdapterView<?> adapterView, View item,
+		    int position, long rowId) {
+		// Item item1 = adapterItems.getItem(position);
+		// Fire selected listener event with item
+		listener.onItemSelected(rowId); // <--------------
+	    }
+	});
+
+	lvItems.setMultiChoiceModeListener(new MultiSelectListener());
 
 	fillData();
-	noteView.setOnItemClickListener(this);
+
 	mCallbacks = this;
 
 	// создаем лоадер для чтения данных
@@ -84,7 +109,7 @@ public class NoteListFragment extends Fragment implements OnItemClickListener,
 	public void onItemCheckedStateChanged(ActionMode mode, int position,
 		long id, boolean checked) {
 	    // Capture total checked items
-	    final int checkedCount = noteView.getCheckedItemCount();
+	    final int checkedCount = lvItems.getCheckedItemCount();
 	    // Set the CAB title according to total checked items
 	    mode.setTitle(checkedCount + " Selected");
 	}
@@ -110,7 +135,7 @@ public class NoteListFragment extends Fragment implements OnItemClickListener,
 
 	@Override
 	public void onDestroyActionMode(ActionMode mode) {
-	    noteView.clearChoices();
+	    lvItems.clearChoices();
 	}
 
 	@Override
@@ -124,20 +149,10 @@ public class NoteListFragment extends Fragment implements OnItemClickListener,
 	Intent intent = new Intent(getActivity(), ServerDBHelper.class)
 		.putExtra("update_notes_on_remote", R.id.delete_notes)
 		.putExtra(APIStringConstants.CONST_NOTE_ID,
-			noteView.getCheckedItemIds())
+			lvItems.getCheckedItemIds())
 		.putExtra(APIStringConstants.CONST_SESSOIN_ID, sessionId);
 	getActivity().startService(intent);
 
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position,
-	    long id) {
-
-	Intent intent = new Intent(view.getContext(), EditNoteActivity.class)
-		.putExtra(APIStringConstants.CONST_SESSOIN_ID, sessionId);
-	intent.putExtra(APIStringConstants.CONST_NOTE_ID, id);
-	startActivity(intent);
     }
 
     @Override
@@ -163,4 +178,42 @@ public class NoteListFragment extends Fragment implements OnItemClickListener,
     private void fillData() {
 	getLoaderManager().initLoader(0, null, this);
     }
+
+    public interface OnListItemSelectedListener {
+	public void onItemSelected(long id);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+	super.onAttach(activity);
+	if (activity instanceof OnListItemSelectedListener) {
+	    listener = (OnListItemSelectedListener) activity;
+	} else {
+	    throw new ClassCastException(
+		    activity.toString()
+			    + " must implement ItemsListFragment.OnListItemSelectedListener");
+	}
+    }
+
+    /**
+     * Turns on activate-on-click mode. When this mode is on, list items will be
+     * given the 'activated' state when touched.
+     */
+    public void setActivateOnItemClick(boolean activateOnItemClick) {
+	// When setting CHOICE_MODE_SINGLE, ListView will automatically
+	// give items the 'activated' state when touched.
+//	lvItems.setChoiceMode(activateOnItemClick ? ListView.CHOICE_MODE_SINGLE
+//		: ListView.CHOICE_MODE_MULTIPLE_MODAL);
+    }
+
+    // @Override
+    // public void onItemClick(AdapterView<?> parent, View view, int position,
+    // long id) {
+    //
+    // // TODO change for multi
+    // Intent intent = new Intent(view.getContext(), EditNoteActivity.class)
+    // .putExtra(APIStringConstants.CONST_SESSOIN_ID, sessionId);
+    // intent.putExtra(APIStringConstants.CONST_NOTE_ID, id);
+    // startActivity(intent);
+    // }
 }

@@ -25,31 +25,53 @@ import com.andreykaraman.multinote.data.UserExceptions.Error;
 import com.andreykaraman.multinote.model.Note;
 import com.andreykaraman.multinote.model.ServerDBHelper;
 import com.andreykaraman.multinote.remote.ServerHelper;
-import com.andreykaraman.multinote.ui.list.menu.Events.*;
+import com.andreykaraman.multinote.ui.list.menu.Events.GetNoteRequest;
+import com.andreykaraman.multinote.ui.list.menu.Events.GetNoteResponse;
 
 import de.greenrobot.event.EventBus;
 
-public class EditNoteFragment extends Fragment {
+public class ItemDetailFragment extends Fragment {
 
     protected final String TAG = this.getClass().getSimpleName();
-
+    private boolean isTwoPane = true;
     private EditText titleText;
     private EditText contentText;
     private Note note = new Note();
     private int sessionId;
     private long noteId;
-    private EventBus bus;
+    private EventBus bus = EventBus.getDefault();
     private ProgressDialog ringProgressDialog;
 
-    public EditNoteFragment() {
-	super();
-    }
+    // private Item item;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	setHasOptionsMenu(true);
-	bus = EventBus.getDefault();
+	// bus = EventBus.getDefault();
+	Log.d("onCreate", "onCreate");
+	// item = (Item) getArguments().getSerializable("item");
+    }
+
+    @Override
+    public void onPause() {
+	bus.unregister(this);
+	super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+	super.onResume();
+	bus.registerSticky(this);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	    Bundle savedInstanceState) {
+	View view = inflater.inflate(R.layout.fragment_new_note, container,
+		false);
+	Log.d("onCreateView", "onCreateView");
+	return view;
     }
 
     @Override
@@ -71,8 +93,11 @@ public class EditNoteFragment extends Fragment {
 		getActivity().getActionBar().setDisplayHomeAsUpEnabled(false);
 		showCancelChangesDialog(getActivity());
 	    } else {
+
 		getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
-		getActivity().finish();
+		if (!isTwoPane) {
+		    getActivity().finish();
+		}
 		return true;
 	    }
 	    break;
@@ -83,27 +108,6 @@ public class EditNoteFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	    Bundle savedInstanceState) {
-	View rootView = inflater.inflate(R.layout.fragment_new_note, container,
-		false);
-
-	return rootView;
-    }
-
-    @Override
-    public void onPause() {
-	bus.unregister(this);
-	super.onPause();
-    }
-
-    @Override
-    public void onResume() {
-	super.onResume();
-	bus.registerSticky(this);
-    }
-
-    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
 	super.onViewCreated(view, savedInstanceState);
 
@@ -111,21 +115,40 @@ public class EditNoteFragment extends Fragment {
 		APIStringConstants.CONST_NOTE_ID, -1);
 	sessionId = getActivity().getIntent().getIntExtra(
 		APIStringConstants.CONST_SESSOIN_ID, -1);
+	isTwoPane = getActivity().getIntent().getBooleanExtra(
+		APIStringConstants.PARAM_TABLET, true);
+
+	Log.d("onViewCreated", "sessionId " + sessionId + " noteId " + noteId);
 
 	if (noteId != -1) {
 	    
 	    ringProgressDialog = ProgressDialog.show(getActivity(), "",
 		    getResources().getString(R.string.loading), true);
 	    ringProgressDialog.setCancelable(false);
-	    bus.postSticky(new GetNoteRequest(sessionId, noteId));
-
+	    
+	    updateNote(sessionId, noteId);
 	} else {
 	    getActivity().setTitle(getString(R.string.new_note));
 	}
 
 	titleText = (EditText) view.findViewById(R.id.editTextNewTitle);
 	contentText = (EditText) view.findViewById(R.id.editTextNewNote);
+    }
 
+    // ItemDetailFragment.newInstance(item)
+    public static ItemDetailFragment newInstance(int sessionId, long noteId,
+	    boolean isLarge) {
+
+	// TODO to note item on select
+	ItemDetailFragment fragmentDemo = new ItemDetailFragment();
+
+	if (noteId != -1) {
+	    updateNote(sessionId, noteId);
+	}
+	// Bundle args = new Bundle();
+	// args.putSerializable("item", item);
+	// fragmentDemo.setArguments(args);
+	return fragmentDemo;
     }
 
     public boolean isContentChanged() {
@@ -135,6 +158,12 @@ public class EditNoteFragment extends Fragment {
 	    return true;
 	}
 	return false;
+    }
+
+    private static void updateNote(int sessionId, long noteId) {
+
+	Log.d("updateNote", "sessionId " + sessionId + " noteId " + noteId);
+	EventBus.getDefault().postSticky(new GetNoteRequest(sessionId, noteId));
     }
 
     public void showCancelChangesDialog(Context context) {
@@ -176,11 +205,8 @@ public class EditNoteFragment extends Fragment {
 
 	    Toast.makeText(getActivity(), R.string.note_updated,
 		    Toast.LENGTH_SHORT).show();
-
 	} else {
-
 	    Log.d(TAG, "sessionId = " + sessionId);
-
 	    Intent intent = new Intent(getActivity(), ServerDBHelper.class)
 		    .putExtra("update_notes_on_remote", R.id.add_note)
 		    .putExtra(APIStringConstants.CONST_SESSOIN_ID, sessionId)
@@ -188,19 +214,21 @@ public class EditNoteFragment extends Fragment {
 		    .putExtra("content", contentText.getText().toString());
 
 	    getActivity().startService(intent);
-
 	    Toast.makeText(getActivity(), R.string.note_added,
 		    Toast.LENGTH_SHORT).show();
 	}
-
-	getActivity().finish();
+	if (!isTwoPane) {
+	    getActivity().finish();
+	}
     }
 
     public void onEventMainThread(GetNoteResponse event) {
-	Log.d("onEventMainThread", "onEventMainThread start");
+	Log.d("onEventMainThread", "onEventMainThread GetNoteResponse start");
 
 	titleText.setVisibility(View.GONE);
-	ringProgressDialog.dismiss();
+	if (ringProgressDialog != null) {
+	    ringProgressDialog.dismiss();
+	}
 	bus.removeStickyEvent(event);
 
 	if (event.getStatus() == Error.OK) {
@@ -217,15 +245,23 @@ public class EditNoteFragment extends Fragment {
     }
 
     public void onEventBackgroundThread(GetNoteRequest req) {
+
+	Log.d("onEventBackgroundThread", "onEventBackgroundThread");
 	bus.removeStickyEvent(req);
 	GetNoteResponse event = new GetNoteResponse(new Note());
 	try {
 	    ServerHelper sHelper = ServerHelper.getInstance();
+	    Log.d("onEventBackgroundThread", "event " + req.getSessionId()
+		    + " " + req.getNoteId());
 	    event.setNote(sHelper.getNote(req.getSessionId(), req.getNoteId()));
+	    Log.d("onEventBackgroundThread", "Note "
+		    + event.getNote().getNoteTitle() + " "
+		    + event.getNote().getNoteContent());
 	    event.setStatus(Error.OK);
 	    EventBus.getDefault().postSticky(event);
 	} catch (UserExceptions e) {
 	    event.setStatus(e.getError());
+	    Log.d("onEventBackgroundThread", "Error " + e.getError().toString());
 	    EventBus.getDefault().postSticky(event);
 	}
     }

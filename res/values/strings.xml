@@ -62,5 +62,8 @@ THE SOFTWARE.</string>
     <string name="login_not_free">Login not free</string>
     <string name="error_db">Error while connectin server</string>
     <string name="unknown_error">Unknown error</string>
+    <string name="title_activity_items_list">ItemsListActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_item_detail">ItemDetailActivity</string>
 
 </resources>

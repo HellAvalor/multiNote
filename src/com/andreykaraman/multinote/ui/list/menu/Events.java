@@ -77,6 +77,7 @@ public class Events {
 	private Note note;
 
 	GetNoteResponse(Note note) {
+	    super();
 	    this.setNote(note);
 	}
 

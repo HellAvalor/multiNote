@@ -32,6 +32,6 @@ public class APIStringConstants {
     public final static String PARAM_RESULT = "result";
     public final static String PARAM_STATUS = "status";
     
-    
+    public final static String PARAM_TABLET = "tablet";
     public final static String BROADCAST_ACTION = "com.andreykaraman.multinote.getnotebroadcast";
 }

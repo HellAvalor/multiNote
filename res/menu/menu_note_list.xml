@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.andreykaraman.multinote.NoteList" >
+    tools:context="com.andreykaraman.multinote.ItemListActivity" >
 
     <item
         android:id="@+id/change_pass"

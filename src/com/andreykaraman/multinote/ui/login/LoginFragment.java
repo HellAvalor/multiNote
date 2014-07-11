@@ -19,8 +19,9 @@ import com.andreykaraman.multinote.data.APIStringConstants;
 import com.andreykaraman.multinote.data.UserExceptions;
 import com.andreykaraman.multinote.data.UserExceptions.Error;
 import com.andreykaraman.multinote.remote.ServerHelper;
-import com.andreykaraman.multinote.ui.list.NoteListActivity;
-import com.andreykaraman.multinote.ui.login.Events.*;
+import com.andreykaraman.multinote.ui.list.ItemsListActivity;
+import com.andreykaraman.multinote.ui.login.Events.LoginRequest;
+import com.andreykaraman.multinote.ui.login.Events.LoginResponse;
 
 import de.greenrobot.event.EventBus;
 
@@ -109,7 +110,10 @@ public class LoginFragment extends Fragment {
 		savedData.edit().putString(APIStringConstants.ARG_LOGIN, login)
 			.commit();
 	    }
-	    startActivity(new Intent(getActivity(), NoteListActivity.class)
+	    // startActivity(new Intent(getActivity(), AltNoteActivity.class)
+	    // .putExtra(APIStringConstants.CONST_SESSOIN_ID,
+	    // event.getSessionId()));
+	    startActivity(new Intent(getActivity(), ItemsListActivity.class)
 		    .putExtra(APIStringConstants.CONST_SESSOIN_ID,
 			    event.getSessionId()));
 	} else {
